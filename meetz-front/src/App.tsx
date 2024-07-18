@@ -1,5 +1,5 @@
-import Router from './routes'
-import Layout from './Layout';
+import Router from "./routes";
+import Layout from "./Layout";
 
 function App() {
   return (
@@ -8,7 +8,7 @@ function App() {
         <Router />
       </Layout>
     </>
-  )
+  );
 }
 
 export default App;
