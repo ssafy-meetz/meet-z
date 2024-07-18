@@ -1,11 +1,14 @@
 import Router from './routes'
+import Layout from './Layout';
 
 function App() {
   return (
     <>
-      <Router />
+      <Layout>
+        <Router />
+      </Layout>
     </>
   )
 }
 
-export default App
+export default App;
