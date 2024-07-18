@@ -1,9 +1,9 @@
 import React from 'react'
 
-const login = () => {
-  return (
-    <div>login</div>
-  )
+const Login = () => {
+    return (
+        <div className='text-[--color-primary] font-[Pretendard] text-3xl font-extrabold'>Login</div>
+    )
 }
 
-export default login
+export default Login

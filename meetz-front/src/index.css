@@ -1,12 +1,19 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css");
 
 
+:root {
+  /* 커스텀 색상 변수 */
+  --color-primary: #3490dc;
+  --color-secondary: #ffed4a;
 
-*{
-  margin:0px;
+  /* 커스텀 폰트 변수 */
+}
+
+* {
+  margin: 0px;
   padding: 0px;
   font-family: Pretendard;
 }
