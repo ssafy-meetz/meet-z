@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,11 +7,9 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div>
-        {/* 헤더 */}
-        <main>
-            {children}
-        </main>
-        {/* 푸터 */}
+      {/* 헤더 */}
+      <main>{children}</main>
+      {/* 푸터 */}
     </div>
   );
 };
