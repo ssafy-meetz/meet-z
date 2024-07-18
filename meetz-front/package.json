@@ -12,12 +12,17 @@
   "lint": "eslint './src/**/*.{ts,tsx,js,jsx}'",
   "lint:fix": "eslint --fix './src/**/*.{ts,tsx,js,jsx}'",
   "dependencies": {
+    "@eslint/config-array": "^0.17.0",
+    "@eslint/object-schema": "^2.1.4",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.7.2",
+    "glob": "^11.0.0",
+    "lru-cache": "^11.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.1",
     "react-spinner": "^0.2.7",
+    "rimraf": "^6.0.1",
     "yarn": "^1.22.22",
     "zustand": "^4.5.4"
   },
