@@ -1,21 +1,26 @@
 package com.c108.meetz.api;
 
+import com.c108.meetz.constants.ErrorCode;
+import com.c108.meetz.constants.SuccessCode;
+import com.c108.meetz.domain.Manager;
+import com.c108.meetz.dto.ApiResponse;
+import com.c108.meetz.dto.request.ManagerJoinRequest;
 import com.c108.meetz.repository.ManagerRepository;
 import com.c108.meetz.service.MailService;
 import com.c108.meetz.service.ManagerService;
-import lombok.Getter;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.*;
 
+import static com.c108.meetz.constants.ErrorCode.*;
+import static com.c108.meetz.constants.SuccessCode.*;
+
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/manager")
@@ -24,17 +29,48 @@ public class ManagerApi {
     private final ManagerService managerService;
     private final ManagerRepository managerRepository;
     private final MailService mailService;
-    //일정 시간이 지나면 map에서 삭제를 시키면 된다. (시간 설정은 어떻게???)
-    //하지만 서버에 저장하면 여러명의 메일 요청이 올 때 서버에 부하(메모리 차지함) => DB에 저장하는게 서버 부하 측면에서 더 효율성이 있음
-    private Map<String, Integer> mapCode = new HashMap<>(); // 이메일, 인증코드를 담고 있는 맵
+
+
+    @PostMapping("/join")
+    public ApiResponse<Void> joinManager(@Valid @RequestBody ManagerJoinRequest joinRequest) {
+
+        Manager manager = new Manager();
+
+        //이메일
+        manager.setEmail(joinRequest.getEmail());
+        //비밀번호
+        manager.setPassword(joinRequest.getPassword());
+        //회사
+        manager.setCompany(joinRequest.getCompany());
+        //전화번호
+        manager.setPhone(joinRequest.getPhone());
+
+        managerRepository.save(manager);
+
+        return ApiResponse.success(JOIN_SUCCESS);
+    }
 
     @GetMapping("/authemail")
-    public String authEmail(@RequestParam String email) {
+    public ApiResponse<Void> authEmail(@RequestParam(value="email") String email) {
 
-
+        //메일 보내고 UUID 받기
         int sendedNum = mailService.sendMail(email);
+        log.info("email={}  ", email);
+        //redis에 <email, sendedNum> 넣기
+        mailService.saveEmail(email, Integer.toString(sendedNum));
+        return ApiResponse.success(SUCCESS);
+    }
 
-        return "tmp";
+    @GetMapping("/checkemail")
+    public ApiResponse<Void> getEmail(@RequestParam(value="email") String email, @RequestParam(value="sendedNum") String sendedNum) {
+
+        String redisEmail = mailService.getEmail(sendedNum);
+
+        if (redisEmail != null && redisEmail.equals(email)) {
+            mailService.delEmail(sendedNum);
+            return ApiResponse.success(VERIFICATION_CODE_MATCH);
+        }
+        return ApiResponse.error(INVALID_VERIFICATION_CODE);
     }
 
 
