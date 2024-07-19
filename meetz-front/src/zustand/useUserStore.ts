@@ -45,7 +45,7 @@ export const useUserStore = create<userStore>((set) => ({
     const data = await response.json();
 
     if (response.ok) {
-      const { 'refresh-token': refreshToken, 'access-token': accessToken, 'expire-at': expireAt, role } = data.data;
+      const { refreshToken, accessToken, expireAt, role } = data.data;
       set({ refreshToken, accessToken, expireAt, role });
       localStorage.setItem('refreshToken', refreshToken); // 리프레시 토큰을 로컬 스토리지에 저장
     } else {
@@ -88,7 +88,7 @@ export const useUserStore = create<userStore>((set) => ({
     const data = await response.json();
 
     if (response.ok) {
-      const { 'access-token': accessToken, 'expire-at': expireAt } = data.data;
+      const { accessToken, expireAt } = data.data;
       set((state) => ({ ...state, accessToken, expireAt }));
     } else {
       console.error('Failed to refresh access token', data);
