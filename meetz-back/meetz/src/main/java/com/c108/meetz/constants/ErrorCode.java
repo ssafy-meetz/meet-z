@@ -11,8 +11,10 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 public enum ErrorCode {
 
     //400 BAD_REQUEST
-    DUPLICATE_EMAIL(BAD_REQUEST, "이미 가입된 이메일입니다");
-
+    FAIL(BAD_REQUEST, "실패"),
+    DUPLICATE_EMAIL(BAD_REQUEST, "이미 가입된 이메일"),
+    INVALID_VERIFICATION_CODE(BAD_REQUEST, "코드 인증 실패"),
+    FAIL_TO_SEND_EMAIL(BAD_REQUEST, "메일 전송 실패");
     private final HttpStatus status;
     private final String message;
 }
