@@ -50,6 +50,8 @@ public class ManagerApi {
         return ApiResponse.success(JOIN_SUCCESS);
     }
 
+
+    //이메일 인증 요청
     @GetMapping("/authemail")
     public ApiResponse<Void> authEmail(@RequestParam(value="email") String email) {
 
@@ -58,20 +60,19 @@ public class ManagerApi {
         log.info("email={}  ", email);
         //redis에 <email, sendedNum> 넣기
         mailService.saveEmail(email, Integer.toString(sendedNum));
-        return ApiResponse.success(SUCCESS);
+        return ApiResponse.success(VERIFICATION_CODE_SEND_SUCCESS);
     }
 
-    @GetMapping("/checkemail")
-    public ApiResponse<Void> getEmail(@RequestParam(value="email") String email, @RequestParam(value="sendedNum") String sendedNum) {
+    //이메일 인증 번호 일치 확인
+    @GetMapping()
+    public ApiResponse<Void> getEmail(@RequestParam(value="email") String email, @RequestParam(value="authcode") String authcode) {
 
-        String redisEmail = mailService.getEmail(sendedNum);
+        String redisEmail = mailService.getEmail(authcode);
 
         if (redisEmail != null && redisEmail.equals(email)) {
-            mailService.delEmail(sendedNum);
+            mailService.delEmail(authcode);
             return ApiResponse.success(VERIFICATION_CODE_MATCH);
         }
         return ApiResponse.error(INVALID_VERIFICATION_CODE);
     }
-
-
 }
