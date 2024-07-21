@@ -6,12 +6,11 @@ import com.c108.meetz.dto.response.LoginResponseDto;
 import com.c108.meetz.service.CommonService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.c108.meetz.constants.SuccessCode.LOGIN_SUCCESS;
+import static com.c108.meetz.constants.SuccessCode.TOKEN_REISSUE_SUCCESS;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -23,4 +22,11 @@ public class CommonApi {
         LoginResponseDto response = commonService.login(loginRequestDto);
         return ApiResponse.success(LOGIN_SUCCESS, response);
     }
+
+    @PostMapping("/refresh")
+    public ApiResponse<LoginResponseDto> tokenRefresh(@RequestHeader("Authorization") String header){
+        LoginResponseDto response = commonService.refreshToken(header);
+        return ApiResponse.success(TOKEN_REISSUE_SUCCESS, response);
+    }
+
 }
