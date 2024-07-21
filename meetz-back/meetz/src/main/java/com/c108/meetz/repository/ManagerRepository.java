@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+
 public interface ManagerRepository extends JpaRepository<Manager, Integer> {
 
     Manager findByEmail(String email);
@@ -20,6 +21,7 @@ public interface ManagerRepository extends JpaRepository<Manager, Integer> {
     @Modifying
     @Query("update Manager m set m.token=?2 where m.email=?1")
     void updateRefreshToken(String email, String refreshToken);
+
 
 
 }
