@@ -2,7 +2,7 @@ package com.c108.meetz.config;
 
 import com.c108.meetz.jwt.CustomLogoutFilter;
 import com.c108.meetz.jwt.JWTFilter;
-import com.c108.meetz.jwt.LoginFilter;
+//import com.c108.meetz.jwt.LoginFilter;
 import com.c108.meetz.repository.ManagerRepository;
 import com.c108.meetz.jwt.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -83,15 +83,14 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join").permitAll()
-                        .requestMatchers("/admin").hasRole("ADMIN")
-                        .requestMatchers("/reissue").permitAll()
+                        .requestMatchers("/api/login", "/", "/api/manager/join").permitAll()
+                        .requestMatchers("/api/refresh").permitAll()
                         .anyRequest().authenticated());
 
         http
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
-        http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, managerRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+//        http
+//                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, managerRepository, bCryptPasswordEncoder()), UsernamePasswordAuthenticationFilter.class);
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, managerRepository), LogoutFilter.class);
 

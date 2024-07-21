@@ -1,7 +1,7 @@
 package com.c108.meetz.jwt;
 
 import com.c108.meetz.dto.CustomUserDetails;
-import com.c108.meetz.dto.req.CommonDto;
+import com.c108.meetz.dto.request.CommonDto;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,8 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import static com.c108.meetz.constants.ErrorCode.UNAUTHORIZED_USER;
-
 public class JWTFilter extends OncePerRequestFilter {
    private final JWTUtil jwtUtil;
    public JWTFilter(JWTUtil jwtUtil){
@@ -25,7 +23,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-
+        logger.debug("jwtfilter 시작");
        //request 에서 Authorization 헤더 찾음
        String authorization = request.getHeader("Authorization");
         if(authorization == null || !authorization.startsWith("Bearer ")){
@@ -44,7 +42,7 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-
+            logger.debug("JWTFilter: 토큰 만료");
             //response body
             PrintWriter writer = response.getWriter();
             writer.print("access token expired");
@@ -58,7 +56,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String category = jwtUtil.getCategory(accessToken);
 
         if (!category.equals("access")) {
-
+            logger.debug("JWTFilter: 잘못된 토큰 카테고리");
             //response body
             PrintWriter writer = response.getWriter();
             writer.print("invalid access token");
@@ -79,7 +77,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
-
+        logger.debug("JWTFilter: 종료");
         filterChain.doFilter(request, response);
     }
 }
