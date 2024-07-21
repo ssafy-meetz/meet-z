@@ -1,11 +1,13 @@
 package com.c108.meetz.dto.request;
 
+import com.c108.meetz.domain.Manager;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Getter
-public class ManagerJoinRequest {
+public class JoinRequestDto {
 
     @Email
     private String email;
@@ -21,6 +23,15 @@ public class ManagerJoinRequest {
     private String company;
 
     @NotBlank
-    @Length(min=11, max=11)
+    @Length(min=10, max=11)
     private String phone;
+
+    public Manager toManager(BCryptPasswordEncoder bCryptPasswordEncoder){
+        Manager manager = new Manager();
+        manager.setEmail(this.email);
+        manager.setPassword(bCryptPasswordEncoder.encode(this.password));
+        manager.setCompany(this.company);
+        manager.setPhone(this.phone);
+        return manager;
+    }
 }
