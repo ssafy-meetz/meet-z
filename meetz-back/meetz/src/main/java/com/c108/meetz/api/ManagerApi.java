@@ -1,21 +1,15 @@
 package com.c108.meetz.api;
 
-import com.c108.meetz.constants.ErrorCode;
-import com.c108.meetz.constants.SuccessCode;
-import com.c108.meetz.domain.Manager;
 import com.c108.meetz.dto.ApiResponse;
-import com.c108.meetz.dto.request.ManagerJoinRequest;
-import com.c108.meetz.repository.ManagerRepository;
+import com.c108.meetz.dto.request.JoinRequestDto;
+import com.c108.meetz.exception.CustomException;
 import com.c108.meetz.service.MailService;
 import com.c108.meetz.service.ManagerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
 
 import static com.c108.meetz.constants.ErrorCode.*;
 import static com.c108.meetz.constants.SuccessCode.*;
@@ -27,26 +21,15 @@ import static com.c108.meetz.constants.SuccessCode.*;
 public class ManagerApi {
 
     private final ManagerService managerService;
-    private final ManagerRepository managerRepository;
     private final MailService mailService;
 
 
     @PostMapping("/join")
-    public ApiResponse<Void> joinManager(@Valid @RequestBody ManagerJoinRequest joinRequest) {
-
-        Manager manager = new Manager();
-
-        //이메일
-        manager.setEmail(joinRequest.getEmail());
-        //비밀번호
-        manager.setPassword(joinRequest.getPassword());
-        //회사
-        manager.setCompany(joinRequest.getCompany());
-        //전화번호
-        manager.setPhone(joinRequest.getPhone());
-
-        managerRepository.save(manager);
-
+    public ApiResponse<Void> joinManager(@Valid @RequestBody JoinRequestDto joinRequestDto, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            throw new CustomException(FAIL_TO_JOIN);
+        }
+        managerService.joinManager(joinRequestDto);
         return ApiResponse.success(JOIN_SUCCESS);
     }
 
