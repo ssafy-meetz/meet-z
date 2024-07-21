@@ -1,6 +1,7 @@
 package com.c108.meetz.api;
 
 import com.c108.meetz.dto.ApiResponse;
+import com.c108.meetz.dto.request.CommonDto;
 import com.c108.meetz.dto.request.LoginRequestDto;
 import com.c108.meetz.dto.response.LoginResponseDto;
 import com.c108.meetz.service.CommonService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.c108.meetz.constants.SuccessCode.LOGIN_SUCCESS;
 import static com.c108.meetz.constants.SuccessCode.TOKEN_REISSUE_SUCCESS;
+import static com.c108.meetz.constants.SuccessCode.CHECK_INFO_SUCCESS;
 
 @RequiredArgsConstructor
 @RestController
@@ -27,6 +29,12 @@ public class CommonApi {
     public ApiResponse<LoginResponseDto> tokenRefresh(@RequestHeader("Authorization") String header){
         LoginResponseDto response = commonService.refreshToken(header);
         return ApiResponse.success(TOKEN_REISSUE_SUCCESS, response);
+    }
+
+    @GetMapping("/info")
+    public ApiResponse<CommonDto> checkInfo(){
+        CommonDto response = commonService.checkInfo();
+        return ApiResponse.success(CHECK_INFO_SUCCESS, response);
     }
 
 }

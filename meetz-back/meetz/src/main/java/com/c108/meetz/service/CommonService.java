@@ -1,11 +1,13 @@
 package com.c108.meetz.service;
 
 import com.c108.meetz.domain.Manager;
+import com.c108.meetz.dto.request.CommonDto;
 import com.c108.meetz.dto.request.LoginRequestDto;
 import com.c108.meetz.dto.response.LoginResponseDto;
 import com.c108.meetz.exception.CustomException;
 import com.c108.meetz.jwt.JWTUtil;
 import com.c108.meetz.repository.ManagerRepository;
+import com.c108.meetz.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -78,6 +80,17 @@ public class CommonService {
             return new LoginResponseDto(newRefreshToken, newAccessToken, expireAt, "MANAGER");
         }
         throw new CustomException(USER_NOT_FOUND);
+    }
+
+    public CommonDto checkInfo(){
+        CommonDto commonDto = new CommonDto();
+        String email = SecurityUtil.getCurrentUserEmail();
+        commonDto.setEmail(email);
+        commonDto.setPassword("temp");
+        if(managerRepository.findByEmail(email).isPresent()){
+            commonDto.setRole("MANAGER");
+        }
+        return commonDto;
     }
 
 }
