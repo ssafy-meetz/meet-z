@@ -1,4 +1,4 @@
-package com.c108.meetz.dto.req;
+package com.c108.meetz.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

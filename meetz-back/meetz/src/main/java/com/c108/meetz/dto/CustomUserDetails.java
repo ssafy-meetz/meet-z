@@ -1,6 +1,6 @@
 package com.c108.meetz.dto;
 
-import com.c108.meetz.dto.req.CommonDto;
+import com.c108.meetz.dto.request.CommonDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
