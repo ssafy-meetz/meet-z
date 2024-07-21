@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 
 public interface ManagerRepository extends JpaRepository<Manager, Integer> {
 
-    Manager findByEmail(String email);
+    Optional<Manager> findByEmail(String email);
     Boolean existsByToken(String token);
 
     @Transactional
