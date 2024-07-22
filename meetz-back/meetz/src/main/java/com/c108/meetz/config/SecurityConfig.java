@@ -1,5 +1,7 @@
 package com.c108.meetz.config;
 
+import com.c108.meetz.exception.CustomAccessDeniedHandler;
+import com.c108.meetz.exception.CustomAuthenticationEntryPoint;
 import com.c108.meetz.jwt.CustomLogoutFilter;
 import com.c108.meetz.jwt.JWTFilter;
 //import com.c108.meetz.jwt.LoginFilter;
@@ -29,11 +31,15 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final ManagerRepository managerRepository;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, ManagerRepository managerRepository) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, ManagerRepository managerRepository, CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.managerRepository = managerRepository;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -86,7 +92,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/login", "/", "/api/manager/join").permitAll()
                         .requestMatchers("/api/refresh").permitAll()
                         .anyRequest().authenticated());
-
+        // 예외 처리 설정
+        http.exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
+        );
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 //        http

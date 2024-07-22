@@ -69,15 +69,21 @@ public class CommonService {
         String email = jwtUtil.getEmail(refreshToken);
         String role = jwtUtil.getRole(refreshToken);
         if(role.equals("MANAGER")){
-            Manager manager = managerRepository.findByEmail(email).orElseThrow(()->new CustomException(USER_NOT_FOUND));
-            String newRefreshToken = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", 86400000L * 60);
-            String newAccessToken = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", 86400000L);
-            managerRepository.updateRefreshToken(manager.getEmail(), newRefreshToken);
-            LocalDateTime expirationTime = LocalDateTime.now().plusDays(60);
-            OffsetDateTime offsetExpirationTime = expirationTime.atOffset(ZoneOffset.UTC);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-            String expireAt = offsetExpirationTime.format(formatter);
-            return new LoginResponseDto(newRefreshToken, newAccessToken, expireAt, "MANAGER");
+            boolean isExist = managerRepository.existsByToken(refreshToken);
+            if(isExist){
+                Manager manager = managerRepository.findByEmail(email).orElseThrow(()->new CustomException(USER_NOT_FOUND));
+                String newRefreshToken = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", 86400000L * 60);
+                String newAccessToken = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", 86400000L);
+                managerRepository.updateRefreshToken(manager.getEmail(), newRefreshToken);
+                LocalDateTime expirationTime = LocalDateTime.now().plusDays(60);
+                OffsetDateTime offsetExpirationTime = expirationTime.atOffset(ZoneOffset.UTC);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                String expireAt = offsetExpirationTime.format(formatter);
+                return new LoginResponseDto(newRefreshToken, newAccessToken, expireAt, "MANAGER");
+            }
+            else{
+                throw new CustomException(UNAUTHORIZED_USER);
+            }
         }
         throw new CustomException(USER_NOT_FOUND);
     }
