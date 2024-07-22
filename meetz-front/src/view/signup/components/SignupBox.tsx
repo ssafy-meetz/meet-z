@@ -1,7 +1,13 @@
-import React from 'react';
+import { useState } from 'react';
 import logo from '/src/assets/images/logo.png';
 
 const SignupBox = () => {
+  const [email, setEmail] = useState("");
+  const [authNum, setAuthNum] = useState("");
+  const [password, setPassword] = useState("");
+  const [company, setCompany] = useState("");
+  const [phone, setPhone] = useState("");
+
   return (
     <div className='bg-white rounded-2xl  w-464px h-660 flex flex-col items-center '>
       <div className='w-[360px] my-[64px] '>
