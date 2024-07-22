@@ -30,7 +30,7 @@ const LoginBox = () => {
         <input
           type='text'
           placeholder='이메일 또는 임시 아이디'
-          className='w-full focus:border-[#FF4F5D] focus:outline-none p-4 mb-4 border border-[#C4C4C4] rounded-lg text-[16px] font-[pretendard]'
+          className='w-full focus:border-[#FF4F5D] focus:outline-none p-4 mb-4 border border-[#C4C4C4] rounded-lg text-[16px]'
         />
         <input
           type='password'
