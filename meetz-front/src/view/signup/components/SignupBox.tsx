@@ -4,11 +4,14 @@ import useEmailValidation from '../../../hooks/form/useEmailValidation';
 import usePasswordValidation from '../../../hooks/form/usePasswordValidation';
 import usePhoneValidation from '../../../hooks/form/usePhoneValidation';
 import useAuthTimer from '../../../hooks/form/useAuthTimer';
+import postUserSignup from '../../../apis/auth/signup';
+import checkDuplicatedEmail from '../../../apis/auth/checkDuplicatedEmail';
+import reqCertifyEmail from '../../../apis/auth/reqCertifyEmail';
+import checkEmailAuthNum from '../../../apis/auth/checkEmailAuthNum';
 
 const SignupBox = () => {
   const [secondPW, setSecondPW] = useState("");
-  const [authNum, setAuthNum] = useState("");
-  const [inputAuthNum, setInputAuthNum] = useState("");
+  const [authCode, setAuthCode] = useState("");
   const [company, setCompany] = useState("");
   const [notDuplicated, setNotDuplicated] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -18,15 +21,15 @@ const SignupBox = () => {
   const { phone, isValidPhone, handlePhoneChange } = usePhoneValidation();
   const { time, isActive, setTime, startTimer, stopTimer } = useAuthTimer(120);
 
-  const checkDuplicate = () => {
+  const checkDuplicate = async () => {
     if (!isValidEmail) {
       alert("유효하지 않은 이메일입니다!");
       setNotDuplicated(false);
       return;
     }
 
-    // 이메일 중복 검사 로직 (API 호출로 대체)
-    const isDuplicate = false; // 임시 값
+    // const isDuplicate = await checkDuplicatedEmail(email); // API : 이메일 중복 여부 체크
+    const isDuplicate = false; // API : 이메일 중복 여부 체크
     if (isDuplicate) {
       alert("중복된 이메일입니다!");
       setNotDuplicated(false);
@@ -38,7 +41,7 @@ const SignupBox = () => {
     return;
   };
 
-  const getEmailAuthenticate = () => {
+  const getEmailAuthenticate = async () => {
     if (!isValidEmail) {
       alert("유효한 이메일을 입력해주세요.");
       return;
@@ -51,26 +54,34 @@ const SignupBox = () => {
     if (!isActive) { // 타이머가 작동하지 않는 상태라면
       startTimer(); //isActive = true로
       try {
-        const result = "123456"; // api : 이메일 인증 요청
-        setAuthNum(result);
+        // await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
 
       } catch (e) {
-        alert("서버 오류가 발생했습니다.");
+        alert("인증에 실패했습니다. 다시 시도해주세요.");
+        stopTimer();
+        setTime(120); //isActive = false로
       }
       return;
     }
 
+
+
     // 타이머가 작동하고 있는 상태라면
     stopTimer();
-    if (authNum !== inputAuthNum) { // 인증 번호 불일치시
-      setTime(120); //isActive = false로
-      alert("인증 번호가 일치하지 않습니다.");
-      setInputAuthNum("");
-      return;
-    }
+    try {
+      // const result = await checkEmailAuthNum(email, authCode)// API : 이메일 인증 번호 보내서 인증 여부 확인
+      const result = true;
 
-    alert("인증에 성공했습니다.");
-    setIsAuthenticated(true); // 이메일 인증 성공 여부
+      if (result) {
+        alert("인증이 완료되었습니다.");
+        setIsAuthenticated(true);
+      }
+    } catch (e) {
+      alert("인증 번호가 일치하지 않습니다.");
+      setIsAuthenticated(false);
+    }
+    stopTimer();
+    setTime(120); //isActive = false로
   };
 
   const checkMatchPassword = () => {
@@ -80,7 +91,7 @@ const SignupBox = () => {
     return true;
   };
 
-  const formClickHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const formClickHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!notDuplicated) return;
     if (!isAuthenticated) return;
@@ -102,7 +113,17 @@ const SignupBox = () => {
     }
 
     // 회원가입 API 호출 로직 추가
-    alert("회원가입이 완료되었습니다.");
+    try {
+      const successSignup = await postUserSignup(email, password, company, phone);
+      if (successSignup) {
+        alert("회원가입이 완료되었습니다.");
+        //페이지 라우팅 코드 추가 필요
+
+      }
+
+    } catch (e) {
+      console.error(`회원가입 실패 : ${e}`)
+    }
   };
 
   return (
@@ -134,8 +155,8 @@ const SignupBox = () => {
               type='password'
               placeholder='인증번호 입력'
               className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 text-[16px] rounded-lg w-[256px]'
-              value={inputAuthNum}
-              onChange={(e) => setInputAuthNum(e.target.value)}
+              value={authCode}
+              onChange={(e) => setAuthCode(e.target.value)}
               disabled={!isActive}
             />
             <button
