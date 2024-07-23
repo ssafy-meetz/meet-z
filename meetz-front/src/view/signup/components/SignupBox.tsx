@@ -8,8 +8,10 @@ import postUserSignup from '../../../apis/auth/signup';
 import checkDuplicatedEmail from '../../../apis/auth/checkDuplicatedEmail';
 import reqCertifyEmail from '../../../apis/auth/reqCertifyEmail';
 import checkEmailAuthNum from '../../../apis/auth/checkEmailAuthNum';
+import { useNavigate } from 'react-router-dom';
 
 const SignupBox = () => {
+  const navigate = useNavigate();
   const [secondPW, setSecondPW] = useState("");
   const [authCode, setAuthCode] = useState("");
   const [company, setCompany] = useState("");
@@ -116,9 +118,9 @@ const SignupBox = () => {
     try {
       const successSignup = await postUserSignup(email, password, company, phone);
       if (successSignup) {
-        alert("회원가입이 완료되었습니다.");
-        //페이지 라우팅 코드 추가 필요
-
+        alert("회원가입이 완료되었습니다. 로그인 후 이용해주세요.");
+        //로그인 페이지로 라우팅
+        navigate('/');
       }
 
     } catch (e) {
