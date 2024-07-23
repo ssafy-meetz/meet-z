@@ -5,8 +5,8 @@ const MeetingListTitle = () => {
   };
 
   return (
-    <div className='flex flex-col items-center'>
-      <div className='max-w-screen-xl w-screen flex flex-col'>
+    <div className='flex flex-col items-center '>
+      <div className='max-w-screen-xl w-screen flex flex-col px-24 '>
         <div className='flex justify-between mt-16'>
           <h1 className='text-[32px] font-bold'>
             <span className='text-[#FF4F5D] mr-2'>SSAFY</span> 일정관리

@@ -8,7 +8,7 @@ const YetMeetingPage = () => {
 
 
   return (
-    <div className="mb-[160px]">
+    <div className="mb-40 min-h-screen">
       <MeetingListTitle />
       <MeetingList month={thisMonth} />
       <MeetingList month={nextMonth} />
