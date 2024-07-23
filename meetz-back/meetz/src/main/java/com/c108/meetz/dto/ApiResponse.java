@@ -4,22 +4,23 @@ import com.c108.meetz.constants.ErrorCode;
 import com.c108.meetz.constants.SuccessCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-    private int status;
+    private int code;
     private String message;
     private T data;
 
-    private ApiResponse(int status, String message, T data) {
-        this.status = status;
+    private ApiResponse(int code, String message, T data) {
+        this.code = code;
         this.message = message;
         this.data = data;
     }
 
-    private ApiResponse(int status, String message) {
-        this.status = status;
+    private ApiResponse(int code, String message) {
+        this.code = code;
         this.message = message;
     }
 
