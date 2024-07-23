@@ -1,5 +1,6 @@
 package com.c108.meetz.service;
 
+import com.c108.meetz.repository.ManagerRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,14 @@ public class MailService {
     private static final String senderEmail= "wlk256032@gmail.com";
     private static int number;
     private final RedisTemplate<String, String> redisTemplate;
+    private final ManagerRepository managerRepository;
+
+    public boolean checkEmail(String email) {
+        if (managerRepository.existsByEmail(email)) {
+            return true;
+        }
+        return false;
+    }
 
     //redis에 메일과 number를 넣는 코드
     public void saveEmail(String email, String sendedNum) {
@@ -50,12 +59,21 @@ public class MailService {
         try {
             message.setFrom(senderEmail);
             message.setRecipients(MimeMessage.RecipientType.TO, mail);
-            message.setSubject("[Meet'z]인증번호 안내 메일");
+            message.setSubject("[MEET:Z]인증번호 안내 메일");
             String body = "";
-            body += "<h3>" + "[Meet'z] 인증번호 안내 메일입니다." + "</h3>";
-            body += "<h3>" + "요청하신 인증 번호입니다." + "</h3>";
-            body += "<h1>" + number + "</h1>";
-            body += "<h3>" + "감사합니다." + "</h3>";
+            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>";
+            body += "<h2 style='color: #FE4D5C; text-align: center;'>MEET:Z 인증번호 안내</h2>";
+            body += "<p style='font-size: 16px; color: #333;'>안녕하세요,</p>";
+            body += "<p style='font-size: 16px; color: #333;'>MEET:Z 서비스를 이용해 주셔서 감사합니다.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>아래의 인증번호를 입력하여 이메일 인증을 완료해 주세요:</p>";
+            body += "<div style='text-align: center; margin: 20px 0;'>";
+            body += "<span style='display: inline-block; font-size: 24px; color: #FE4D5C; padding: 10px 20px; border: 2px solid #FE4D5C; border-radius: 5px;'>" + number + "</span>";
+            body += "</div>";
+            body += "<p style='font-size: 16px; color: #333;'>인증번호는 보안을 위해 타인과 공유하지 마세요.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>감사합니다.<br>MEET:Z 팀</p>";
+            body += "<div style='text-align: center; margin-top: 30px;'>";
+            body += "</div>";
+            body += "</div>";
             message.setText(body,"UTF-8", "html");
         } catch (MessagingException e) {
             e.printStackTrace();
