@@ -9,7 +9,7 @@ interface UseTimer {
     stopTimer: () => void;
 }
 
-const useAuthTimer = (initialTime: number = 120): UseTimer => {
+const useAuthTimer = (initialTime: number = 180): UseTimer => {
     const [time, setTime] = useState<number>(initialTime);
     const [isActive, setIsActive] = useState<boolean>(false);
 
@@ -20,7 +20,9 @@ const useAuthTimer = (initialTime: number = 120): UseTimer => {
                 setTime(prevTime => prevTime - 1);
             }, 1000);
         } else if (time === 0) {
+            alert('인증 시간이 초과되었습니다. 인증을 다시 진행하세요.')
             setIsActive(false);
+            setTime(180);
         }
 
         return () => clearInterval(timer);
