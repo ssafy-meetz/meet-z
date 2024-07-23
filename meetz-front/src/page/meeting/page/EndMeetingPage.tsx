@@ -1,15 +1,13 @@
-// 삭제할 거 푸터 헤더
-import Footer from '../common/ui/Footer';
-import Header from '../common/ui/Header';
 
-const handleButtonClick = () => {
-  alert('버튼이 클릭되었습니다!');
-};
 
 const EndMeetingPage = () => {
+
+  const handleButtonClick = () => {
+    alert('버튼이 클릭되었습니다!');
+  };
+
   return (
     <>
-      <Header />
       <div className='flex flex-col items-center'>
         <div className='max-w-screen-xl w-screen flex flex-col'>
           <div className='flex justify-between mt-16'>
@@ -261,7 +259,6 @@ const EndMeetingPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </>
   );
 };

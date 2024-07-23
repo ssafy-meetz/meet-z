@@ -1,9 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import LoginPage from '../view/login/LoginPage';
-import SignupPage from '../view/signup/SignupPage';
-import EndMeetingPage from '../meeting/EndMeetingPage';
-import YetMeetingPage from '../meeting/YetMeetingPage';
+import LoginPage from '../page/login/LoginPage';
+import SignupPage from '../page/signup/SignupPage';
+import YetMeetingPage from '../page/meeting/page/YetMeetingPage';
+import EndMeetingPage from '../page/meeting/page/EndMeetingPage';
+import MeetingLayout from '../page/meeting/MeetingLayout';
+import DetailPage from '../page/meeting/page/DetailPage';
+import MonitorPage from '../page/meeting/page/MonitorPage';
 
 const Router: React.FC = () => {
   return (
@@ -11,10 +14,17 @@ const Router: React.FC = () => {
       <Routes>
         <Route path='/' element={<LoginPage />} />
         <Route path='/signup' element={<SignupPage />} />
-        <Route path='/endmeet' element={<EndMeetingPage />} />
-        <Route path='/yetmeet' element={<YetMeetingPage />} />
+        <Route path='/meeting' element={<MeetingLayout />}>
+          {/* 미팅 미완료 */}
+          <Route path='yet' element={<YetMeetingPage />} />
+          <Route path='detail/:id' element={<DetailPage />} />
+
+          {/* 미팅 완료 */}
+          <Route path='end' element={<EndMeetingPage />} />
+          <Route path='monitor/:id' element={<MonitorPage />} />
+        </Route>
       </Routes>
-    </BrowserRouter>
+    </BrowserRouter >
   );
 };
 
