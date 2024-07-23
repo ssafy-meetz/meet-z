@@ -14,6 +14,9 @@ const postUserLogin = async (email: string, password: string, isManager: boolean
     }, {
       headers: { 'Content-Type': 'application/json' }
     });
+
+    console.log(data)
+
     if (!data) {
       alert('로그인에 실패했습니다!')
     }
