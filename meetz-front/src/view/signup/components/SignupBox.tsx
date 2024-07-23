@@ -22,7 +22,7 @@ const SignupBox = () => {
   const { password, setPassword, isValidPassword, handlePasswordChange } =
     usePasswordValidation();
   const { phone, isValidPhone, handlePhoneChange } = usePhoneValidation();
-  const { time, isActive, setTime, startTimer, stopTimer } = useAuthTimer(120);
+  const { time, isActive, setTime, startTimer, stopTimer } = useAuthTimer(180);
 
   const checkDuplicate = async () => {
     if (!isValidEmail) {
@@ -39,9 +39,14 @@ const SignupBox = () => {
       setNotDuplicated(false);
       return;
     }
+
     // 중복이 아닌 경우
     alert('사용 가능한 이메일입니다.');
+    setAuthCode("");
+    setIsAuthenticated(false);
     setNotDuplicated(true);
+    setTime(180);
+    stopTimer();
     return;
   };
 
@@ -58,30 +63,42 @@ const SignupBox = () => {
     if (!isActive) {
       // 타이머가 작동하지 않는 상태라면
       startTimer(); //isActive = true로
+      alert("인증 번호를 발송했습니다. 제한 시간 내에 인증을 완료해주세요.")
       try {
-        await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
+        const reqResult = await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
+        if (!reqResult) {
+          alert('인증 요청에 실패했습니다. 다시 시도해주세요.');
+          stopTimer();
+          setTime(180); //isActive = false로
+        }
       } catch (e) {
-        alert('인증에 실패했습니다. 다시 시도해주세요.');
+        alert('인증 요청에 실패했습니다. 다시 시도해주세요.');
         stopTimer();
-        setTime(120); //isActive = false로
+        setTime(180); //isActive = false로
       }
       return;
     }
 
     // 타이머가 작동하고 있는 상태라면
+    if (!authCode || authCode === null || authCode === "") {
+      alert("올바른 인증 번호를 입력하세요.");
+      return;
+    }
+
     stopTimer();
     try {
       const result = await checkEmailAuthNum(email, authCode)// API : 이메일 인증 번호 보내서 인증 여부 확인
-      // const result = true;
 
       if (result) {
         alert('인증이 완료되었습니다.');
         setIsAuthenticated(true);
+        return
       }
     } catch (e) {
-      alert('인증 번호가 일치하지 않습니다.');
-      setIsAuthenticated(false);
     }
+    alert('인증 번호가 일치하지 않습니다.');
+    setIsAuthenticated(false);
+    setAuthCode("");
     stopTimer();
     setTime(120); //isActive = false로
   };
@@ -128,9 +145,13 @@ const SignupBox = () => {
         alert("회원가입이 완료되었습니다. 로그인 후 이용해주세요.");
         //로그인 페이지로 라우팅
         navigate('/');
+        return;
       }
+
+      alert('회원가입에 실패했습니다.')
+
     } catch (e) {
-      console.error(`회원가입 실패 : ${e}`);
+      alert(`회원가입에 실패했습니다.`);
     }
   };
 
