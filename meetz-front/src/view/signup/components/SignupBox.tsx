@@ -31,14 +31,15 @@ const SignupBox = () => {
       return;
     }
 
-    // const isDuplicate = await checkDuplicatedEmail(email); // API : 이메일 중복 여부 체크
-    const isDuplicate = false; // API : 이메일 중복 여부 체크
-    if (isDuplicate) {
+    const isNotDuplicate = await checkDuplicatedEmail(email); // API : 이메일 중복 여부 체크
+    //  true면 중복이 아니다.
+
+    if (!isNotDuplicate) { //중복인 경우
       alert('중복된 이메일입니다!');
       setNotDuplicated(false);
       return;
     }
-
+    // 중복이 아닌 경우
     alert('사용 가능한 이메일입니다.');
     setNotDuplicated(true);
     return;
@@ -58,7 +59,7 @@ const SignupBox = () => {
       // 타이머가 작동하지 않는 상태라면
       startTimer(); //isActive = true로
       try {
-        // await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
+        await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
       } catch (e) {
         alert('인증에 실패했습니다. 다시 시도해주세요.');
         stopTimer();
@@ -70,8 +71,8 @@ const SignupBox = () => {
     // 타이머가 작동하고 있는 상태라면
     stopTimer();
     try {
-      // const result = await checkEmailAuthNum(email, authCode)// API : 이메일 인증 번호 보내서 인증 여부 확인
-      const result = true;
+      const result = await checkEmailAuthNum(email, authCode)// API : 이메일 인증 번호 보내서 인증 여부 확인
+      // const result = true;
 
       if (result) {
         alert('인증이 완료되었습니다.');
