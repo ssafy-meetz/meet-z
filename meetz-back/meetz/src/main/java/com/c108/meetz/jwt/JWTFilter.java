@@ -3,7 +3,7 @@ package com.c108.meetz.jwt;
 import com.c108.meetz.constants.ErrorCode;
 import com.c108.meetz.dto.CustomUserDetails;
 import com.c108.meetz.dto.request.CommonDto;
-import com.c108.meetz.exception.CustomException;
+import com.c108.meetz.exception.UnauthorizedException;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import static com.c108.meetz.constants.ErrorCode.UNAUTHORIZED_USER;
 
@@ -47,7 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
             logger.debug("JWTFilter: 토큰 만료");
-            throw new CustomException(UNAUTHORIZED_USER);
+            throw new UnauthorizedException(UNAUTHORIZED_USER);
 
             //response status code
 //            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -59,12 +58,12 @@ public class JWTFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         if(requestURI.equals("/api/refresh")){
             if(!category.equals("refresh")){
-                throw new CustomException(UNAUTHORIZED_USER);
+                throw new UnauthorizedException(UNAUTHORIZED_USER);
             }
         }
         else{
             if(!category.equals("access")){
-                throw new CustomException(UNAUTHORIZED_USER);
+                throw new UnauthorizedException(UNAUTHORIZED_USER);
             }
         }
 //        if (!category.equals("access")) {
