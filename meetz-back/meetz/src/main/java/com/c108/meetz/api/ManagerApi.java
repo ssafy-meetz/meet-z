@@ -2,7 +2,7 @@ package com.c108.meetz.api;
 
 import com.c108.meetz.dto.ApiResponse;
 import com.c108.meetz.dto.request.JoinRequestDto;
-import com.c108.meetz.exception.CustomException;
+import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.service.MailService;
 import com.c108.meetz.service.ManagerService;
 import jakarta.validation.Valid;
@@ -27,7 +27,7 @@ public class ManagerApi {
     @PostMapping("/join")
     public ApiResponse<Void> joinManager(@Valid @RequestBody JoinRequestDto joinRequestDto, BindingResult bindingResult) {
         if(bindingResult.hasErrors()){
-            throw new CustomException(FAIL_TO_JOIN);
+            throw new BadRequestException(FAIL_TO_JOIN);
         }
         managerService.joinManager(joinRequestDto);
         return ApiResponse.success(JOIN_SUCCESS);
@@ -38,7 +38,7 @@ public class ManagerApi {
     public ApiResponse<Void> checkEmail(@RequestParam(value="email") String email) {
 
         if (mailService.checkEmail(email)) {
-            return ApiResponse.error(DUPLICATE_EMAIL);
+            throw new BadRequestException(DUPLICATE_EMAIL);
         }
         return ApiResponse.success(CHECK_EMAIL_SUCCESS);
     }
@@ -65,6 +65,6 @@ public class ManagerApi {
             mailService.delEmail(authcode);
             return ApiResponse.success(VERIFICATION_CODE_MATCH);
         }
-        return ApiResponse.error(INVALID_VERIFICATION_CODE);
+        throw new BadRequestException(INVALID_VERIFICATION_CODE);
     }
 }

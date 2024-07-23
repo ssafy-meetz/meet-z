@@ -1,9 +1,8 @@
 package com.c108.meetz.service;
 
-import com.c108.meetz.constants.ErrorCode;
 import com.c108.meetz.domain.Manager;
 import com.c108.meetz.dto.request.JoinRequestDto;
-import com.c108.meetz.exception.CustomException;
+import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.repository.ManagerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,7 +19,7 @@ public class ManagerService {
 
     public void joinManager(JoinRequestDto joinRequestDto){
         if(managerRepository.findByEmail(joinRequestDto.getEmail()).isPresent()){
-            throw new CustomException(DUPLICATE_EMAIL);
+            throw new BadRequestException(DUPLICATE_EMAIL);
         }
         Manager manager = joinRequestDto.toManager(bCryptPasswordEncoder);
         managerRepository.save(manager);

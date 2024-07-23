@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class MailService {
 
     private final JavaMailSender javaMailSender;
-    private static final String senderEmail= "wlk256032@gmail.com";
+    private static final String senderEmail= "meetz.c108@gmail.com";
     private static int number;
     private final RedisTemplate<String, String> redisTemplate;
     private final ManagerRepository managerRepository;
