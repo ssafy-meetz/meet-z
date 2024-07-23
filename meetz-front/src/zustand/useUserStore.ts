@@ -6,7 +6,7 @@ interface UserStore {
   accessToken: string;
   expireAt: string;
   role: string;
-  loginHandler: (username: string, password: string) => Promise<void>;
+  loginHandler: (username: string, password: string, isManager: boolean) => Promise<void>;
   logoutHandler: () => void;
   refreshAccessToken: () => Promise<boolean>;
 }
@@ -23,9 +23,9 @@ export const useUserStore = create<UserStore>((set) => ({
    * @param {string} password - 가입한/발급받은 비밀번호
    * @returns {Promise<void>}
    */
-  loginHandler: async (username: string, password: string): Promise<void> => {
+  loginHandler: async (username: string, password: string, isManager: boolean): Promise<void> => {
     try {
-      const { refreshToken, accessToken, expireAt, role } = await postUserLogin(username, password);
+      const { refreshToken, accessToken, expireAt, role } = await postUserLogin(username, password, isManager);
       set({ refreshToken, accessToken, expireAt, role });
       localStorage.setItem('refreshToken', refreshToken);
     } catch (error) {
