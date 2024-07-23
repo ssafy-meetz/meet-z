@@ -33,6 +33,15 @@ public class ManagerApi {
         return ApiResponse.success(JOIN_SUCCESS);
     }
 
+    //이메일 중복
+    @GetMapping("/checkemail")
+    public ApiResponse<Void> checkEmail(@RequestParam(value="email") String email) {
+
+        if (mailService.checkEmail(email)) {
+            return ApiResponse.error(DUPLICATE_EMAIL);
+        }
+        return ApiResponse.success(CHECK_EMAIL_SUCCESS);
+    }
 
     //이메일 인증 요청
     @GetMapping("/authemail")
@@ -47,7 +56,7 @@ public class ManagerApi {
     }
 
     //이메일 인증 번호 일치 확인
-    @GetMapping()
+    @GetMapping("/checkauth")
     public ApiResponse<Void> getEmail(@RequestParam(value="email") String email, @RequestParam(value="authcode") String authcode) {
 
         String redisEmail = mailService.getEmail(authcode);

@@ -17,8 +17,9 @@ public enum SuccessCode {
     VERIFICATION_CODE_SEND_SUCCESS(OK, "인증 요청을 완료했습니다."),
     LOGIN_SUCCESS(OK, "로그인에 성공했습니다."),
     TOKEN_REISSUE_SUCCESS(OK, "토큰재발급에 성공했습니다."),
-    CHECK_INFO_SUCCESS(OK, "회원정보 조회에 성공했습니다.");
-    
+    CHECK_INFO_SUCCESS(OK, "회원정보 조회에 성공했습니다."),
+    CHECK_EMAIL_SUCCESS(OK, "사용 가능한 이메일입니다.");
+
     private final HttpStatus status;
     private final String message;
 }
