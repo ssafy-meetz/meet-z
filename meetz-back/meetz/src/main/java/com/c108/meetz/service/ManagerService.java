@@ -19,7 +19,7 @@ public class ManagerService {
 
     public void joinManager(JoinRequestDto joinRequestDto){
         if(managerRepository.findByEmail(joinRequestDto.getEmail()).isPresent()){
-            throw new BadRequestException(DUPLICATE_EMAIL);
+            throw new BadRequestException("이미 가입된 이메일입니다.");
         }
         Manager manager = joinRequestDto.toManager(bCryptPasswordEncoder);
         managerRepository.save(manager);

@@ -46,7 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
             jwtUtil.isExpired(token);
         } catch (ExpiredJwtException e) {
             logger.debug("JWTFilter: 토큰 만료");
-            throw new UnauthorizedException(UNAUTHORIZED_USER);
+            throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
 
             //response status code
 //            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -58,12 +58,12 @@ public class JWTFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         if(requestURI.equals("/api/refresh")){
             if(!category.equals("refresh")){
-                throw new UnauthorizedException(UNAUTHORIZED_USER);
+                throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
             }
         }
         else{
             if(!category.equals("access")){
-                throw new UnauthorizedException(UNAUTHORIZED_USER);
+                throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
             }
         }
 //        if (!category.equals("access")) {

@@ -4,9 +4,15 @@ import com.c108.meetz.constants.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
 public class DuplicateException extends RuntimeException {
-    private final ErrorCode errorCode;
 
+    private String message;
+    public DuplicateException() {
+        this.message = "Duplicate Exception";
+    }
+    public DuplicateException(String message) {
+        super(message);
+        this.message = message;
+    }
 }

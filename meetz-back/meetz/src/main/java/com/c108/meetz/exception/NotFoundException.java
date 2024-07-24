@@ -4,9 +4,14 @@ import com.c108.meetz.constants.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
 public class NotFoundException extends RuntimeException {
-    private final ErrorCode errorCode;
-
+    private String message;
+    public NotFoundException() {
+        this.message = "Not found";
+    }
+    public NotFoundException(String message) {
+        super(message);
+        this.message = message;
+    }
 }

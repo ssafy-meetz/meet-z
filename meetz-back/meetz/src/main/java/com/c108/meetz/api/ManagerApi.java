@@ -12,7 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import static com.c108.meetz.constants.ErrorCode.*;
-import static com.c108.meetz.constants.SuccessCode.*;
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @RestController
@@ -27,10 +27,10 @@ public class ManagerApi {
     @PostMapping("/join")
     public ApiResponse<Void> joinManager(@Valid @RequestBody JoinRequestDto joinRequestDto, BindingResult bindingResult) {
         if(bindingResult.hasErrors()){
-            throw new BadRequestException(FAIL_TO_JOIN);
+            throw new BadRequestException("올바른 형식이 아닙니다.");
         }
         managerService.joinManager(joinRequestDto);
-        return ApiResponse.success(JOIN_SUCCESS);
+        return ApiResponse.success(OK);
     }
 
     //이메일 중복
@@ -38,9 +38,9 @@ public class ManagerApi {
     public ApiResponse<Void> checkEmail(@RequestParam(value="email") String email) {
 
         if (mailService.checkEmail(email)) {
-            throw new BadRequestException(DUPLICATE_EMAIL);
+            throw new BadRequestException("이미 가입된 이메일입니다.");
         }
-        return ApiResponse.success(CHECK_EMAIL_SUCCESS);
+        return ApiResponse.success(OK);
     }
 
     //이메일 인증 요청
@@ -52,7 +52,7 @@ public class ManagerApi {
         log.info("email={}  ", email);
         //redis에 <email, sendedNum> 넣기
         mailService.saveEmail(email, Integer.toString(sendedNum));
-        return ApiResponse.success(VERIFICATION_CODE_SEND_SUCCESS);
+        return ApiResponse.success(OK);
     }
 
     //이메일 인증 번호 일치 확인
@@ -63,8 +63,8 @@ public class ManagerApi {
 
         if (redisEmail != null && redisEmail.equals(email)) {
             mailService.delEmail(authcode);
-            return ApiResponse.success(VERIFICATION_CODE_MATCH);
+            return ApiResponse.success(OK);
         }
-        throw new BadRequestException(INVALID_VERIFICATION_CODE);
+        throw new BadRequestException("인증번호가 일치하지 않습니다.");
     }
 }

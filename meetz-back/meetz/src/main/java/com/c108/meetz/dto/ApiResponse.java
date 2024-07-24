@@ -1,7 +1,5 @@
 package com.c108.meetz.dto;
 
-import com.c108.meetz.constants.ErrorCode;
-import com.c108.meetz.constants.SuccessCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -24,14 +22,18 @@ public class ApiResponse<T> {
         this.message = message;
     }
 
-    public static <T> ApiResponse<T> success(SuccessCode code, T data) {
-        return new ApiResponse<>(code.getStatus().value(), code.getMessage(), data);
+    public static <T> ApiResponse<T> success(HttpStatus status, T data) {
+        return new ApiResponse<>(status.value(), "SUCCESS", data);
     }
-    public static <T> ApiResponse<T> success(SuccessCode code) {
-        return new ApiResponse<>(code.getStatus().value(), code.getMessage());
+    public static <T> ApiResponse<T> success(HttpStatus status) {
+        return new ApiResponse<>(status.value(), "SUCCESS");
     }
 
-    public static <T> ApiResponse<T> error(ErrorCode code) {
-        return new ApiResponse<>(code.getStatus().value(), code.getMessage());
+    public static <T> ApiResponse<T> error(HttpStatus status) {
+        return new ApiResponse<>(status.value(), status.name());
+    }
+
+    public static <T> ApiResponse<T> error(HttpStatus status, String message) {
+        return new ApiResponse<>(status.value(), message);
     }
 }

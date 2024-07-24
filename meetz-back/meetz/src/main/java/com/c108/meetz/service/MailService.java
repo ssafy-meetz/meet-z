@@ -1,5 +1,6 @@
 package com.c108.meetz.service;
 
+import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.repository.ManagerRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -76,7 +77,7 @@ public class MailService {
             body += "</div>";
             message.setText(body,"UTF-8", "html");
         } catch (MessagingException e) {
-            e.printStackTrace();
+            throw new BadRequestException();
         }
 
         return message;
@@ -84,8 +85,11 @@ public class MailService {
 
     public int sendMail(String mail) {
         MimeMessage message = CreateMail(mail);
-        javaMailSender.send(message);
-
+        try {
+            javaMailSender.send(message);
+        }catch (Exception e){
+            throw new BadRequestException();
+        }
         return number;
     }
 }
