@@ -31,23 +31,27 @@ const SignupBox = () => {
       return;
     }
 
-    const isNotDuplicate = await checkDuplicatedEmail(email); // API : 이메일 중복 여부 체크
-    //  true면 중복이 아니다.
+    try {
+      const isNotDuplicate = await checkDuplicatedEmail(email); // API : 이메일 중복 여부 체크
+      //  true면 중복이 아니다.
 
-    if (!isNotDuplicate) { //중복인 경우
+      if (isNotDuplicate) {
+        // 중복이 아닌 경우
+        alert('사용 가능한 이메일입니다.');
+        setAuthCode("");
+        setIsAuthenticated(false);
+        setNotDuplicated(true);
+        setTime(180);
+        stopTimer();
+        return;
+      }
+
       alert('중복된 이메일입니다!');
       setNotDuplicated(false);
       return;
+    } catch (e) {
+      alert(`${e}`)
     }
-
-    // 중복이 아닌 경우
-    alert('사용 가능한 이메일입니다.');
-    setAuthCode("");
-    setIsAuthenticated(false);
-    setNotDuplicated(true);
-    setTime(180);
-    stopTimer();
-    return;
   };
 
   const getEmailAuthenticate = async () => {
