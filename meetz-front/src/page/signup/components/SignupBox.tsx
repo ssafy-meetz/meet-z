@@ -188,8 +188,9 @@ const SignupBox = () => {
             />
             <button
               type='button'
-              className='flex items-center justify-center text-[16px] w-[96px] h-full text-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 rounded-lg border border-solid border-[#FF4F5D]'
+              className={`flex items-center justify-center text-[16px] w-[96px] h-full text-[#FF4F5D] transition duration-100 ease-in-out transform rounded-lg border border-solid border-[#FF4F5D] ${isAuthenticated ? 'bg-gray-100 hover:' : 'hover:bg-[#ff4f5d] hover:text-white hover:scale-105'}`}
               onClick={getEmailAuthenticate}
+              disabled={isAuthenticated}
             >
               {!isAuthenticated
                 ? isActive
