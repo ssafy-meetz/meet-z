@@ -7,6 +7,8 @@ import EndMeetingPage from '../page/meeting/page/EndMeetingPage';
 import MeetingLayout from '../page/meeting/MeetingLayout';
 import DetailPage from '../page/meeting/page/DetailPage';
 import MonitorPage from '../page/meeting/page/MonitorPage';
+import CreatePage from '../page/meeting/page/CreatePage';
+import ModifyPage from '../page/meeting/page/ModifyPage';
 
 const Router: React.FC = () => {
   return (
@@ -17,6 +19,8 @@ const Router: React.FC = () => {
         <Route path='/meeting' element={<MeetingLayout />}>
           {/* 미팅 미완료 */}
           <Route path='yet' element={<YetMeetingPage />} />
+          <Route path='create' element={<CreatePage />} />
+          <Route path='modify' element={<ModifyPage />} />
           <Route path='detail/:id' element={<DetailPage />} />
 
           {/* 미팅 완료 */}
