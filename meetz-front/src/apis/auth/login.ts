@@ -4,10 +4,7 @@ import { AxiosError } from "axios";
 
 interface LoginResponse {
   code: number;
-  refreshToken: string;
-  accessToken: string;
-  expireAt: string;
-  role: string;
+  data: LoginUserDto
 }
 
 /**
@@ -22,7 +19,7 @@ const postUserLogin = async (email: string, password: string, isManager: boolean
     const { data } = await instance.post<LoginResponse>('/api/login', {
       email, password, isManager
     });
-    return data as LoginUserDto;
+    return data.data as LoginUserDto;
 
   } catch (error) {
     const e = error as AxiosError<LoginResponse>;

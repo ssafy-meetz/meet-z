@@ -3,15 +3,16 @@ import logo from '/src/assets/images/logo.png';
 import { useState } from 'react';
 import useEmailValidation from '../../../hooks/form/useEmailValidation';
 import usePasswordValidation from '../../../hooks/form/usePasswordValidation';
+import postUserLogin from '../../../apis/auth/login';
 import { useUserStore } from '../../../zustand/useUserStore';
 
 const LoginBox = () => {
   const navigate = useNavigate();
 
   const [isManager, setIsManager] = useState(false);
-  const { loginHandler, role } = useUserStore();
   const { email, isValidEmail, handleEmailChange } = useEmailValidation();
   const { password, isValidPassword, handlePasswordChange } = usePasswordValidation();
+  const { setUserData } = useUserStore();
 
   const onChangeRadioBtn = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsManager(e.target.value === 'manager');
@@ -32,10 +33,13 @@ const LoginBox = () => {
 
     // 로그인 API 요청 보내기
     try {
-      await loginHandler(email, password, isManager);
-      alert("로그인에 성공했습니다.")
-      if (role === 'MANAGER') {
+      const { refreshToken, accessToken, expireAt, role } = await postUserLogin(email, password, isManager);
+      alert("로그인에 성공했습니다.");
 
+      localStorage.setItem('rt', refreshToken);
+      setUserData(accessToken, expireAt, role);
+
+      if (role === 'MANAGER') {
         navigate('/meeting/yet');
         return;
       }
