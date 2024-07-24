@@ -1,8 +1,14 @@
+import { useNavigate } from "react-router-dom";
+import useIsEndPage from "../../../hooks/meeting/useIsEndPage";
+import { useState } from "react";
+
 const MeetingListTitle = () => {
+  const navigate = useNavigate();
+  const [isEnd, setIsEnd] = useState(useIsEndPage());
+
   const handleButtonClick = () => {
-    //미팅 생성 페이지로 이동시키기
-    alert('버튼이 클릭되었습니다!');
-  };
+    navigate('/meeting/create');
+  }
 
   return (
     <div className='flex flex-col items-center '>
@@ -13,7 +19,7 @@ const MeetingListTitle = () => {
           </h1>
           <button
             onClick={handleButtonClick}
-            className='bg-[#FF4F5D] text-white p-1 px-4 text-[20px] rounded-full'
+            className={`bg-[#FF4F5D] text-white p-1 px-4 text-[20px] rounded-full ${isEnd ? 'hidden' : ''}`}
           >
             팬싸인회 생성
           </button>
