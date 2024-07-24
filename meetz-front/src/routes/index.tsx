@@ -24,7 +24,7 @@ const Router: React.FC = () => {
           <Route path='monitor/:id' element={<MonitorPage />} />
         </Route>
       </Routes>
-    </BrowserRouter >
+    </BrowserRouter>
   );
 };
 
