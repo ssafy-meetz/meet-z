@@ -4,9 +4,16 @@ import com.c108.meetz.constants.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Getter
 public class BadRequestException extends RuntimeException {
-    private final ErrorCode errorCode;
+    private String message;
 
+    public BadRequestException() {
+        this.message = "Bad Request";
+    }
+
+    public BadRequestException(String message) {
+        super(message);
+        this.message = message;
+    }
 }

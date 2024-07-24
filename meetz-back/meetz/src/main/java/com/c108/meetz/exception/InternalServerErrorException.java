@@ -4,9 +4,17 @@ import com.c108.meetz.constants.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
+
 @Getter
 public class InternalServerErrorException extends RuntimeException {
-    private final ErrorCode errorCode;
+    private String message;
+    public InternalServerErrorException() {
+        this.message = "Internal Server Error";
+    }
+
+    public InternalServerErrorException(String message) {
+        super(message);
+        this.message = message;
+    }
 
 }
