@@ -1,15 +1,21 @@
+import { AxiosError } from "axios";
 import instance from "../axios";
+
+interface SignupResponse {
+    code: number;
+    message: string;
+}
 
 const checkDuplicatedEmail = async (email: string) => {
     try {
-        const { data } = await instance.get(`api/manager/checkemail?email=${email}`);
-        if (data.code === 200) { //중복이 아니다.
-            return true;
-        } else { // 중복이다.
-            return false;
+        await instance.get(`api/manager/checkemail?email=${email}`);
+        return true;
+    } catch (error) {
+        const e = error as AxiosError<SignupResponse>;
+        if (e.response && e.response.status === 400) {
+            throw new Error('이미 가입된 이메일입니다.');
         }
-    } catch (e) {
-        throw new Error('이메일 중복 체크 중 에러 발생!');
+        throw new Error('로그인 중 오류가 발생했습니다.');
     }
 }
 
