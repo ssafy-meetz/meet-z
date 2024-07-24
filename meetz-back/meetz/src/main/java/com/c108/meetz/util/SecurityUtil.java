@@ -14,7 +14,7 @@ public class SecurityUtil {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if(authentication == null || authentication.getPrincipal() == null){
-            throw new NotFoundException(USER_NOT_FOUND);
+            throw new NotFoundException("존재하지 않는 회원입니다.");
         }
         return authentication.getName();
     }
