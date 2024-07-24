@@ -33,8 +33,15 @@ const LoginBox = () => {
     try {
       await loginHandler(email, password, isManager);
       // 매니저 여부에 따라 라우팅 처리하기
-    } catch (error) {
-      console.error('로그인 실패', error);
+      alert("로그인에 성공했습니다.")
+    } catch (error: any) {
+      if (error.message === '존재하지 않는 회원입니다.') {
+        alert('존재하지 않는 회원입니다.');
+      } else if (error.message === '올바른 형식이 아닙니다.') {
+        alert('올바른 형식이 아닙니다.');
+      } else {
+        alert('로그인 중 오류가 발생했습니다.');
+      }
     }
   }
 

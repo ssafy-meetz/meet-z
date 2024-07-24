@@ -29,7 +29,7 @@ export const useUserStore = create<UserStore>((set) => ({
       set({ refreshToken, accessToken, expireAt, role });
       localStorage.setItem('refreshToken', refreshToken);
     } catch (error) {
-      alert(`${error}`);
+      throw error;
     }
   },
 
