@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '/src/assets/images/logo.png';
 import { useState } from 'react';
 import useEmailValidation from '../../../hooks/form/useEmailValidation';
@@ -6,9 +6,10 @@ import usePasswordValidation from '../../../hooks/form/usePasswordValidation';
 import { useUserStore } from '../../../zustand/useUserStore';
 
 const LoginBox = () => {
-  const [isManager, setIsManager] = useState(false);
-  const { loginHandler } = useUserStore();
+  const navigate = useNavigate();
 
+  const [isManager, setIsManager] = useState(false);
+  const { loginHandler, role } = useUserStore();
   const { email, isValidEmail, handleEmailChange } = useEmailValidation();
   const { password, isValidPassword, handlePasswordChange } = usePasswordValidation();
 
@@ -32,8 +33,16 @@ const LoginBox = () => {
     // 로그인 API 요청 보내기
     try {
       await loginHandler(email, password, isManager);
-      // 매니저 여부에 따라 라우팅 처리하기
       alert("로그인에 성공했습니다.")
+      if (role === 'MANAGER') {
+
+        navigate('/meeting/yet');
+        return;
+      }
+
+      //스타 또는 팬이라면 미팅 페이지로 이동
+      navigate('')
+
     } catch (error: any) {
       if (error.message === '존재하지 않는 회원입니다.') {
         alert('존재하지 않는 회원입니다.');
