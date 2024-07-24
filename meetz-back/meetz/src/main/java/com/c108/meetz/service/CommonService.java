@@ -33,9 +33,9 @@ public class CommonService {
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         if(loginRequestDto.getIsManager()){
-            Manager manager = managerRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow(()-> new NotFoundException(USER_NOT_FOUND));
+            Manager manager = managerRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
             if(!bCryptPasswordEncoder.matches(loginRequestDto.getPassword(), manager.getPassword())){
-                throw new NotFoundException(USER_NOT_FOUND);
+                throw new NotFoundException("존재하지 않는 회원입니다.");
             }
             String access = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", 86400000L);
             String refresh = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", 86400000L*60); //60일
@@ -45,12 +45,12 @@ public class CommonService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return new LoginResponseDto(refresh, access, expireAt, "MANAGER");
         }
-        throw new NotFoundException(USER_NOT_FOUND);
+        throw new NotFoundException("존재하지 않는 회원입니다.");
     }
 
     public LoginResponseDto refreshToken(String header) {
         if(!header.startsWith("Bearer ")){
-            throw new UnauthorizedException(UNAUTHORIZED_USER);
+            throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
         }
         String refreshToken = header.substring(7);
         String email = jwtUtil.getEmail(refreshToken);
@@ -58,7 +58,7 @@ public class CommonService {
         if(role.equals("MANAGER")){
             boolean isExist = managerRepository.existsByToken(refreshToken);
             if(isExist){
-                Manager manager = managerRepository.findByEmail(email).orElseThrow(()->new NotFoundException(USER_NOT_FOUND));
+                Manager manager = managerRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 회원입니다."));
                 String newRefreshToken = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", 86400000L * 60);
                 String newAccessToken = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", 86400000L);
                 managerRepository.updateRefreshToken(manager.getEmail(), newRefreshToken);
@@ -66,10 +66,10 @@ public class CommonService {
                 return new LoginResponseDto(newRefreshToken, newAccessToken, expireAt, "MANAGER");
             }
             else{
-                throw new UnauthorizedException(UNAUTHORIZED_USER);
+                throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
             }
         }
-        throw new NotFoundException(USER_NOT_FOUND);
+        throw new NotFoundException("존재하지 않는 회원입니다.");
     }
 
     public CommonDto checkInfo(){
