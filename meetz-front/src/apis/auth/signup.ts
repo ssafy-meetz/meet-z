@@ -16,7 +16,7 @@ const postUserSignup = async (email: string, password: string, company: string, 
             email, password, company, phone
         })
 
-        if (data.status === 400) {
+        if (data.code === 400) {
             return false;
         } else {
             return true;
