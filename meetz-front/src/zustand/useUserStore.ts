@@ -25,7 +25,8 @@ export const useUserStore = create<UserStore>((set) => ({
    */
   loginHandler: async (username: string, password: string, isManager: boolean): Promise<void> => {
     try {
-      const { refreshToken, accessToken, expireAt, role } = await postUserLogin(username, password, isManager);
+      const data = await postUserLogin(username, password, isManager);
+      const { refreshToken, accessToken, expireAt, role } = data
       set({ refreshToken, accessToken, expireAt, role });
       localStorage.setItem('refreshToken', refreshToken);
     } catch (error) {
