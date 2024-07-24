@@ -67,4 +67,9 @@ public class ManagerApi {
         }
         throw new BadRequestException("인증번호가 일치하지 않습니다.");
     }
+
+    @GetMapping("/test")
+    public ApiResponse<Void> testFun() {
+        return ApiResponse.success(OK);
+    }
 }
