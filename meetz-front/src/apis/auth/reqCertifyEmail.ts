@@ -4,7 +4,7 @@ const reqCertifyEmail = async (eamil: string) => {
     try {
         const { data } = await instance.get(`api/manager/authemail?email=${eamil}`)
 
-        if (data.status === 400) {
+        if (data.code === 400) {
             return false;
         } else {
             return true;

@@ -11,19 +11,19 @@ const postUserLogin = async (email: string, password: string, isManager: boolean
   try {
     const { data } = await instance.post('/api/login', {
       email, password, isManager
-    }, {
-      headers: { 'Content-Type': 'application/json' }
     });
 
-    console.log(data)
-
-    if (!data) {
-      alert('로그인에 실패했습니다!')
+    if (data && data.code == 200) {
+      alert('로그인에 성공했습니다.')
+      return data as LoginUserDto;
+    } else if (data.code === 404) {
+      throw new Error('존재하지 않는 회원입니다.')
+    } else {
+      throw new Error('로그인 오류가 발생했습니다.')
     }
-    alert('로그인에 성공했습니다.')
-    return data as LoginUserDto;
+
   } catch (e) {
-    throw new Error(`login API 통신 오류 발생 : ${e}`);
+    throw new Error(`로그인 오류가 발생했습니다.`);
   }
 }
 
