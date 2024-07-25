@@ -1,16 +1,18 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '/src/assets/images/logo.png';
 import { useState } from 'react';
 import useEmailValidation from '../../../hooks/form/useEmailValidation';
 import usePasswordValidation from '../../../hooks/form/usePasswordValidation';
+import postUserLogin from '../../../apis/auth/login';
 import { useUserStore } from '../../../zustand/useUserStore';
 
 const LoginBox = () => {
-  const [isManager, setIsManager] = useState(false);
-  const { loginHandler } = useUserStore();
+  const navigate = useNavigate();
 
+  const [isManager, setIsManager] = useState(false);
   const { email, isValidEmail, handleEmailChange } = useEmailValidation();
   const { password, isValidPassword, handlePasswordChange } = usePasswordValidation();
+  const { setUserData } = useUserStore();
 
   const onChangeRadioBtn = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsManager(e.target.value === 'manager');
@@ -31,10 +33,28 @@ const LoginBox = () => {
 
     // 로그인 API 요청 보내기
     try {
-      await loginHandler(email, password, isManager);
-      // 매니저 여부에 따라 라우팅 처리하기
-    } catch (error) {
-      console.error('로그인 실패', error);
+      const { refreshToken, accessToken, expireAt, role } = await postUserLogin(email, password, isManager);
+      alert("로그인에 성공했습니다.");
+
+      localStorage.setItem('rt', refreshToken);
+      setUserData(accessToken, expireAt, role);
+
+      if (role === 'MANAGER') {
+        navigate('/meeting/yet');
+        return;
+      }
+
+      //스타 또는 팬이라면 미팅 페이지로 이동
+      navigate('')
+
+    } catch (error: any) {
+      if (error.message === '존재하지 않는 회원입니다.') {
+        alert('존재하지 않는 회원입니다.');
+      } else if (error.message === '올바른 형식이 아닙니다.') {
+        alert('올바른 형식이 아닙니다.');
+      } else {
+        alert('로그인 중 오류가 발생했습니다.');
+      }
     }
   }
 

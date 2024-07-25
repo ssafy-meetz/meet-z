@@ -49,8 +49,12 @@ const SignupBox = () => {
       alert('중복된 이메일입니다!');
       setNotDuplicated(false);
       return;
-    } catch (e) {
-      alert(`${e}`)
+    } catch (error: any) {
+      if (error.message === '이미 가입된 이메일입니다.') {
+        alert('이미 가입된 이메일입니다.');
+      } else {
+        alert('로그인 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -68,18 +72,7 @@ const SignupBox = () => {
       // 타이머가 작동하지 않는 상태라면
       startTimer(); //isActive = true로
       alert("인증 번호를 발송했습니다. 제한 시간 내에 인증을 완료해주세요.")
-      try {
-        const reqResult = await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
-        if (!reqResult) {
-          alert('인증 요청에 실패했습니다. 다시 시도해주세요.');
-          stopTimer();
-          setTime(180); //isActive = false로
-        }
-      } catch (e) {
-        alert('인증 요청에 실패했습니다. 다시 시도해주세요.');
-        stopTimer();
-        setTime(180); //isActive = false로
-      }
+      await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
       return;
     }
 
@@ -99,12 +92,13 @@ const SignupBox = () => {
         return
       }
     } catch (e) {
+      alert('인증 번호가 일치하지 않습니다.');
+      setIsAuthenticated(false);
+      setAuthCode("");
+      stopTimer();
+      setTime(120); //isActive = false로
     }
-    alert('인증 번호가 일치하지 않습니다.');
-    setIsAuthenticated(false);
-    setAuthCode("");
-    stopTimer();
-    setTime(120); //isActive = false로
+
   };
 
   const checkMatchPassword = () => {
@@ -194,8 +188,9 @@ const SignupBox = () => {
             />
             <button
               type='button'
-              className='flex items-center justify-center text-[16px] w-[96px] h-full text-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 rounded-lg border border-solid border-[#FF4F5D]'
+              className={`flex items-center justify-center text-[16px] w-[96px] h-full text-[#FF4F5D] transition duration-100 ease-in-out transform rounded-lg border border-solid border-[#FF4F5D] ${isAuthenticated ? 'bg-gray-100 hover:' : 'hover:bg-[#ff4f5d] hover:text-white hover:scale-105'}`}
               onClick={getEmailAuthenticate}
+              disabled={isAuthenticated}
             >
               {!isAuthenticated
                 ? isActive
