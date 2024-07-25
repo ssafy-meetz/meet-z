@@ -7,6 +7,9 @@ module.exports = {
     "no-undef": "error",
     // 'unused-imports/no-unused-imports': 'error',
 
+    // 선언되지 않은 변수 에러 끄기(ts)
+    "@typescript-eslint/no-unused-vars": "off",
+
     // 프리티어 설정
     "prettier/prettier": [
       "error",

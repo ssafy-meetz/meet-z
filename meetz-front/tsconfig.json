@@ -8,4 +8,9 @@
       "path": "./tsconfig.node.json"
     }
   ],
+  //변수가 선언되었지만 값이 읽히지 않은 경우 생기는 build 에러 무시하기
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  }
 }
