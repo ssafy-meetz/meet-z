@@ -1,5 +1,5 @@
 import instance from "../axios";
-import { LoginUserDto } from "../../types";
+import { LoginUserDto } from "../../types/types.ts";
 
 /**
  * 백엔드 API 통신 - 로그인
