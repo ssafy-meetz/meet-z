@@ -8,7 +8,7 @@ interface CheckAuthNumResponse {
 
 const checkEmailAuthNum = async (email: string, authCode: string) => {
     try {
-        const res = await instance.get(`api/manager/checkauth?email=${email}&authcode=${authCode}`);
+        const res = await instance.get(`/api/manager/checkauth?email=${email}&authcode=${authCode}`);
         if (res.status === 200 && res.data.code === 200) {
             return true;
         }

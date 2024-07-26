@@ -12,7 +12,7 @@ import instance from "../axios";
 
 const postUserSignup = async (email: string, password: string, company: string, phone: string): Promise<boolean> => {
     try {
-        const { data } = await instance.post('api/manager/join', {
+        const { data } = await instance.post('/api/manager/join', {
             email, password, company, phone
         })
 
