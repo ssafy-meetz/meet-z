@@ -5,10 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MeetingResponseDto {
+public class MeetingSaveResponseDto {
     private int meetingId;
 
-    public MeetingResponseDto(int meetingId) {
+    public MeetingSaveResponseDto(int meetingId) {
         this.meetingId = meetingId;
     }
 }
