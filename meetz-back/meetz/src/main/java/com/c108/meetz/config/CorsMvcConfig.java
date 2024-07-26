@@ -11,6 +11,6 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
         //port 3000 : 프론트 단에서 사용되는 포트
         corsRegistry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173");
+                .allowedOrigins("http://localhost:5173", "http://localhost:3000");
     }
 }
