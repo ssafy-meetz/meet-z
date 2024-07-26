@@ -33,6 +33,7 @@ public class MailService {
     //redis에 메일과 number를 넣는 코드
     public void saveEmail(String email, String sendedNum) {
         // TTL 설정 (300초)
+        log.info("보낼 email={}", email);
         redisTemplate.opsForValue().set(sendedNum, email, 300, TimeUnit.SECONDS);
         log.info("redis에 이메일 저장 성공");
     }
