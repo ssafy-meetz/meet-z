@@ -1,2 +1,10 @@
-package com.c108.meetz.dto.request;public class StarSaveDto {
+package com.c108.meetz.dto.request;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class StarSaveDto {
+    private String name;
 }
