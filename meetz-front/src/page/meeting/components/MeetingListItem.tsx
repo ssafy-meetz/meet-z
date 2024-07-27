@@ -1,7 +1,6 @@
-import { useLocation, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 const MeetingListItem = () => {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const clickRouter = (to: string) => {
