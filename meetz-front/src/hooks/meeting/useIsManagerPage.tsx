@@ -9,10 +9,11 @@ import { useLocation } from "react-router-dom";
 const useIsManagerPage = () => {
     const [isManagerPage, setIsManagerPage] = useState(false);
     const { pathname } = useLocation();
-    if (pathname.includes('end') || pathname.includes('monitor')) {
+    if (pathname.includes('end') || pathname.includes('monitor') || pathname.includes('create') || pathname.includes('modify')) {
         setIsManagerPage(true);
-    }
-    setIsManagerPage(false);
+    } else {
+        setIsManagerPage(false)
+    };
     return { isManagerPage };
 };
 
