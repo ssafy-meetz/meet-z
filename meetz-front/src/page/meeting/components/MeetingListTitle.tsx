@@ -1,6 +1,7 @@
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const MeetingListTitle = () => {
+  const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
@@ -12,7 +13,7 @@ const MeetingListTitle = () => {
       <div className='max-w-screen-xl w-screen flex flex-col px-24 '>
         <div className='flex justify-between mt-16'>
           <h1 className='text-[32px] font-bold'>
-            <span className='text-[#FF4F5D] mr-2'>SSAFY</span> 일정관리
+            <span className='text-[#FF4F5D] mr-2'>SSAFY</span> {pathname.includes('end') ? '완료된 미팅' : '예정된 미팅'}
           </h1>
           <button
             onClick={handleButtonClick}
