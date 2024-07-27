@@ -27,11 +27,11 @@ public class JoinRequestDto {
     private String phone;
 
     public Manager toManager(BCryptPasswordEncoder bCryptPasswordEncoder){
-        Manager manager = new Manager();
-        manager.setEmail(this.email);
-        manager.setPassword(bCryptPasswordEncoder.encode(this.password));
-        manager.setCompany(this.company);
-        manager.setPhone(this.phone);
-        return manager;
-    }
+        return Manager.builder()
+                .email(this.email)
+                .password(bCryptPasswordEncoder.encode(this.password))
+                .company(this.company)
+                .phone(this.phone)
+                .build();
+}
 }
