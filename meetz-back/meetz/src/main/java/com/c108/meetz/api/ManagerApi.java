@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import static com.c108.meetz.constants.ErrorCode.*;
 import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j

@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import static com.c108.meetz.constants.ErrorCode.UNAUTHORIZED_USER;
-import static com.c108.meetz.constants.ErrorCode.USER_NOT_FOUND;
 
 
 @RequiredArgsConstructor
@@ -35,9 +33,9 @@ public class CommonService {
     private final JWTUtil jwtUtil;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-        if(loginRequestDto.getIsManager()){
-            Manager manager = managerRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
-            if(!bCryptPasswordEncoder.matches(loginRequestDto.getPassword(), manager.getPassword())){
+        if(loginRequestDto.isManager()){
+            Manager manager = managerRepository.findByEmail(loginRequestDto.email()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
+            if(!bCryptPasswordEncoder.matches(loginRequestDto.password(), manager.getPassword())){
                 throw new NotFoundException("존재하지 않는 회원입니다.");
             }
             String access = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", 86400000L);
@@ -48,7 +46,7 @@ public class CommonService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return new LoginResponseDto(refresh, access, expireAt, "MANAGER");
         }
-        User user = userRepository.findByEmailAndPassword(loginRequestDto.getEmail(), loginRequestDto.getPassword()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
+        User user = userRepository.findByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
 
         String access = jwtUtil.createJwt("access", user.getEmail(), String.valueOf(user.getRole()), 86400000L);
         String refresh = jwtUtil.createJwt("refresh", user.getEmail(), String.valueOf(user.getRole()), 86400000L*60); //60일
@@ -95,13 +93,9 @@ public class CommonService {
     }
 
     public CommonDto checkInfo(){
-        CommonDto commonDto = new CommonDto();
         String email = SecurityUtil.getCurrentUserEmail();
         String role = SecurityUtil.getCurrentUserRole();
-        commonDto.setEmail(email);
-        commonDto.setPassword("temp");
-        commonDto.setRole(role);
-        return commonDto;
+        return new CommonDto(email, role);
     }
 
 }

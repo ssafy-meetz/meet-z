@@ -4,8 +4,6 @@ import com.c108.meetz.exception.NotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import static com.c108.meetz.constants.ErrorCode.USER_NOT_FOUND;
-
 public class SecurityUtil {
 
     private SecurityUtil() {}

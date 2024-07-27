@@ -26,7 +26,7 @@ public class CustomUserDetails implements UserDetails {
             @Override
             public String getAuthority() {
 
-                return commonDto.getRole();
+                return commonDto.role();
             }
         });
 
@@ -36,13 +36,13 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getPassword() {
 
-        return commonDto.getPassword();
+        return "temp";
     }
 
     @Override
     public String getUsername() {
 
-        return commonDto.getEmail();
+        return commonDto.email();
     }
 
     @Override
