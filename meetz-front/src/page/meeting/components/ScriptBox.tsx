@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { useMonitorStore } from '../../../zustand/useMonitorStore';
 
 const ScriptBox = () => {
+  const { openWarnModal } = useMonitorStore();
   const [script, setScript] = useState(`
 안녕하세요! 오늘 저랑 영상대화 할 수 있어서 너무 기뻐요. 어떻게 지내셨어요?
 안녕하세요! 저도 정말 기대하고 있었어요. 그런데 요즘 너무 바빠 보여서 좀 걱정되더라고요. 괜찮으세요?
@@ -18,9 +20,6 @@ const ScriptBox = () => {
 오, 요리도 배우시다니 멋지네요! 저는 최근에 본 '기생충' 영화가 정말 인상 깊었어요. 책으로는 '데미안'을 추천드리고 싶어요.
 '기생충' 정말 명작이죠. '데미안'도 한번 읽어볼게요. 감사합니다+`);
 
-  const handleWarn = () => {
-    alert('해당 팬에게 경고가 누적되었습니다.');
-  };
 
   const handleBan = () => {
     alert('해당 팬이 영구 제명되었습니다.');
@@ -37,7 +36,7 @@ const ScriptBox = () => {
       </div>
       <div className='flex justify-end space-x-4 py-'>
         <button
-          onClick={handleWarn}
+          onClick={openWarnModal}
           className='bg-white text-[#FF4F5D] px-4 py-2 border border-[#FF4F5D] hover:text-white rounded-3xl hover:bg-[#FF4F5D]'
         >
           해당 팬 경고 누적하기
