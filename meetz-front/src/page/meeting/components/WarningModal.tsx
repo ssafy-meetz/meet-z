@@ -21,7 +21,7 @@ const WarningModal = () => {
             </div>
             <div>
               <span className='text-base cursor-default'>
-                "강창우" 팬을 영구 제명 하겠습니까?
+                "강창우" 팬을 <span className='text-red-600 font-semibold'>영구 제명</span> 하시겠습니까?
               </span>
             </div>
           </div>
