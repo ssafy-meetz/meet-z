@@ -1,6 +1,7 @@
 package com.c108.meetz.api;
 
 import com.c108.meetz.dto.ApiResponse;
+import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
 import com.c108.meetz.dto.response.ExcelResponseDto;
 import com.c108.meetz.dto.response.MeetingSaveResponseDto;
@@ -37,5 +38,11 @@ public class MeetingApi {
     public ApiResponse<ExcelResponseDto> readExcelFile(@RequestParam("file") MultipartFile file){
         ExcelResponseDto response = meetingService.readExcelFile(file);
         return ApiResponse.success(OK, response);
+    }
+
+    @PostMapping("blacklist")
+    public ApiResponse<Void> checkBlackList(@RequestBody FanSaveDto fanSaveDto) {
+        meetingService.checkBlackList(fanSaveDto);
+        return ApiResponse.success(OK);
     }
 }
