@@ -8,14 +8,9 @@ import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.service.CommonService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import static com.c108.meetz.constants.ErrorCode.FAIL_TO_LOGIN;
-import static com.c108.meetz.constants.SuccessCode.LOGIN_SUCCESS;
-import static com.c108.meetz.constants.SuccessCode.TOKEN_REISSUE_SUCCESS;
-import static com.c108.meetz.constants.SuccessCode.CHECK_INFO_SUCCESS;
 import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
