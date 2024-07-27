@@ -1,10 +1,11 @@
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 const MeetingListItem = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const clickRouter = (to: string) => {
-    let path = '/meeting/' + to;
+    let path = '/meeting/' + to + '/3';
     navigate(path);
   }
 
@@ -12,7 +13,7 @@ const MeetingListItem = () => {
     <div className='p-4 bg-[#FFFFFF] rounded-2xl flex justify-between items-center'>
       <div className="flex flex-col">
         <div
-          onClick={() => clickRouter('detail')}
+          onClick={() => clickRouter(pathname.includes('end') ? 'monitor' : 'detail')}
           className='text-[20px] font-semibold hover:text-[#FF4F5D] cursor-pointer'>
           우주최강 이승원 앨범 출시 팬싸인회
         </div>
