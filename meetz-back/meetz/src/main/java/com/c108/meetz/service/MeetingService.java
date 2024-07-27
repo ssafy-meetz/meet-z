@@ -72,12 +72,14 @@ public class MeetingService {
     public ExcelResponseDto readExcelFile(MultipartFile file) {
         if(file.isEmpty()) throw new BadRequestException("파일을 첨부해주세요.");
         if(!isExcelFile(file)) throw new BadRequestException("엑셀파일만 첨부할 수 있습니다.");
+        String email = SecurityUtil.getCurrentUserEmail();
+        int managerId = managerRepository.findByEmail(email).get().getManagerId();
         try {
             List<FanSaveDto> dtos = parseExcel(file);
             List<FanSaveDto> blackList = new ArrayList<>();
             List<FanSaveDto> notBlackList = new ArrayList<>();
             for(FanSaveDto dto : dtos){
-                if(blackListRepository.existsByNameAndEmailAndPhone(dto.name(), dto.email(), dto.phone())){
+                if(blackListRepository.existsByNameAndEmailAndPhoneAndManager_ManagerId(dto.name(), dto.email(), dto.phone(), managerId)){
                     blackList.add(dto);
                 }else{
                     notBlackList.add(dto);
@@ -132,6 +134,14 @@ public class MeetingService {
                 return String.valueOf((int) cell.getNumericCellValue());
             default:
                 return "";
+        }
+    }
+
+    public void checkBlackList(FanSaveDto fanSaveDto) {
+        String email = SecurityUtil.getCurrentUserEmail();
+        int managerId = managerRepository.findByEmail(email).get().getManagerId();
+        if(blackListRepository.existsByNameAndEmailAndPhoneAndManager_ManagerId(fanSaveDto.name(), fanSaveDto.email(), fanSaveDto.phone(), managerId)){
+            throw new BadRequestException("블랙리스트입니다.");
         }
     }
 
