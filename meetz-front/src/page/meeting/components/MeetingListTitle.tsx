@@ -1,10 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import useIsEndPage from "../../../hooks/meeting/useIsEndPage";
-import { useState } from "react";
 
 const MeetingListTitle = () => {
   const navigate = useNavigate();
-  const [isEnd, setIsEnd] = useState(useIsEndPage());
 
   const handleButtonClick = () => {
     navigate('/meeting/create');
@@ -19,7 +16,7 @@ const MeetingListTitle = () => {
           </h1>
           <button
             onClick={handleButtonClick}
-            className={`bg-[#FF4F5D] text-white p-1 px-4 text-[20px] rounded-full ${isEnd ? 'hidden' : ''}`}
+            className='bg-[#FF4F5D] text-white p-1 px-4 text-[20px] rounded-full'
           >
             팬싸인회 생성
           </button>
