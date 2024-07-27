@@ -3,19 +3,11 @@ package com.c108.meetz.dto.request;
 import com.c108.meetz.domain.Meeting;
 import com.c108.meetz.domain.User;
 import com.c108.meetz.service.TemporaryGenerator;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static com.c108.meetz.domain.Role.FAN;
 
-@Getter
-@Setter
-public class FanSaveDto {
 
-    private String name;
-    private String email;
-    private String phone;
+public record FanSaveDto(String name, String email, String phone) {
 
     public User toUser(Meeting meeting){
         User user = new User();
