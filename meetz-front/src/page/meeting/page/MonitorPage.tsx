@@ -1,7 +1,11 @@
+import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 import Accordion from '../components/Accordion';
 import Alert from '/src/assets/images/alert.png';
 
 const MonitoringPage = () => {
+
+  useCheckAuth('MANAGER');
+
   return (
     <div className='flex flex-col items-center'>
       <div className='max-w-screen-xl w-screen  px-24'>
