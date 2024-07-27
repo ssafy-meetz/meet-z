@@ -1,13 +1,12 @@
 // Accordion.tsx
-import React, { useState, ReactNode } from 'react';
+import React, { useState } from 'react';
 import AudioPlayer from './AudioPlayer';
 import ScriptBox from './ScriptBox';
 interface AccordionProps {
   title: string;
-  children: ReactNode;
 }
 
-const Accordion: React.FC<AccordionProps> = ({ title, children }) => {
+const Accordion: React.FC<AccordionProps> = ({ title }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -18,9 +17,8 @@ const Accordion: React.FC<AccordionProps> = ({ title, children }) => {
       >
         <span className='font-medium text-2xl'>{title}</span>
         <svg
-          className={`w-9 h-9 text-[#FF4F5D] transform transition-transform ${
-            isOpen ? 'rotate-180' : ''
-          }`}
+          className={`w-9 h-9 text-[#FF4F5D] transform transition-transform ${isOpen ? 'rotate-180' : ''
+            }`}
           fill='none'
           stroke='currentColor'
           viewBox='0 0 24 24'
@@ -38,7 +36,6 @@ const Accordion: React.FC<AccordionProps> = ({ title, children }) => {
         <div className='p-4'>
           <AudioPlayer />
           <ScriptBox />
-          {children}
         </div>
       )}
     </div>
