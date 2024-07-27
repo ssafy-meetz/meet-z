@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 
 /**
@@ -5,12 +6,14 @@ import { useLocation } from "react-router-dom";
  * 
  * @returns {boolean}
  */
-const useIsEndPage = () => {
+const useIsManagerPage = () => {
+    const [isManagerPage, setIsManagerPage] = useState(false);
     const { pathname } = useLocation();
     if (pathname.includes('end') || pathname.includes('monitor')) {
-        return true;
+        setIsManagerPage(true);
     }
-    return false;
+    setIsManagerPage(false);
+    return { isManagerPage };
 };
 
-export default useIsEndPage;
+export default useIsManagerPage;
