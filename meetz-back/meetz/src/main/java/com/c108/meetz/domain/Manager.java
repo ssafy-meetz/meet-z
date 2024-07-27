@@ -3,17 +3,21 @@ package com.c108.meetz.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Manager {
 
     @Id
+    @Column(name="manager_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int manager_id;
+    private int managerId;
 
     @NotNull
     @Email
@@ -34,4 +38,12 @@ public class Manager {
 
     @Column()
     private String token;
+
+    @Builder
+    public Manager(String email, String password, String company, String phone) {
+        this.email = email;
+        this.password = password;
+        this.company = company;
+        this.phone = phone;
+    }
 }
