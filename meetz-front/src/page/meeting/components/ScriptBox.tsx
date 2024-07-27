@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMonitorStore } from '../../../zustand/useMonitorStore';
 
 const ScriptBox = () => {
-  const { openWarnModal } = useMonitorStore();
+  const { openWarnModal, openBlackModal } = useMonitorStore();
   const [script, setScript] = useState(`
 안녕하세요! 오늘 저랑 영상대화 할 수 있어서 너무 기뻐요. 어떻게 지내셨어요?
 안녕하세요! 저도 정말 기대하고 있었어요. 그런데 요즘 너무 바빠 보여서 좀 걱정되더라고요. 괜찮으세요?
@@ -19,11 +19,6 @@ const ScriptBox = () => {
 저는 주로 책 읽거나 영화를 보면서 보내요. 요즘에는 요리도 조금씩 배우고 있어요. 혹시 추천할 만한 영화나 있나요?
 오, 요리도 배우시다니 멋지네요! 저는 최근에 본 '기생충' 영화가 정말 인상 깊었어요. 책으로는 '데미안'을 추천드리고 싶어요.
 '기생충' 정말 명작이죠. '데미안'도 한번 읽어볼게요. 감사합니다+`);
-
-
-  const handleBan = () => {
-    alert('해당 팬이 영구 제명되었습니다.');
-  };
 
   return (
     <div className='flex flex-col items-center p-4 space-y-4 gap-12'>
@@ -42,7 +37,7 @@ const ScriptBox = () => {
           해당 팬 경고 누적하기
         </button>
         <button
-          onClick={handleBan}
+          onClick={openBlackModal}
           className='bg-white text-[#FF4F5D] px-4 py-2 rounded-3xl border border-[#FF4F5D] hover:text-white hover:bg-[#FF4F5D]'
         >
           해당 팬 영구제명하기

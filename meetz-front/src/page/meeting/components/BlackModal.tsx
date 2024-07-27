@@ -1,8 +1,8 @@
 import { useMonitorStore } from '../../../zustand/useMonitorStore';
 import Alert from '/src/assets/images/alert.png';
 
-const WarningModal = () => {
-  const { closeWarnModal } = useMonitorStore();
+const BlackModal = () => {
+  const { closeBlackModal } = useMonitorStore();
 
   const continueBtnHandler = () => {
     // 경고 누적 API 연동
@@ -10,7 +10,7 @@ const WarningModal = () => {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" onClick={() => closeWarnModal()}>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" onClick={closeBlackModal}>
       <div
         onClick={(e) => e.stopPropagation()}
         className='w-[360px] h-[180px] flex flex-col items-center justify-center rounded-3xl border border-[#FF4F5D] bg-white'>
@@ -21,7 +21,7 @@ const WarningModal = () => {
             </div>
             <div>
               <span className='text-base cursor-default'>
-                "강창우" 팬을 <span className='text-red-600 font-semibold'>영구 제명</span> 하시겠습니까?
+                “강창우” 팬에게 <span className='text-red-600 font-semibold'>경고 1회 누적</span>을 진행하시겠습니까?
               </span>
             </div>
           </div>
@@ -32,7 +32,7 @@ const WarningModal = () => {
               진행
             </button>
             <button
-              onClick={closeWarnModal}
+              onClick={closeBlackModal}
               className='text-sm text-[#FF4F5D] border px-4 py-1 border-[#FF4F5D] hover:text-white rounded-lg hover:bg-[#FF4F5D]'>
               취소
             </button>
@@ -43,4 +43,4 @@ const WarningModal = () => {
   )
 }
 
-export default WarningModal
+export default BlackModal
