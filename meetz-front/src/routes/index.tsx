@@ -20,7 +20,7 @@ const Router: React.FC = () => {
           {/* 미팅 미완료 */}
           <Route path='yet' element={<YetMeetingPage />} />
           <Route path='create' element={<CreatePage />} />
-          <Route path='modify' element={<ModifyPage />} />
+          <Route path='modify/:id' element={<ModifyPage />} />
           <Route path='detail/:id' element={<DetailPage />} />
 
           {/* 미팅 완료 */}
