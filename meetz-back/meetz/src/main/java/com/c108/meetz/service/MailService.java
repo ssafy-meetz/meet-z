@@ -1,7 +1,12 @@
 package com.c108.meetz.service;
 
+import com.c108.meetz.domain.Meeting;
+import com.c108.meetz.domain.User;
 import com.c108.meetz.exception.BadRequestException;
+import com.c108.meetz.exception.NotFoundException;
 import com.c108.meetz.repository.ManagerRepository;
+import com.c108.meetz.repository.MeetingRepository;
+import com.c108.meetz.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +15,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
+import static com.c108.meetz.domain.Role.FAN;
 
 @Slf4j
 @Service
@@ -22,12 +32,11 @@ public class MailService {
     private static int number;
     private final RedisTemplate<String, String> redisTemplate;
     private final ManagerRepository managerRepository;
+    private final MeetingRepository meetingRepository;
+    private final UserRepository userRepository;
 
     public boolean checkEmail(String email) {
-        if (managerRepository.existsByEmail(email)) {
-            return true;
-        }
-        return false;
+        return managerRepository.existsByEmail(email);
     }
 
     //redis에 메일과 number를 넣는 코드
@@ -92,5 +101,63 @@ public class MailService {
             throw new BadRequestException();
         }
         return number;
+    }
+
+    public MimeMessage createTemporaryMail(User user, Meeting meeting) {
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        try {
+            message.setFrom(senderEmail);
+            message.setRecipients(MimeMessage.RecipientType.TO, user.getEmail());
+            message.setSubject("[MEET:Z]팬싸인회 참여 안내 메일");
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm");
+
+            String meetingStartFormatted = meeting.getMeetingStart().format(formatter);
+            String meetingEndFormatted = meeting.getMeetingEnd().format(formatter);
+
+            String body = "";
+            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>";
+            body += "<h2 style='color: #FE4D5C; text-align: center;'>MEET:Z 팬싸인회 참여 안내</h2>";
+            body += "<p style='font-size: 16px; color: #333;'>안녕하세요,</p>";
+            body += "<p style='font-size: 16px; color: #333;'>MEET:Z 서비스를 이용해 주셔서 감사합니다.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>팬싸인회 참여 안내드립니다.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>팬싸인회 정보:</p>";
+            body += "<ul style='font-size: 16px; color: #333;'>";
+            body += "<li>팬싸인회 이름: " + meeting.getMeetingName() + "</li>";
+            body += "<li>시작 시간: " + meetingStartFormatted + "</li>";
+            body += "<li>종료 시간: " + meetingEndFormatted + "</li>";
+            body += "<li>진행 시간: " + meeting.getMeetingDuration() + "초</li>";
+            body += "<li>대기 시간: " + meeting.getTerm() + "초</li>";
+            body += "</ul>";
+            body += "<div style='text-align: center; margin: 20px 0;'>";
+            body += "<div style='display: inline-block; font-size: 16px; color: #FE4D5C; padding: 10px 20px; border: 2px solid #FE4D5C; border-radius: 5px; background-color: #fee;'>";
+            body += "<p>이메일: " + user.getEmail() + "</p>";
+            body += "<p>비밀번호: " + user.getPassword() + "</p>";
+            body += "</div>";
+            body += "</div>";
+            body += "<p style='font-size: 16px; color: #333;'>위 로그인 정보는 보안을 위해 타인과 공유하지 마세요.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>감사합니다.<br>MEET:Z 팀</p>";
+            body += "<div style='text-align: center; margin-top: 30px;'></div>";
+            body += "</div>";
+            message.setText(body, "UTF-8", "html");
+        } catch (MessagingException e) {
+            throw new BadRequestException();
+        }
+
+        return message;
+    }
+
+    public void sendMailToFan(int meetingId){
+        Meeting meeting = meetingRepository.findById(meetingId).orElseThrow(()->  new NotFoundException("존재하지 않는 미팅입니다."));
+        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
+        for(User user : fans){
+            MimeMessage message = createTemporaryMail(user, meeting);
+            try {
+                javaMailSender.send(message);
+            }catch (Exception e){
+                throw new BadRequestException();
+            }
+        }
     }
 }
