@@ -43,7 +43,7 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
 
-    @PostMapping("blacklist")
+    @PostMapping("/blacklist")
     public ApiResponse<Void> checkBlackList(@RequestBody FanSaveDto fanSaveDto) {
         meetingService.checkBlackList(fanSaveDto);
         return ApiResponse.success(OK);
@@ -55,7 +55,7 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
     
-    @GetMapping("{meetingId}/sendmail")
+    @GetMapping("/{meetingId}/sendmail")
     public ApiResponse<Void> sendMailToFan(@PathVariable int meetingId){
         mailService.sendMailToFan(meetingId);
         return ApiResponse.success(OK);
@@ -67,5 +67,9 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
 
-
+    @PutMapping("/{meetingId}")
+    public ApiResponse<MeetingSaveResponseDto> updateMeeting(@PathVariable int meetingId, @RequestBody MeetingSaveRequestDto meetingSaveRequestDto) {
+        MeetingSaveResponseDto response = meetingService.updateMeeting(meetingId, meetingSaveRequestDto);
+        return ApiResponse.success(OK, response);
+    }
 }
