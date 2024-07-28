@@ -4,6 +4,7 @@ import com.c108.meetz.dto.ApiResponse;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
 import com.c108.meetz.dto.response.ExcelResponseDto;
+import com.c108.meetz.dto.response.MeetingDetailResponseDto;
 import com.c108.meetz.dto.response.MeetingSaveResponseDto;
 import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.service.MailService;
@@ -48,6 +49,12 @@ public class MeetingApi {
         return ApiResponse.success(OK);
     }
 
+    @GetMapping("/{meetingId}")
+    public ApiResponse<MeetingDetailResponseDto> getMeetingDetails(@PathVariable int meetingId) {
+        MeetingDetailResponseDto response = meetingService.getMeetingDetails(meetingId);
+        return ApiResponse.success(OK, response);
+    }
+    
     @GetMapping("{meetingId}/sendmail")
     public ApiResponse<Void> sendMailToFan(@PathVariable int meetingId){
         mailService.sendMailToFan(meetingId);
