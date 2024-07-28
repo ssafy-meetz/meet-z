@@ -3,9 +3,7 @@ package com.c108.meetz.api;
 import com.c108.meetz.dto.ApiResponse;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
-import com.c108.meetz.dto.response.ExcelResponseDto;
-import com.c108.meetz.dto.response.MeetingDetailResponseDto;
-import com.c108.meetz.dto.response.MeetingSaveResponseDto;
+import com.c108.meetz.dto.response.*;
 import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.service.MailService;
 import com.c108.meetz.service.MeetingService;
@@ -15,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -60,4 +60,12 @@ public class MeetingApi {
         mailService.sendMailToFan(meetingId);
         return ApiResponse.success(OK);
     }
+
+    @GetMapping("/completed")
+    public ApiResponse<CompletedMeetingListResponseDto> getCompletedMeetings() {
+        CompletedMeetingListResponseDto response = meetingService.getCompletedMeetings();
+        return ApiResponse.success(OK, response);
+    }
+
+
 }
