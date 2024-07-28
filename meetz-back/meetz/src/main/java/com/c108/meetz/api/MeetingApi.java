@@ -6,6 +6,7 @@ import com.c108.meetz.dto.request.MeetingSaveRequestDto;
 import com.c108.meetz.dto.response.ExcelResponseDto;
 import com.c108.meetz.dto.response.MeetingSaveResponseDto;
 import com.c108.meetz.exception.BadRequestException;
+import com.c108.meetz.service.MailService;
 import com.c108.meetz.service.MeetingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class MeetingApi {
 
     private final MeetingService meetingService;
+    private final MailService mailService;
 
     @PostMapping("")
     public ApiResponse<MeetingSaveResponseDto> createMeeting(@Valid @RequestBody MeetingSaveRequestDto meetingSaveRequestDto, BindingResult bindingResult) {
@@ -43,6 +45,12 @@ public class MeetingApi {
     @PostMapping("blacklist")
     public ApiResponse<Void> checkBlackList(@RequestBody FanSaveDto fanSaveDto) {
         meetingService.checkBlackList(fanSaveDto);
+        return ApiResponse.success(OK);
+    }
+
+    @GetMapping("{meetingId}/sendmail")
+    public ApiResponse<Void> sendMailToFan(@PathVariable int meetingId){
+        mailService.sendMailToFan(meetingId);
         return ApiResponse.success(OK);
     }
 }
