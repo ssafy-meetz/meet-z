@@ -18,5 +18,4 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     Boolean existsByToken(String token);
 
     List<User> findByMeeting_MeetingIdAndRole(int meetingId, Role role);
-
 }
