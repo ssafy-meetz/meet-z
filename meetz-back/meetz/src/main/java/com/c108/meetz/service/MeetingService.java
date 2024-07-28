@@ -153,7 +153,7 @@ public class MeetingService {
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
         Optional<Manager> manager = managerRepository.findByEmail(SecurityUtil.getCurrentUserEmail());
         if(meeting.getManager() != manager.get()){
-            throw new UnauthorizedException("접근 권한이 없습니다.");
+            throw new BadRequestException("접근 권한이 없습니다.");
         }
         // 미팅 번호에 따라 팬과 스타 리스트를 조회
         List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR);
@@ -176,7 +176,7 @@ public class MeetingService {
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
         Optional<Manager> manager = managerRepository.findByEmail(SecurityUtil.getCurrentUserEmail());
         if(meeting.getManager() != manager.get()){
-            throw new UnauthorizedException("접근 권한이 없습니다.");
+            throw new BadRequestException("접근 권한이 없습니다.");
         }
         meetingSaveRequestDto.updateMeeting(meeting);
         List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
