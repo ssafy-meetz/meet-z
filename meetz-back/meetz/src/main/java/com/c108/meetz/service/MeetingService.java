@@ -2,13 +2,11 @@ package com.c108.meetz.service;
 
 import com.c108.meetz.domain.Manager;
 import com.c108.meetz.domain.Meeting;
-import com.c108.meetz.domain.Role;
 import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
 import com.c108.meetz.dto.response.*;
 import com.c108.meetz.exception.*;
-import com.c108.meetz.jwt.JWTUtil;
 import com.c108.meetz.repository.BlackListRepository;
 import com.c108.meetz.repository.ManagerRepository;
 import com.c108.meetz.repository.MeetingRepository;
@@ -27,6 +25,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.c108.meetz.domain.Role.FAN;
+import static com.c108.meetz.domain.Role.STAR;
 
 @Service
 @RequiredArgsConstructor
@@ -51,12 +52,12 @@ public class MeetingService {
         meeting.setMeetingEnd(calculateMeetingEnd(meetingSaveRequestDto));
         meetingRepository.save(meeting);
 
-        List<User> stars = meetingSaveRequestDto.starList().stream()
+        List<User> stars = meetingSaveRequestDto.getStarList().stream()
                 .map(starSaveDto -> starSaveDto.toUser(meeting))
                 .collect(Collectors.toList());
         userRepository.saveAll(stars);
 
-        List<User> fans = meetingSaveRequestDto.fanList().stream()
+        List<User> fans = meetingSaveRequestDto.getFanList().stream()
                 .map(fanSaveDto -> fanSaveDto.toUser(meeting))
                 .collect(Collectors.toList());
         userRepository.saveAll(fans);
@@ -65,9 +66,9 @@ public class MeetingService {
     }
 
     private LocalDateTime calculateMeetingEnd(MeetingSaveRequestDto meeting) {
-        int singleFanMeetingTime = (meeting.meetingDuration() + meeting.term()) * meeting.starList().size() - meeting.term();
-        int totalFanMeetingTime = singleFanMeetingTime * meeting.fanList().size();
-        return meeting.meetingStart().plusSeconds(totalFanMeetingTime);
+        int singleFanMeetingTime = (meeting.getMeetingDuration() + meeting.getTerm()) * meeting.getStarList().size() - meeting.getTerm();
+        int totalFanMeetingTime = singleFanMeetingTime * meeting.getFanList().size();
+        return meeting.getMeetingStart().plusSeconds(totalFanMeetingTime);
     }
 
     public ExcelResponseDto readExcelFile(MultipartFile file) {
@@ -150,10 +151,13 @@ public class MeetingService {
         // 주어진 meetingId로 미팅을 조회
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
-
+        Optional<Manager> manager = managerRepository.findByEmail(SecurityUtil.getCurrentUserEmail());
+        if(meeting.getManager() != manager.get()){
+            throw new UnauthorizedException("접근 권한이 없습니다.");
+        }
         // 미팅 번호에 따라 팬과 스타 리스트를 조회
-        List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meetingId, Role.STAR);
-        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, Role.FAN);
+        List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR);
+        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
 
         // 팬 리스트와 스타 리스트를 DTO로 변환
         List<StarResponseDto> starList = stars.stream()
@@ -163,18 +167,35 @@ public class MeetingService {
         List<FanResponseDto> fanList = fans.stream()
                 .map(fan -> new FanResponseDto(fan.getUserId(), fan.getName(), fan.getEmail(), fan.getPhone()))
                 .collect(Collectors.toList());
+        return MeetingDetailResponseDto.of(meeting, starList, fanList);
 
-        // MeetingDetailResponseDto를 생성하여 반환
-        return new MeetingDetailResponseDto(
-                meeting.getMeetingId(),
-                meeting.getMeetingName(),
-                meeting.getMeetingStart(),
-                meeting.getMeetingEnd(),
-                meeting.getMeetingDuration(),
-                meeting.getTerm(),
-                starList,
-                fanList
-        );
+    }
+
+    public MeetingSaveResponseDto updateMeeting(int meetingId, MeetingSaveRequestDto meetingSaveRequestDto) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new NotFoundException("Meeting not found"));
+        Optional<Manager> manager = managerRepository.findByEmail(SecurityUtil.getCurrentUserEmail());
+        if(meeting.getManager() != manager.get()){
+            throw new UnauthorizedException("접근 권한이 없습니다.");
+        }
+        meetingSaveRequestDto.updateMeeting(meeting);
+        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
+        List<FanSaveDto> fanSaveDtoList = fans.stream()
+                .map(fan -> new FanSaveDto(fan.getName(), fan.getEmail(), fan.getPhone()))
+                .collect(Collectors.toList());
+        meetingSaveRequestDto.setFanList(fanSaveDtoList);
+        meeting.setMeetingEnd(calculateMeetingEnd(meetingSaveRequestDto));
+        meetingRepository.save(meeting);
+
+        userRepository.deleteAll(userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR));
+
+        List<User> stars = meetingSaveRequestDto.getStarList().stream()
+                .map(starSaveDto -> starSaveDto.toUser(meeting))
+                .collect(Collectors.toList());
+        userRepository.saveAll(stars);
+
+        return new MeetingSaveResponseDto(meeting.getMeetingId());
+
     }
 
 }
