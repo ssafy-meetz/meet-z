@@ -1,4 +1,3 @@
-import { access } from "fs";
 import instance from "../axios"
 
 interface CreateMeetingDTO {
@@ -17,7 +16,6 @@ const postMeetingToCreate = async ({ meetingName, meetingStart, meetingDuration,
       meetingName, meetingStart, meetingDuration, term, starList, fanList
     }, {
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
       }
     })
