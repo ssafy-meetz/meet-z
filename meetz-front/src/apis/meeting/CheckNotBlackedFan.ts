@@ -1,6 +1,6 @@
 import instance from "../axios"
 
-const CheckNotBlackedFan = async (name: string, email: string, phone: string, accessToken: string) => {
+const checkNotBlackedFan = async (name: string, email: string, phone: string, accessToken: string) => {
   try {
     const { data } = await instance.post('/api/meeting/blacklist', { name, email, phone }, {
       headers: {
