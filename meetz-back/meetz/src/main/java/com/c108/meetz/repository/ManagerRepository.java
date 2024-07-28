@@ -19,11 +19,6 @@ public interface ManagerRepository extends JpaRepository<Manager, Integer> {
     @Query("update Manager m set m.token=NULL where m.token=:token")
     void upDateTokenToNull(String token);
 
-    @Transactional
-    @Modifying
-    @Query("update Manager m set m.token=?2 where m.email=?1")
-    void updateRefreshToken(String email, String refreshToken);
-
     boolean existsByEmail(String email);
 
 
