@@ -3,6 +3,7 @@ import Header from '../../common/ui/Header';
 import Footer from '../../common/ui/Footer';
 
 const MeetingLayout: React.FC = () => {
+
   return (
     <div className='flex flex-col min-h-screen'>
       <Header />

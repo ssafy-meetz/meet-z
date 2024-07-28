@@ -1,6 +1,7 @@
 package com.c108.meetz.service;
 
 import com.c108.meetz.domain.Manager;
+import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.request.CommonDto;
 import com.c108.meetz.dto.request.LoginRequestDto;
 import com.c108.meetz.dto.response.LoginResponseDto;
@@ -8,7 +9,9 @@ import com.c108.meetz.exception.NotFoundException;
 import com.c108.meetz.exception.UnauthorizedException;
 import com.c108.meetz.jwt.JWTUtil;
 import com.c108.meetz.repository.ManagerRepository;
+import com.c108.meetz.repository.UserRepository;
 import com.c108.meetz.util.SecurityUtil;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,8 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import static com.c108.meetz.constants.ErrorCode.UNAUTHORIZED_USER;
-import static com.c108.meetz.constants.ErrorCode.USER_NOT_FOUND;
 
 
 @RequiredArgsConstructor
@@ -29,23 +30,37 @@ public class CommonService {
 
     private final ManagerRepository managerRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
 
+    private static final long ACCESS_TOKEN_EXPIRATION = 86400000L;
+    private static final long REFRESH_TOKEN_EXPIRATION = 86400000L * 60;
+
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
-        if(loginRequestDto.getIsManager()){
-            Manager manager = managerRepository.findByEmail(loginRequestDto.getEmail()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
-            if(!bCryptPasswordEncoder.matches(loginRequestDto.getPassword(), manager.getPassword())){
+        if(loginRequestDto.isManager()){
+            Manager manager = managerRepository.findByEmail(loginRequestDto.email()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
+            if(!bCryptPasswordEncoder.matches(loginRequestDto.password(), manager.getPassword())){
                 throw new NotFoundException("존재하지 않는 회원입니다.");
             }
-            String access = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", 86400000L);
-            String refresh = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", 86400000L*60); //60일
-            managerRepository.updateRefreshToken(manager.getEmail(), refresh);
+            String access = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", ACCESS_TOKEN_EXPIRATION);
+            String refresh = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", REFRESH_TOKEN_EXPIRATION);
+            manager.setToken(refresh);
+            managerRepository.save(manager);
             LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
             Authentication authentication  = new UsernamePasswordAuthenticationToken(manager.getEmail(), null, List.of(new SimpleGrantedAuthority("MANAGER")));
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return new LoginResponseDto(refresh, access, expireAt, "MANAGER");
         }
-        throw new NotFoundException("존재하지 않는 회원입니다.");
+
+        User user = userRepository.findByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
+        String access = jwtUtil.createJwt("access", user.getEmail(), String.valueOf(user.getRole()), ACCESS_TOKEN_EXPIRATION);
+        String refresh = jwtUtil.createJwt("refresh", user.getEmail(), String.valueOf(user.getRole()), REFRESH_TOKEN_EXPIRATION);
+        user.setToken(refresh);
+        userRepository.save(user);
+        LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
+        Authentication authentication  = new UsernamePasswordAuthenticationToken(user.getEmail(), null, List.of(new SimpleGrantedAuthority(String.valueOf(user.getRole()))));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return new LoginResponseDto(refresh, access, expireAt, String.valueOf(user.getRole()));
     }
 
     public LoginResponseDto refreshToken(String header) {
@@ -61,7 +76,8 @@ public class CommonService {
                 Manager manager = managerRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 회원입니다."));
                 String newRefreshToken = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", 86400000L * 60);
                 String newAccessToken = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", 86400000L);
-                managerRepository.updateRefreshToken(manager.getEmail(), newRefreshToken);
+                manager.setToken(newRefreshToken);
+                managerRepository.save(manager);
                 LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
                 return new LoginResponseDto(newRefreshToken, newAccessToken, expireAt, "MANAGER");
             }
@@ -69,18 +85,26 @@ public class CommonService {
                 throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
             }
         }
-        throw new NotFoundException("존재하지 않는 회원입니다.");
-    }
-
-    public CommonDto checkInfo(){
-        CommonDto commonDto = new CommonDto();
-        String email = SecurityUtil.getCurrentUserEmail();
-        commonDto.setEmail(email);
-        commonDto.setPassword("temp");
-        if(managerRepository.findByEmail(email).isPresent()){
-            commonDto.setRole("MANAGER");
+        boolean isExist = userRepository.existsByToken(refreshToken);
+        if(isExist){
+            User user = userRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 회원입니다."));
+            String newRefreshToken = jwtUtil.createJwt("refresh", user.getEmail(), String.valueOf(user.getRole()), 86400000L * 60);
+            String newAccessToken = jwtUtil.createJwt("access", user.getEmail(), String.valueOf(user.getRole()), 86400000L);
+            user.setToken(newRefreshToken);
+            userRepository.save(user);
+            LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
+            return new LoginResponseDto(newRefreshToken, newAccessToken, expireAt, String.valueOf(user.getRole()));
         }
-        return commonDto;
+        else{
+            throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
+        }
     }
 
+
+    public CommonDto checkInfo() {
+        String email = SecurityUtil.getCurrentUserEmail();
+        String role = SecurityUtil.getCurrentUserRole();
+        return new CommonDto(email, role);
+    }
 }
+

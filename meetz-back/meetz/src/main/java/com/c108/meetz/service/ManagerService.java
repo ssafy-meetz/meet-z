@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.c108.meetz.constants.ErrorCode.DUPLICATE_EMAIL;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +17,7 @@ public class ManagerService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void joinManager(JoinRequestDto joinRequestDto){
-        if(managerRepository.findByEmail(joinRequestDto.getEmail()).isPresent()){
+        if(managerRepository.findByEmail(joinRequestDto.email()).isPresent()){
             throw new BadRequestException("이미 가입된 이메일입니다.");
         }
         Manager manager = joinRequestDto.toManager(bCryptPasswordEncoder);
