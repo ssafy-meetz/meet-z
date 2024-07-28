@@ -12,10 +12,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmailAndPassword(String email, String password);
     Optional<User> findByEmail(String email);
-    @Transactional
-    @Modifying
-    @Query("update User u set u.token=?2 where u.email=?1")
-    void updateRefreshToken(String email, String refreshToken);
 
     Boolean existsByToken(String token);
 }
