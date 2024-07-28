@@ -8,7 +8,6 @@ import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
 import com.c108.meetz.dto.response.*;
 import com.c108.meetz.exception.*;
-import com.c108.meetz.jwt.JWTUtil;
 import com.c108.meetz.repository.BlackListRepository;
 import com.c108.meetz.repository.ManagerRepository;
 import com.c108.meetz.repository.MeetingRepository;
@@ -177,4 +176,25 @@ public class MeetingService {
         );
     }
 
+    public CompletedMeetingListResponseDto getCompletedMeetings() {
+        String email = SecurityUtil.getCurrentUserEmail();
+        int managerId = managerRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("Manager not found")).getManagerId();
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        List<Meeting> completedMeetings = meetingRepository.findCompletedMeetingsByManagerId(managerId, currentTime);
+
+        List<CompletedMeetingResponseDto> meetingList = completedMeetings.stream()
+                .map(meeting -> {
+                    int fanCount = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), Role.FAN).size();
+                    return new CompletedMeetingResponseDto(
+                            meeting.getMeetingId(),
+                            meeting.getMeetingName(),
+                            meeting.getMeetingStart(),
+                            meeting.getMeetingEnd(),
+                            fanCount
+                    );
+                }).collect(Collectors.toList());
+
+        return new CompletedMeetingListResponseDto(meetingList);
+    }
 }
