@@ -2,12 +2,13 @@ package com.c108.meetz.service;
 
 import com.c108.meetz.domain.Manager;
 import com.c108.meetz.domain.Meeting;
+import com.c108.meetz.domain.Role;
 import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
-import com.c108.meetz.dto.response.ExcelResponseDto;
-import com.c108.meetz.dto.response.MeetingSaveResponseDto;
+import com.c108.meetz.dto.response.*;
 import com.c108.meetz.exception.*;
+import com.c108.meetz.jwt.JWTUtil;
 import com.c108.meetz.repository.BlackListRepository;
 import com.c108.meetz.repository.ManagerRepository;
 import com.c108.meetz.repository.MeetingRepository;
@@ -145,5 +146,35 @@ public class MeetingService {
         }
     }
 
+    public MeetingDetailResponseDto getMeetingDetails(int meetingId) {
+        // 주어진 meetingId로 미팅을 조회
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new NotFoundException("Meeting not found"));
+
+        // 미팅 번호에 따라 팬과 스타 리스트를 조회
+        List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meetingId, Role.STAR);
+        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, Role.FAN);
+
+        // 팬 리스트와 스타 리스트를 DTO로 변환
+        List<StarResponseDto> starList = stars.stream()
+                .map(star -> new StarResponseDto(star.getUserId(), star.getName(), star.getEmail(), star.getPassword()))
+                .collect(Collectors.toList());
+
+        List<FanResponseDto> fanList = fans.stream()
+                .map(fan -> new FanResponseDto(fan.getUserId(), fan.getName(), fan.getEmail(), fan.getPhone()))
+                .collect(Collectors.toList());
+
+        // MeetingDetailResponseDto를 생성하여 반환
+        return new MeetingDetailResponseDto(
+                meeting.getMeetingId(),
+                meeting.getMeetingName(),
+                meeting.getMeetingStart(),
+                meeting.getMeetingEnd(),
+                meeting.getMeetingDuration(),
+                meeting.getTerm(),
+                starList,
+                fanList
+        );
+    }
 
 }
