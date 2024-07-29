@@ -1,16 +1,13 @@
 import { useState } from "react";
-import { FaFileExcel } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
+import ExcelBox from "./ExcelBox";
 
 const FanListModal = () => {
   const { setIsOpenModal } = useMeetingSettingStore();
   const [addBtnClicked, setAddBtnClicked] = useState(false);
   const [isBlacked, setIsBlacked] = useState(false);
 
-  const attachExcelFile = () => {
-    alert("눌림")
-  }
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -23,15 +20,7 @@ const FanListModal = () => {
             <IoMdClose className="text-4xl cursor-pointer group-hover:text-[#ff4f5d]" />
           </div>
         </div>
-        <div onClick={attachExcelFile} className="group border-dashed border-2 border-gray-300 rounded-lg p-16 flex flex-col items-center justify-center mb-6 hover:border-red-500 transition duration-100 cursor-pointer">
-          <button className="text-gray-300 text-5xl mb-4 group-hover:text-[#ff4f5d] transition duration-100">
-            <FaFileExcel />
-          </button>
-          <p className="text-xl">클릭하거나 엑셀 파일을 드래그하여 첨부 하세요.</p>
-        </div>
-        <div className='flex justify-center mb-14'>
-          <button className="bg-[#ff4f5d] text-white  px-28 py-2 rounded-xl mb-6">Clean</button>
-        </div>
+        <ExcelBox />
         <div className="w-full mb-2 flex">
           <input className="w-32 hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] flex-1 border-b border-gray-300 px-2 py-2 mr-2" type="text" placeholder="이름" />
           <input className="hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] flex-1 border-b border-gray-300 px-2 py-2 mr-2" type="text" placeholder="이메일" />
