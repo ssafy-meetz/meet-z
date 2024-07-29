@@ -1,7 +1,7 @@
-// Accordion.tsx
 import React, { useState } from 'react';
 import AudioPlayer from './AudioPlayer';
 import ScriptBox from './ScriptBox';
+
 interface AccordionProps {
   title: string;
 }
@@ -15,10 +15,10 @@ const Accordion: React.FC<AccordionProps> = ({ title }) => {
         className='flex justify-between items-center py-7 cursor-pointer'
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className='font-medium text-2xl'>{title}</span>
+        <span className='font-light text-2xl'>{title}</span>
         <svg
           className={`w-9 h-9 text-[#FF4F5D] transform transition-transform ${isOpen ? 'rotate-180' : ''
-            }`}
+            } hover:scale-125 hover:text-[#ff4444]`}
           fill='none'
           stroke='currentColor'
           viewBox='0 0 24 24'
