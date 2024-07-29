@@ -198,4 +198,25 @@ public class MeetingService {
 
     }
 
+    public CompletedMeetingListResponseDto getCompletedMeetings() {
+        String email = SecurityUtil.getCurrentUserEmail();
+        int managerId = managerRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("Manager not found")).getManagerId();
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        List<Meeting> completedMeetings = meetingRepository.findCompletedMeetingsByManagerId(managerId, currentTime);
+
+        List<CompletedMeetingResponseDto> meetingList = completedMeetings.stream()
+                .map(meeting -> {
+                    int fanCount = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), Role.FAN).size();
+                    return new CompletedMeetingResponseDto(
+                            meeting.getMeetingId(),
+                            meeting.getMeetingName(),
+                            meeting.getMeetingStart(),
+                            meeting.getMeetingEnd(),
+                            fanCount
+                    );
+                }).collect(Collectors.toList());
+
+        return new CompletedMeetingListResponseDto(meetingList);
+    }
 }
