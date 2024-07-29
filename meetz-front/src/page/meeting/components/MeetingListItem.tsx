@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom"
+import { MeetingDto } from "../../../types/types";
 
-const MeetingListItem = () => {
+const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -15,7 +16,7 @@ const MeetingListItem = () => {
         <div
           onClick={() => clickRouter(pathname.includes('end') ? 'monitor' : 'detail')}
           className='text-[20px] font-semibold hover:text-[#FF4F5D] cursor-pointer'>
-          우주최강 이승원 앨범 출시 팬싸인회
+          {meeting.meetingName}
         </div>
         <div className='text-[20px] font-medium text-[#7d7d7d] cursor-default'>
           14:00 ~
@@ -23,7 +24,7 @@ const MeetingListItem = () => {
       </div>
       <div className='text-right'>
         <div className='text-[20px] text-[#7d7d7d] cursor-default'>
-          참여인원 : 50명 예정
+          {meeting.meetingEnd === "" ? `참여인원 : ${meeting.cnt}명` : `참여인원 : ${meeting.cnt}명 예정`}
         </div>
         <button
           onClick={() => clickRouter('modify')}
