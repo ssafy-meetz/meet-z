@@ -7,6 +7,5 @@ public record IncompleteMeetingResponseDto(
         int meetingId,
         String meetingName,
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime meetingStart,
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime meetingEnd,
         int cnt
 ) { }
