@@ -11,6 +11,8 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry corsRegistry) {
         //port 3000 : 프론트 단에서 사용되는 포트
         corsRegistry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173", "http://localhost:3000");
+                .allowedOrigins("http://localhost:5173", "http://localhost:3000",
+                        "http://i11c108.p.ssafy.io:5173", "http://i11c108.p.ssafy.io:3000",
+                        "https://i11c108.p.ssafy.io");
     }
 }

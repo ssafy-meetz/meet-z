@@ -64,7 +64,7 @@ public class SecurityConfig {
 
                         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000",
                                 "http://i11c108.p.ssafy.io:5173", "http://i11c108.p.ssafy.io:3000",
-                                "http://i11c108.p.ssafy.io"));
+                                "https://i11c108.p.ssafy.io"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
