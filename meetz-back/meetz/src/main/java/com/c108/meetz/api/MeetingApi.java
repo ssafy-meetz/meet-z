@@ -67,6 +67,12 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
 
+    @GetMapping("/{meetingId}/star")
+    public ApiResponse<StarListResponseDto> getStarList(@PathVariable int meetingId) {
+        StarListResponseDto response = meetingService.getStarList(meetingId);
+        return ApiResponse.success(OK, response);
+    }
+
     @PutMapping("/{meetingId}")
     public ApiResponse<MeetingSaveResponseDto> updateMeeting(@PathVariable int meetingId, @RequestBody MeetingSaveRequestDto meetingSaveRequestDto) {
         MeetingSaveResponseDto response = meetingService.updateMeeting(meetingId, meetingSaveRequestDto);

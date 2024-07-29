@@ -220,4 +220,32 @@ public class MeetingService {
 
         return new CompletedMeetingListResponseDto(meetingList);
     }
+
+    public StarListResponseDto getStarList(int meetingId) {
+        String email = SecurityUtil.getCurrentUserEmail();
+        int managerId = managerRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Manager not found"))
+                .getManagerId();
+
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new NotFoundException("Meeting not found"));
+
+        if (meeting.getManager().getManagerId() != managerId) {
+            throw new UnauthorizedException("접근 권한이 없습니다.");
+        }
+
+        List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meetingId, Role.STAR);
+
+        List<StarResponseDto> starList = stars.stream()
+                .map(star -> new StarResponseDto(
+                        star.getUserId(),
+                        star.getName(),
+                        star.getEmail(),
+                        star.getPassword())
+                )
+                .collect(Collectors.toList());
+
+        return new StarListResponseDto(meetingId, starList);
+    }
+
 }

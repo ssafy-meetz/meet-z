@@ -9,8 +9,9 @@ RUN npm install
 COPY . .
 # .env 파일 생성
 RUN echo "VITE_NOW_BASEURL=deployed\n\
-VITE_API_LOCAL_URL=http://localhost:8088\n\
-VITE_API_DEPLOYED_URL=http://i11c108.p.ssafy.io" > .env
+    VITE_API_LOCAL_URL=http://localhost:8088\n\
+    VITE_API_DEPLOYED_URL=https://i11c108.p.ssafy.io\n\
+    WDS_SOCKET_PORT=0" > .env
 #포트번호
 EXPOSE 3000
 #빌드
