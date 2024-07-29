@@ -90,4 +90,10 @@ public class MeetingApi {
         MeetingSaveResponseDto response = meetingService.updateMeeting(meetingId, meetingSaveRequestDto);
         return ApiResponse.success(OK, response);
     }
+
+    @DeleteMapping("/{meetingId}")
+    public ApiResponse<Void> deleteMeeting(@PathVariable int meetingId) {
+        meetingService.deleteMeeting(meetingId);
+        return ApiResponse.success(OK);
+    }
 }
