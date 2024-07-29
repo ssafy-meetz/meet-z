@@ -246,7 +246,7 @@ public class MeetingService {
         String email = SecurityUtil.getCurrentUserEmail();
 
         Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new NotFoundException("Meeting not found"));
+                .orElseThrow(() -> new BadRequestException("Meeting not found"));
 
         if (meeting.getManager().getEmail() != email) {
             throw new BadRequestException("접근 권한이 없습니다.");
@@ -264,6 +264,30 @@ public class MeetingService {
                 .collect(Collectors.toList());
 
         return new StarListResponseDto(meetingId, starList);
+    }
+
+    public FanListResponseDto getFanList(int meetingId) {
+        String email = SecurityUtil.getCurrentUserEmail();
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("Meeting not found"));
+
+        if (meeting.getManager().getEmail() != email) {
+            throw new BadRequestException("접근 권한이 없습니다.");
+        }
+
+        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
+
+        List<FanResponseDto> fanList = fans.stream()
+                .map(fan -> new FanResponseDto(
+                        fan.getUserId(),
+                        fan.getName(),
+                        fan.getEmail(),
+                        fan.getPhone())
+                )
+                .collect(Collectors.toList());
+
+        return new FanListResponseDto(meetingId, fanList);
+
     }
 
 }
