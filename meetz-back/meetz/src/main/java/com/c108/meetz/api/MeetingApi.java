@@ -67,6 +67,12 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
 
+    @GetMapping("/incomplete")
+    public ApiResponse<IncompleteMeetingListResponseDto> getIncompleteMeetings() {
+        IncompleteMeetingListResponseDto response = meetingService.getIncompleteMeetings();
+        return ApiResponse.success(OK, response);
+    }
+
     @GetMapping("/{meetingId}/star")
     public ApiResponse<StarListResponseDto> getStarList(@PathVariable int meetingId) {
         StarListResponseDto response = meetingService.getStarList(meetingId);

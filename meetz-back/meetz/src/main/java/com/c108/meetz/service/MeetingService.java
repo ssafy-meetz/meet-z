@@ -221,20 +221,38 @@ public class MeetingService {
         return new CompletedMeetingListResponseDto(meetingList);
     }
 
+    public IncompleteMeetingListResponseDto getIncompleteMeetings() {
+        String email = SecurityUtil.getCurrentUserEmail();
+        int managerId = managerRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("Manager not found")).getManagerId();
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        List<Meeting> incompleteMeetings = meetingRepository.findIncompleteMeetingsByManagerId(managerId, currentTime);
+
+        List<IncompleteMeetingResponseDto> meetingList = incompleteMeetings.stream()
+                .map(meeting -> {
+                    int fanCount = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).size();
+                    return new IncompleteMeetingResponseDto(
+                            meeting.getMeetingId(),
+                            meeting.getMeetingName(),
+                            meeting.getMeetingStart(),
+                            fanCount
+                    );
+                }).collect(Collectors.toList());
+
+        return new IncompleteMeetingListResponseDto(meetingList);
+    }
+
     public StarListResponseDto getStarList(int meetingId) {
         String email = SecurityUtil.getCurrentUserEmail();
-        int managerId = managerRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Manager not found"))
-                .getManagerId();
 
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
 
-        if (meeting.getManager().getManagerId() != managerId) {
-            throw new UnauthorizedException("접근 권한이 없습니다.");
+        if (meeting.getManager().getEmail() != email) {
+            throw new BadRequestException("접근 권한이 없습니다.");
         }
 
-        List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meetingId, Role.STAR);
+        List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR);
 
         List<StarResponseDto> starList = stars.stream()
                 .map(star -> new StarResponseDto(
