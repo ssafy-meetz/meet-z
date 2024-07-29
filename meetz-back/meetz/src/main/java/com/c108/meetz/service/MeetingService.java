@@ -2,6 +2,7 @@ package com.c108.meetz.service;
 
 import com.c108.meetz.domain.Manager;
 import com.c108.meetz.domain.Meeting;
+import com.c108.meetz.domain.Role;
 import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
@@ -207,7 +208,7 @@ public class MeetingService {
 
         List<CompletedMeetingResponseDto> meetingList = completedMeetings.stream()
                 .map(meeting -> {
-                    int fanCount = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), Role.FAN).size();
+                    int fanCount = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).size();
                     return new CompletedMeetingResponseDto(
                             meeting.getMeetingId(),
                             meeting.getMeetingName(),
