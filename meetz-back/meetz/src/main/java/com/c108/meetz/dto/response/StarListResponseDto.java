@@ -1,4 +1,6 @@
-package com.c108.meetz.dto.request;
+package com.c108.meetz.dto.response;
+
+import java.util.List;
 
 public record StarListResponseDto(
         int meetingId,
