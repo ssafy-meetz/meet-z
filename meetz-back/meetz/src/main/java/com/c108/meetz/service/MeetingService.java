@@ -290,4 +290,21 @@ public class MeetingService {
 
     }
 
+    public void deleteMeeting(int meetingId) {
+        String email = SecurityUtil.getCurrentUserEmail();
+        int managerId = managerRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("Manager not found"))
+                .getManagerId();
+
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadRequestException("Meeting not found"));
+
+        if (meeting.getManager().getManagerId() != managerId) {
+            throw new BadRequestException("접근 권한이 없습니다.");
+        }
+
+        // 추후 채팅방 구현 시 미팅에 속한 사용자와 채팅방 삭제 쿼리 추가 논의 필요
+        meetingRepository.delete(meeting);
+    }
+
 }
