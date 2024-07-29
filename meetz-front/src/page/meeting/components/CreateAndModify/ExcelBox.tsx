@@ -1,11 +1,14 @@
 import { useRef, useState } from "react";
 import { FaFileExcel, FaRegCircleCheck } from "react-icons/fa6";
 import Loading from "../../../../common/Loading";
+import sendExcelFile from "../../../../apis/meeting/sendExcelFile";
+import { useUserStore } from "../../../../zustand/useUserStore";
 
 const ExcelBox = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { accessToken } = useUserStore();
 
   const attachExcelFile = () => {
     if (inputRef.current) {
@@ -35,6 +38,7 @@ const ExcelBox = () => {
     formData.append("file", selectedFile);
 
     // 엑셀 파일 전송 API 연결
+    await sendExcelFile(formData, accessToken);
   };
 
   const clearFileHandler = () => {
@@ -45,7 +49,7 @@ const ExcelBox = () => {
   };
 
   const truncateFileName = (name: string) => {
-    return name.length > 7 ? name.substring(0, 7) + '..' : name;
+    return name.length > 7 ? name.substring(0, 15) + '..' : name;
   };
 
   const formatFileSize = (size: number) => {
@@ -64,7 +68,7 @@ const ExcelBox = () => {
           </div>
         ) : (
           <>
-            <button className="text-gray-300 text-5xl mb-4 group-hover:text-[#ff4f5d] transition duration-100">
+            <button className={`text-5xl mb-4 group-hover:text-[#ff4f5d] transition duration-100 ${selectedFile ? 'text-[#ff4f5d]' : 'text-gray-300'}`}>
               {!selectedFile || selectedFile === null ? <FaFileExcel /> : <FaRegCircleCheck />}
             </button>
             <span className="text-lg">
