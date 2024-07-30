@@ -23,3 +23,9 @@ export type MeetingDto = {
     meetingEnd: string;
     cnt: number;
 }
+
+export type FanDto = {
+    name: string;
+    email: string;
+    phone: string;
+}
