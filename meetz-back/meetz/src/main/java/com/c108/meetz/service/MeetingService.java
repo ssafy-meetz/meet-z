@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 import static com.c108.meetz.domain.Role.FAN;
 import static com.c108.meetz.domain.Role.STAR;
-import static com.c108.meetz.dto.response.FanListResponseDto.*;
 import static com.c108.meetz.dto.response.MeetingListResponseDto.*;
 
 @Service
@@ -153,17 +152,15 @@ public class MeetingService {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
         // 미팅 번호에 따라 팬과 스타 리스트를 조회
-        List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR);
-        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
-
         // 팬 리스트와 스타 리스트를 DTO로 변환
-        List<StarResponseDto> starList = stars.stream()
-                .map(star -> new StarResponseDto(star.getUserId(), star.getName(), star.getEmail(), star.getPassword()))
-                .collect(Collectors.toList());
+        List<StarResponseDto> starList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR).stream()
+                .map(StarResponseDto::from)
+                .toList();
 
-        List<FanResponseDto> fanList = fans.stream()
-                .map(fan -> new FanResponseDto(fan.getUserId(), fan.getName(), fan.getEmail(), fan.getPhone()))
-                .collect(Collectors.toList());
+        List<FanResponseDto> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
+                .map(FanResponseDto::from)
+                .toList();
+
         return MeetingDetailResponseDto.of(meeting, starList, fanList);
 
     }
@@ -217,9 +214,10 @@ public class MeetingService {
         Map<String, List<MeetingList>> month = meetings.stream()
                 .collect(Collectors.groupingBy(meeting -> meeting.getMeetingStart().format(DateTimeFormatter.ofPattern("MM"))));
 
-        return MeetingListResponseDto.of(month);
+        return MeetingListResponseDto.from(month);
     }
 
+    //DTO 내부클래스를 사용하는 방법
     public StarListResponseDto getStarList(int meetingId) {
         Manager manager = getManager();
         Meeting meeting = meetingRepository.findById(meetingId)
@@ -230,33 +228,27 @@ public class MeetingService {
         }
 
         List<StarList> starList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR).stream()
-                .map(StarList::of)
+                .map(StarList::from)
                 .toList();
 
-        return StarListResponseDto.of(starList);
+        return StarListResponseDto.from(starList);
     }
 
+    //DTO를 다 쪼개서 쓰는 방법
     public FanListResponseDto getFanList(int meetingId) {
-        String email = SecurityUtil.getCurrentUserEmail();
+        Manager manager = getManager();
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new BadRequestException("Meeting not found"));
 
-        if (meeting.getManager().getEmail() != email) {
+        if (meeting.getManager().getManagerId() != manager.getManagerId()) {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
 
-        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
+        List<FanResponseDto> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
+                .map(FanResponseDto::from)
+                .toList();
 
-        List<FanResponseDto> fanList = fans.stream()
-                .map(fan -> new FanResponseDto(
-                        fan.getUserId(),
-                        fan.getName(),
-                        fan.getEmail(),
-                        fan.getPhone())
-                )
-                .collect(Collectors.toList());
-
-        return new FanListResponseDto(meetingId, fanList);
+        return new FanListResponseDto(fanList);
 
     }
 
