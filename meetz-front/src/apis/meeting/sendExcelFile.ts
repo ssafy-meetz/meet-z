@@ -1,19 +1,16 @@
 import instance from "../axios"
 
-const sendExcelFile = async (file: FormData, accessToken: string) => {
-  console.log(file)
+const sendExcelFile = async (formData: FormData, accessToken: string) => {
   try {
-    const { data } = await instance.post('/api/meeting/file', {
-      file
-    }, {
+    const { data } = await instance.post('/api/meeting/file', formData, {
       headers: {
         'Content-Type': 'Multipart/form-data',
         'Authorization': `Bearer ${accessToken}`
       }
     })
 
-    if (data.status === 200 && data.data) {
-      console.log(data)
+    if (data.code === 200 && data) {
+      return data.data;
     }
   } catch (error: any) {
     if (error.response) {
