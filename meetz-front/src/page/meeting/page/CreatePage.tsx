@@ -12,13 +12,51 @@ import SetTimeBreakBox from '../components/CreateAndModify/SetTimeBreakBox';
 import 'react-datepicker/dist/react-datepicker.css';
 import FanListModal from '../components/CreateAndModify/FanListModal';
 import useMeetingSettingStore from '../../../zustand/useMeetingSettingStore';
+import useMeetingTimeStore from '../../../zustand/useMeetingTimeStore';
+import { useNavigate } from 'react-router-dom';
+import { useUserStore } from '../../../zustand/useUserStore';
 // import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
 
 
 const CreateMeeting: React.FC = () => {
-  // useCheckAuth('MANAGER');
 
+  // useCheckAuth('MANAGER');
+  const navigate = useNavigate();
   const { isOpenModal, notBlackCnt } = useMeetingSettingStore();
+  const { selectedDate, selectedDuration, selectedTime, selectedBreak } = useMeetingTimeStore();
+  const { accessToken } = useUserStore();
+
+  function convertTo24H(time: string): string {
+    let [timePart, modifier] = time.split(' ');
+    let [hours, minutes] = timePart.split(':');
+    let hoursNum = parseInt(hours, 10);
+
+    if (modifier.toUpperCase() === 'PM' && hoursNum !== 12) hoursNum += 12;
+    if (modifier.toUpperCase() === 'AM' && hoursNum === 12) hoursNum = 0;
+
+    return `${hoursNum.toString().padStart(2, '0')}:${minutes}`;
+  }
+
+  function convertToSeconds(time: string): number {
+    let [minutes, seconds] = time.split(':').map(Number);
+    return (minutes * 60) + seconds;
+  }
+
+  const saveHandler = async () => {
+
+    console.log(selectedDate?.toISOString().split('T')[0])
+    console.log(selectedTime && convertTo24H(selectedTime.value))
+    console.log(selectedDuration?.value)
+    console.log(selectedBreak && convertToSeconds(selectedBreak?.value))
+    // try {
+    //   await postMeetingToCreate(, accessToken);
+    // }
+
+  }
+
+  const cancelHandler = () => {
+    navigate('/yet');
+  }
 
   return (
     <div className='flex flex-col items-center'>
@@ -44,10 +82,12 @@ const CreateMeeting: React.FC = () => {
         </main>
         <div className='flex justify-center items-center gap-4 py-20'>
           <button
+            onClick={saveHandler}
             className='font-semibold text-white bg-[#ff4f5d] rounded-lg px-16 py-3'>
             저장
           </button>
           <button
+            onClick={cancelHandler}
             className='font-semibold text-[#ff4f5d] border border-[#ff4f5d] rounded-lg px-16 py-3'>
             취소
           </button>
