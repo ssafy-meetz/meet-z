@@ -2,6 +2,7 @@ package com.c108.meetz.api;
 
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 //@CrossOrigin(origins = "*")
+@Slf4j
 @RestController
 @RequestMapping("/api/sessions")
 public class OpenviduApi {
@@ -36,6 +38,8 @@ public class OpenviduApi {
             throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
+        String str = session.getSessionId();
+        log.info("세선 생성 완료 id={}", str);
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
     }
 
