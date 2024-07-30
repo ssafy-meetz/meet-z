@@ -37,7 +37,7 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
 
-    @PostMapping("/file")
+    @PostMapping(value = "/file", consumes = "multipart/form-data")
     public ApiResponse<ExcelResponseDto> readExcelFile(@RequestParam("file") MultipartFile file){
         ExcelResponseDto response = meetingService.readExcelFile(file);
         return ApiResponse.success(OK, response);
