@@ -19,7 +19,7 @@ const sendExcelFile = async (formData: FormData, accessToken: string) => {
         case 500:
           throw new Error("Internal Server Error");
         case 400:
-          throw new Error("파일을 첨부해주세요.");
+          throw new Error("엑셀 파일만 첨부할 수 있습니다.");
         default:
           console.log(error.response)
           throw new Error("알 수 없는 에러가 발생했습니다.");
