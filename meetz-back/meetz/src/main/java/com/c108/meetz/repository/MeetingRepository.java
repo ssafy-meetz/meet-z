@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 
-    @Query("SELECT m FROM Meeting m WHERE m.manager.managerId = :managerId AND m.meetingEnd < :currentTime")
+    @Query("SELECT m FROM Meeting m WHERE m.manager.managerId = :managerId AND m.meetingEnd < :currentTime order by m.meetingStart desc")
     List<Meeting> findCompletedMeetingsByManagerId(@Param("managerId") int managerId, @Param("currentTime") LocalDateTime currentTime);
 
-    @Query("SELECT m FROM Meeting m WHERE m.manager.managerId = :managerId AND m.meetingEnd >= :currentTime")
+    @Query("SELECT m FROM Meeting m WHERE m.manager.managerId = :managerId AND m.meetingEnd >= :currentTime order by m.meetingStart asc")
     List<Meeting> findIncompleteMeetingsByManagerId(@Param("managerId") int managerId, @Param("currentTime") LocalDateTime currentTime);
 }
