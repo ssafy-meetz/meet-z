@@ -2,7 +2,6 @@ package com.c108.meetz.service;
 
 import com.c108.meetz.domain.Manager;
 import com.c108.meetz.domain.Meeting;
-import com.c108.meetz.domain.Role;
 import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
@@ -21,14 +20,13 @@ import org.apache.poi.ss.usermodel.*;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.c108.meetz.domain.Role.FAN;
 import static com.c108.meetz.domain.Role.STAR;
+import static com.c108.meetz.dto.response.MeetingListResponseDto.*;
 
 @Service
 @RequiredArgsConstructor
@@ -199,47 +197,29 @@ public class MeetingService {
 
     }
 
-    public CompletedMeetingListResponseDto getCompletedMeetings() {
-        String email = SecurityUtil.getCurrentUserEmail();
-        int managerId = managerRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("Manager not found")).getManagerId();
+    public MeetingListResponseDto getMeetingList(boolean flag){
+        Manager manager = getManager();
         LocalDateTime currentTime = LocalDateTime.now();
+        List<MeetingList> meetings = new ArrayList<>();
+        if (flag) { //flag==true 이면 완료된 미팅 찾기
+            meetings = meetingRepository.findCompletedMeetingsByManagerId(manager.getManagerId(), currentTime).stream()
+                    .map(meeting -> {
+                        int cnt = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).size();
+                        return MeetingList.of(meeting, cnt, flag);
+                    })
+                    .collect(Collectors.toList());
+        } else { //flag == false 이면 미완료 미팅 찾기
+            meetings = meetingRepository.findIncompleteMeetingsByManagerId(manager.getManagerId(), currentTime).stream()
+                    .map(meeting -> {
+                        int cnt = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).size();
+                        return MeetingList.of(meeting, cnt, flag);
+                    })
+                    .collect(Collectors.toList());
+        }
+        Map<String, List<MeetingList>> month = meetings.stream()
+                .collect(Collectors.groupingBy(meeting -> meeting.getMeetingStart().format(DateTimeFormatter.ofPattern("yyyy-MM"))));
 
-        List<Meeting> completedMeetings = meetingRepository.findCompletedMeetingsByManagerId(managerId, currentTime);
-
-        List<CompletedMeetingResponseDto> meetingList = completedMeetings.stream()
-                .map(meeting -> {
-                    int fanCount = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).size();
-                    return new CompletedMeetingResponseDto(
-                            meeting.getMeetingId(),
-                            meeting.getMeetingName(),
-                            meeting.getMeetingStart(),
-                            meeting.getMeetingEnd(),
-                            fanCount
-                    );
-                }).collect(Collectors.toList());
-
-        return new CompletedMeetingListResponseDto(meetingList);
-    }
-
-    public IncompleteMeetingListResponseDto getIncompleteMeetings() {
-        String email = SecurityUtil.getCurrentUserEmail();
-        int managerId = managerRepository.findByEmail(email).orElseThrow(() -> new BadRequestException("Manager not found")).getManagerId();
-        LocalDateTime currentTime = LocalDateTime.now();
-
-        List<Meeting> incompleteMeetings = meetingRepository.findIncompleteMeetingsByManagerId(managerId, currentTime);
-
-        List<IncompleteMeetingResponseDto> meetingList = incompleteMeetings.stream()
-                .map(meeting -> {
-                    int fanCount = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).size();
-                    return new IncompleteMeetingResponseDto(
-                            meeting.getMeetingId(),
-                            meeting.getMeetingName(),
-                            meeting.getMeetingStart(),
-                            fanCount
-                    );
-                }).collect(Collectors.toList());
-
-        return new IncompleteMeetingListResponseDto(meetingList);
+        return MeetingListResponseDto.of(month);
     }
 
     public StarListResponseDto getStarList(int meetingId) {
@@ -302,6 +282,12 @@ public class MeetingService {
 
         // 추후 채팅방 구현 시 미팅에 속한 사용자와 채팅방 삭제 쿼리 추가 논의 필요
         meetingRepository.delete(meeting);
+    }
+
+    private Manager getManager(){
+        String email = SecurityUtil.getCurrentUserEmail();
+        return managerRepository.findByEmail(email).orElseThrow(()->
+                new NotFoundException("manager not found"));
     }
 
 }
