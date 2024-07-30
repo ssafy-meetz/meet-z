@@ -292,14 +292,11 @@ public class MeetingService {
 
     public void deleteMeeting(int meetingId) {
         String email = SecurityUtil.getCurrentUserEmail();
-        int managerId = managerRepository.findByEmail(email)
-                .orElseThrow(() -> new BadRequestException("Manager not found"))
-                .getManagerId();
 
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new BadRequestException("Meeting not found"));
 
-        if (meeting.getManager().getManagerId() != managerId) {
+        if (!meeting.getManager().getEmail().equals(email)) {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
 
