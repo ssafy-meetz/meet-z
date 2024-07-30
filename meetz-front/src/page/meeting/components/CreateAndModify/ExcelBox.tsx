@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FaFileExcel, FaRegCircleCheck } from "react-icons/fa6";
 import Loading from "../../../../common/Loading";
 import sendExcelFile from "../../../../apis/meeting/sendExcelFile";
@@ -9,7 +9,7 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { accessToken } = useUserStore();
-  const { excelFile, blackList, notBlackList, setBlackList, setNotBlackList, setNotBlackCnt, setExcelFile } = useMeetingSettingStore();
+  const { excelFile, setExcelFile, setTempNotBlackList, setNotBlackCnt } = useMeetingSettingStore();
 
   const attachExcelFile = () => {
     if (inputRef.current) {
@@ -30,13 +30,15 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
       return;
     }
 
+    const file = files[0];
+    setExcelFile(file);
     loadingHandler(1000);
-    setExcelFile(files[0]);
+    loadCleanFanList(file);
   };
 
   const clearFileHandler = () => {
     setExcelFile(null);
-    setNotBlackList([]);
+    setTempNotBlackList([]);
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -50,24 +52,17 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
     return (size / (1024 * 1024)).toFixed(2) + ' MB';
   };
 
-  const loadCleanFanList = async () => {
-    if (!excelFile) {
-      return;
-    }
-
+  const loadCleanFanList = async (file: File) => {
     const formData = new FormData();
-    formData.append("file", excelFile);
+    formData.append("file", file);
 
-    // 엑셀 파일 전송 API 연결
     try {
-      const { BlackList, NotBlackList, cnt } = await sendExcelFile(formData, accessToken);
-      setBlackList(BlackList);
-      setNotBlackList(NotBlackList);
+      const { NotBlackList, cnt } = await sendExcelFile(formData, accessToken);
+      setTempNotBlackList(NotBlackList);
       setNotBlackCnt(cnt);
       setTimeout(() => {
         scrollToBottom();
       }, 200);
-
     } catch (error: any) {
       if (error.response && error.response.data.message) {
         const eMsg = error.response.data.message;
@@ -75,16 +70,7 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
         return;
       }
     }
-  }
-
-  useEffect(() => {
-    if (!notBlackList || notBlackList === null || !blackList || blackList === null) {
-      loadCleanFanList();
-    } else {
-      setExcelFile(excelFile);
-      loadCleanFanList();
-    }
-  }, [excelFile]);
+  };
 
   return (
     <>
