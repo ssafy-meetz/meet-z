@@ -12,9 +12,9 @@ import { useNavigate } from 'react-router-dom';
 
 const SignupBox = () => {
   const navigate = useNavigate();
-  const [secondPW, setSecondPW] = useState("");
-  const [authCode, setAuthCode] = useState("");
-  const [company, setCompany] = useState("");
+  const [secondPW, setSecondPW] = useState('');
+  const [authCode, setAuthCode] = useState('');
+  const [company, setCompany] = useState('');
   const [notDuplicated, setNotDuplicated] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -38,7 +38,7 @@ const SignupBox = () => {
       if (isNotDuplicate) {
         // 중복이 아닌 경우
         alert('사용 가능한 이메일입니다.');
-        setAuthCode("");
+        setAuthCode('');
         setIsAuthenticated(false);
         setNotDuplicated(true);
         setTime(180);
@@ -71,34 +71,33 @@ const SignupBox = () => {
     if (!isActive) {
       // 타이머가 작동하지 않는 상태라면
       startTimer(); //isActive = true로
-      alert("인증 번호를 발송했습니다. 제한 시간 내에 인증을 완료해주세요.")
+      alert('인증 번호를 발송했습니다. 제한 시간 내에 인증을 완료해주세요.');
       await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
       return;
     }
 
     // 타이머가 작동하고 있는 상태라면
-    if (!authCode || authCode === null || authCode === "") {
-      alert("올바른 인증 번호를 입력하세요.");
+    if (!authCode || authCode === null || authCode === '') {
+      alert('올바른 인증 번호를 입력하세요.');
       return;
     }
 
     stopTimer();
     try {
-      const result = await checkEmailAuthNum(email, authCode)// API : 이메일 인증 번호 보내서 인증 여부 확인
+      const result = await checkEmailAuthNum(email, authCode); // API : 이메일 인증 번호 보내서 인증 여부 확인
 
       if (result) {
         alert('인증이 완료되었습니다.');
         setIsAuthenticated(true);
-        return
+        return;
       }
     } catch (e) {
       alert('인증 번호가 일치하지 않습니다.');
       setIsAuthenticated(false);
-      setAuthCode("");
+      setAuthCode('');
       stopTimer();
       setTime(120); //isActive = false로
     }
-
   };
 
   const checkMatchPassword = () => {
@@ -140,14 +139,13 @@ const SignupBox = () => {
         phone
       );
       if (successSignup) {
-        alert("회원가입이 완료되었습니다. 로그인 후 이용해주세요.");
+        alert('회원가입이 완료되었습니다. 로그인 후 이용해주세요.');
         //로그인 페이지로 라우팅
         navigate('/');
         return;
       }
 
-      alert('회원가입에 실패했습니다.')
-
+      alert('회원가입에 실패했습니다.');
     } catch (e) {
       alert(`회원가입에 실패했습니다.`);
     }
@@ -166,12 +164,12 @@ const SignupBox = () => {
               type='email'
               placeholder='이메일(example@company.com)'
               value={email}
-              className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 text-[16px] rounded-lg w-[256px]'
+              className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-[256px]'
               onChange={handleEmailChange}
             />
             <button
               type='button'
-              className='flex items-center justify-center text-[16px] w-[96px] h-full text-[#FF4F5D] rounded-lg transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 border border-solid border-[#FF4F5D]'
+              className='flex items-center justify-center w-[96px] h-full text-[#FF4F5D] rounded-lg transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 border border-solid border-[#FF4F5D]'
               onClick={checkDuplicate}
             >
               중복확인
@@ -181,14 +179,18 @@ const SignupBox = () => {
             <input
               type='password'
               placeholder='인증번호 입력'
-              className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 text-[16px] rounded-lg w-[256px]'
+              className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-[256px]'
               value={authCode}
               onChange={(e) => setAuthCode(e.target.value)}
               disabled={!isActive}
             />
             <button
               type='button'
-              className={`flex items-center justify-center text-[16px] w-[96px] h-full text-[#FF4F5D] transition duration-100 ease-in-out transform rounded-lg border border-solid border-[#FF4F5D] ${isAuthenticated ? 'bg-gray-100 hover:' : 'hover:bg-[#ff4f5d] hover:text-white hover:scale-105'}`}
+              className={`flex items-center justify-center w-[96px] h-full text-[#FF4F5D] transition duration-100 ease-in-out transform rounded-lg border border-solid border-[#FF4F5D] ${
+                isAuthenticated
+                  ? 'bg-gray-100 hover:'
+                  : 'hover:bg-[#ff4f5d] hover:text-white hover:scale-105'
+              }`}
               onClick={getEmailAuthenticate}
               disabled={isAuthenticated}
             >
@@ -203,34 +205,34 @@ const SignupBox = () => {
             type='password'
             value={password}
             placeholder='비밀번호 (영문, 특수문자를 포함하는 8자 이상)'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 text-[16px] rounded-lg w-full'
+            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full'
             onChange={handlePasswordChange}
           />
           <input
             type='password'
             value={secondPW}
             placeholder='비밀번호 확인'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 text-[16px] rounded-lg w-full'
+            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full'
             onChange={(e) => setSecondPW(e.target.value)}
           />
           <input
             type='text'
             value={company}
             placeholder='기관 또는 개인명'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 text-[16px] rounded-lg w-full'
+            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full'
             onChange={(e) => setCompany(e.target.value)}
           />
           <input
             type='text'
             value={phone}
             placeholder='휴대폰 번호 입력 (‘-’ 제외 11자리 입력)'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 text-[16px] rounded-lg w-full'
+            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full'
             onChange={handlePhoneChange}
           />
         </div>
         <button
           type='submit'
-          className='mt-[48px] w-full bg-[#FF4F5D] text-white p-4 rounded-lg text-16px'
+          className='mt-[48px] w-full bg-[#FF4F5D] text-white p-4 rounded-lg '
         >
           가입하기
         </button>
