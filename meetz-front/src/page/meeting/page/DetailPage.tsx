@@ -3,8 +3,12 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { MdOutlineTimer } from 'react-icons/md';
 import { IoCalendarNumberOutline } from 'react-icons/io5';
 import { FaRegHourglass } from 'react-icons/fa6';
+import { useMonitorStore } from '../../../zustand/useMonitorStore';
+import SendEmailModal from '../components/CreateAndModify/SendEmailModal';
 const DetailPage = () => {
   useCheckAuth('MANAGER');
+
+  const { sendModalOpend, openMailModal } = useMonitorStore();
 
   return (
     <div>
@@ -64,7 +68,10 @@ const DetailPage = () => {
         <div className='max-w-screen-xl w-screen px-24 pt-24 pb-60'>
           <div className='flex justify-between pt-8 items-center'>
             <span className='text-2xl font-semibold'>팬 리스트</span>
-            <button className='border border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white rounded-3xl px-4 py-2 text-[#ff4f5d]'>
+            <button
+              onClick={openMailModal}
+              className='border border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white rounded-3xl px-4 py-2 text-[#ff4f5d]'
+            >
               메일 발송
             </button>
           </div>
@@ -96,6 +103,7 @@ const DetailPage = () => {
           </div>
         </div>
       </main>
+      {sendModalOpend && <SendEmailModal />}
     </div>
   );
 };

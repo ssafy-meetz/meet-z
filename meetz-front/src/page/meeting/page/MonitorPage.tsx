@@ -7,7 +7,7 @@ import { useMonitorStore } from '../../../zustand/useMonitorStore';
 const MonitoringPage = () => {
   const { warnModalOpend, blackModalOpend } = useMonitorStore();
 
-  // useCheckAuth('MANAGER');
+  useCheckAuth('MANAGER');
 
   return (
     <div className='flex flex-col items-center'>
@@ -17,7 +17,9 @@ const MonitoringPage = () => {
           <h1 className='text-[28px] font-bold text-[#ff4f5d]'>
             우주 최강 이승원 앨범 출시 팬싸인회
           </h1>
-          <h2 className='text-[#7D7D7D] text-[24px]'>2024.07.24 오후 4시 (50명 참여)</h2>
+          <h2 className='text-[#7D7D7D] text-[24px]'>
+            2024.07.24 오후 4시 (50명 참여)
+          </h2>
         </header>
         <span className='text-2xl font-bold'>총 3 건</span>
         <main className='py-7 pb-72'>
