@@ -6,6 +6,7 @@ import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
 import com.c108.meetz.dto.response.*;
+import com.c108.meetz.dto.response.StarListResponseDto.StarList;
 import com.c108.meetz.exception.*;
 import com.c108.meetz.repository.BlackListRepository;
 import com.c108.meetz.repository.ManagerRepository;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 
 import static com.c108.meetz.domain.Role.FAN;
 import static com.c108.meetz.domain.Role.STAR;
+import static com.c108.meetz.dto.response.FanListResponseDto.*;
 import static com.c108.meetz.dto.response.MeetingListResponseDto.*;
 
 @Service
@@ -43,11 +45,8 @@ public class MeetingService {
         if(!SecurityUtil.getCurrentUserRole().equals("MANAGER")){
             throw new UnauthorizedException("접근 권한이 없습니다.");
         }
-        Optional<Manager> manager = managerRepository.findByEmail(SecurityUtil.getCurrentUserEmail());
-        if (manager.isEmpty()) {
-            throw new NotFoundException("Manager not found");
-        }
-        Meeting meeting = meetingSaveRequestDto.toMeeting(manager.get());
+        Manager manager = getManager();
+        Meeting meeting = meetingSaveRequestDto.toMeeting(manager);
         meeting.setMeetingEnd(calculateMeetingEnd(meetingSaveRequestDto));
         meetingRepository.save(meeting);
 
@@ -139,9 +138,8 @@ public class MeetingService {
     }
 
     public void checkBlackList(FanSaveDto fanSaveDto) {
-        String email = SecurityUtil.getCurrentUserEmail();
-        int managerId = managerRepository.findByEmail(email).get().getManagerId();
-        if(blackListRepository.existsByNameAndEmailAndPhoneAndManager_ManagerId(fanSaveDto.name(), fanSaveDto.email(), fanSaveDto.phone(), managerId)){
+        Manager manager = getManager();
+        if(blackListRepository.existsByNameAndEmailAndPhoneAndManager_ManagerId(fanSaveDto.name(), fanSaveDto.email(), fanSaveDto.phone(), manager.getManagerId())){
             throw new BadRequestException("블랙리스트입니다.");
         }
     }
@@ -150,8 +148,8 @@ public class MeetingService {
         // 주어진 meetingId로 미팅을 조회
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
-        Optional<Manager> manager = managerRepository.findByEmail(SecurityUtil.getCurrentUserEmail());
-        if(meeting.getManager() != manager.get()){
+        Manager manager = getManager();
+        if(meeting.getManager().getManagerId() != manager.getManagerId()){
             throw new BadRequestException("접근 권한이 없습니다.");
         }
         // 미팅 번호에 따라 팬과 스타 리스트를 조회
@@ -173,8 +171,8 @@ public class MeetingService {
     public MeetingSaveResponseDto updateMeeting(int meetingId, MeetingSaveRequestDto meetingSaveRequestDto) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
-        Optional<Manager> manager = managerRepository.findByEmail(SecurityUtil.getCurrentUserEmail());
-        if(meeting.getManager() != manager.get()){
+        Manager manager = getManager();
+        if(meeting.getManager().getManagerId() != manager.getManagerId()){
             throw new BadRequestException("접근 권한이 없습니다.");
         }
         meetingSaveRequestDto.updateMeeting(meeting);
@@ -223,60 +221,44 @@ public class MeetingService {
     }
 
     public StarListResponseDto getStarList(int meetingId) {
-        String email = SecurityUtil.getCurrentUserEmail();
-
+        Manager manager = getManager();
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new BadRequestException("Meeting not found"));
 
-        if (meeting.getManager().getEmail() != email) {
+        if (meeting.getManager().getManagerId() != manager.getManagerId()) {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
 
-        List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR);
+        List<StarList> starList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR).stream()
+                .map(StarList::of)
+                .toList();
 
-        List<StarResponseDto> starList = stars.stream()
-                .map(star -> new StarResponseDto(
-                        star.getUserId(),
-                        star.getName(),
-                        star.getEmail(),
-                        star.getPassword())
-                )
-                .collect(Collectors.toList());
-
-        return new StarListResponseDto(meetingId, starList);
+        return StarListResponseDto.of(starList);
     }
 
     public FanListResponseDto getFanList(int meetingId) {
-        String email = SecurityUtil.getCurrentUserEmail();
+        Manager manager = getManager();
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new BadRequestException("Meeting not found"));
 
-        if (meeting.getManager().getEmail() != email) {
+        if (meeting.getManager().getManagerId() != manager.getManagerId()) {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
+        List<FanList> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN)
+                .stream()
+                .map(FanList::of)
+                .toList();
 
-        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
-
-        List<FanResponseDto> fanList = fans.stream()
-                .map(fan -> new FanResponseDto(
-                        fan.getUserId(),
-                        fan.getName(),
-                        fan.getEmail(),
-                        fan.getPhone())
-                )
-                .collect(Collectors.toList());
-
-        return new FanListResponseDto(meetingId, fanList);
+        return FanListResponseDto.of(fans);
 
     }
 
     public void deleteMeeting(int meetingId) {
-        String email = SecurityUtil.getCurrentUserEmail();
-
+        Manager manager = getManager();
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new BadRequestException("Meeting not found"));
 
-        if (!meeting.getManager().getEmail().equals(email)) {
+        if (meeting.getManager().getManagerId() != manager.getManagerId()) {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
 
