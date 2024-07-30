@@ -237,19 +237,26 @@ public class MeetingService {
     }
 
     public FanListResponseDto getFanList(int meetingId) {
-        Manager manager = getManager();
+        String email = SecurityUtil.getCurrentUserEmail();
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new BadRequestException("Meeting not found"));
 
-        if (meeting.getManager().getManagerId() != manager.getManagerId()) {
+        if (meeting.getManager().getEmail() != email) {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
-        List<FanList> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN)
-                .stream()
-                .map(FanList::of)
-                .toList();
 
-        return FanListResponseDto.of(fans);
+        List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
+
+        List<FanResponseDto> fanList = fans.stream()
+                .map(fan -> new FanResponseDto(
+                        fan.getUserId(),
+                        fan.getName(),
+                        fan.getEmail(),
+                        fan.getPhone())
+                )
+                .collect(Collectors.toList());
+
+        return new FanListResponseDto(meetingId, fanList);
 
     }
 
