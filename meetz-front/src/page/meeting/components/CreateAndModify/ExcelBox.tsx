@@ -1,14 +1,15 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFileExcel, FaRegCircleCheck } from "react-icons/fa6";
 import Loading from "../../../../common/Loading";
 import sendExcelFile from "../../../../apis/meeting/sendExcelFile";
 import { useUserStore } from "../../../../zustand/useUserStore";
+import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
 
-const ExcelBox = () => {
+const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { accessToken } = useUserStore();
+  const { excelFile, blackList, notBlackList, setBlackList, setNotBlackList, setNotBlackCnt, setExcelFile } = useMeetingSettingStore();
 
   const attachExcelFile = () => {
     if (inputRef.current) {
@@ -23,26 +24,19 @@ const ExcelBox = () => {
     }, time);
   };
 
-  const fileChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const fileChangeHandler = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files && files[0]) {
-      loadingHandler(1500);
-      setSelectedFile(files[0]);
+    if (!files || !files[0]) {
+      return;
     }
-  };
 
-  const FileUploadHandler = async () => {
-    if (!selectedFile) return;
-
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-
-    // 엑셀 파일 전송 API 연결
-    await sendExcelFile(formData, accessToken);
+    loadingHandler(1000);
+    setExcelFile(files[0]);
   };
 
   const clearFileHandler = () => {
-    setSelectedFile(null);
+    setExcelFile(null);
+    setNotBlackList([]);
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -56,6 +50,43 @@ const ExcelBox = () => {
     return (size / (1024 * 1024)).toFixed(2) + ' MB';
   };
 
+  const loadCleanFanList = async () => {
+    if (!excelFile) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", excelFile);
+
+    // 엑셀 파일 전송 API 연결
+    try {
+      const { BlackList, NotBlackList, cnt } = await sendExcelFile(formData, accessToken);
+      setBlackList(BlackList);
+      setNotBlackList(NotBlackList);
+      setNotBlackCnt(cnt);
+      setTimeout(() => {
+        scrollToBottom();
+      }, 200);
+
+    } catch (error: any) {
+      if (error.response && error.response.data.message) {
+        const eMsg = error.response.data.message;
+        alert(eMsg);
+        return;
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!notBlackList || notBlackList === null || !blackList || blackList === null) {
+      loadCleanFanList();
+    } else {
+      console.log("first")
+      setExcelFile(excelFile);
+      loadCleanFanList();
+    }
+  }, [excelFile]);
+
   return (
     <>
       <div
@@ -68,18 +99,17 @@ const ExcelBox = () => {
           </div>
         ) : (
           <>
-            <button className={`text-5xl mb-4 group-hover:text-[#ff4f5d] transition duration-100 ${selectedFile ? 'text-[#ff4f5d]' : 'text-gray-300'}`}>
-              {!selectedFile || selectedFile === null ? <FaFileExcel /> : <FaRegCircleCheck />}
+            <button className={`text-5xl mb-4 group-hover:text-[#ff4f5d] transition duration-100 ${excelFile ? 'text-[#ff4f5d]' : 'text-gray-300'}`}>
+              {!excelFile || excelFile === null ? <FaFileExcel /> : <FaRegCircleCheck />}
             </button>
             <span className="text-lg">
-              {selectedFile ? `${truncateFileName(selectedFile.name)} ${formatFileSize(selectedFile.size)}` : '클릭하거나 엑셀 파일을 드래그하여 첨부 하세요.'}
+              {excelFile ? `${truncateFileName(excelFile.name)} ${formatFileSize(excelFile.size)}` : '클릭하거나 엑셀 파일을 드래그하여 첨부 하세요.'}
             </span>
           </>
         )}
       </div>
       <div className="flex gap-3 justify-center mb-14">
-        <button onClick={FileUploadHandler} className="bg-[#ff4f5d] text-white w-72 py-3 rounded-xl mb-6">블랙리스트 체크</button>
-        <button onClick={clearFileHandler} className="text-[#ff4f5d] bg-white w-72 py-3 border border-[#ff4f5d] rounded-xl mb-6">초기화</button>
+        <button onClick={clearFileHandler} className={`text-[#ff4f5d] bg-white w-72 py-3 border border-[#ff4f5d] rounded-xl mb-6 ${excelFile ? '' : 'hidden'}`}>초기화</button>
       </div>
       <input
         onChange={fileChangeHandler}
