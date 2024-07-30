@@ -1,5 +1,5 @@
 import { useState } from "react";
-import checkNotBlackedFan from "../../../../apis/meeting/checkNotBlackedFan";
+import checkNotBlackedFan from "../../../../apis/meeting/CheckNotBlackedFan";
 import { useUserStore } from "../../../../zustand/useUserStore";
 import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
 
