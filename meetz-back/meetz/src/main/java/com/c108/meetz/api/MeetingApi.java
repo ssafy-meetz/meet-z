@@ -62,14 +62,14 @@ public class MeetingApi {
     }
 
     @GetMapping("/completed")
-    public ApiResponse<CompletedMeetingListResponseDto> getCompletedMeetings() {
-        CompletedMeetingListResponseDto response = meetingService.getCompletedMeetings();
+    public ApiResponse<MeetingListResponseDto> getCompletedMeetings() {
+        MeetingListResponseDto response = meetingService.getMeetingList(true);
         return ApiResponse.success(OK, response);
     }
 
     @GetMapping("/incomplete")
-    public ApiResponse<IncompleteMeetingListResponseDto> getIncompleteMeetings() {
-        IncompleteMeetingListResponseDto response = meetingService.getIncompleteMeetings();
+    public ApiResponse<MeetingListResponseDto> getIncompleteMeetings() {
+        MeetingListResponseDto response = meetingService.getMeetingList(false);
         return ApiResponse.success(OK, response);
     }
 
