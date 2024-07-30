@@ -18,7 +18,7 @@ import useMeetingSettingStore from '../../../zustand/useMeetingSettingStore';
 const CreateMeeting: React.FC = () => {
   // useCheckAuth('MANAGER');
 
-  const { isOpenModal, setIsOpenModal } = useMeetingSettingStore();
+  const { isOpenModal, notBlackCnt } = useMeetingSettingStore();
 
   return (
     <div className='flex flex-col items-center'>
@@ -32,7 +32,7 @@ const CreateMeeting: React.FC = () => {
             <SetMeetingNameBox />
             <SetMeetingStarBox />
             <SetMeetingFansBox />
-            <SetMeetingFanCountBox />
+            <SetMeetingFanCountBox notBlackCnt={notBlackCnt} />
           </div>
           <div>
             <SetTimeHeader />
@@ -44,11 +44,11 @@ const CreateMeeting: React.FC = () => {
         </main>
         <div className='flex justify-center items-center gap-4 py-20'>
           <button
-            className='font-thin text-white bg-[#ff4f5d] rounded-lg px-16 py-3'>
+            className='font-semibold text-white bg-[#ff4f5d] rounded-lg px-16 py-3'>
             저장
           </button>
           <button
-            className='font-thin text-[#ff4f5d] border border-[#ff4f5d] rounded-lg px-16 py-3'>
+            className='font-semibold text-[#ff4f5d] border border-[#ff4f5d] rounded-lg px-16 py-3'>
             취소
           </button>
         </div>

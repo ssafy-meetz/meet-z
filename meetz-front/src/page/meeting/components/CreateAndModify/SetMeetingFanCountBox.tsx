@@ -1,4 +1,4 @@
-const SetMeetingFanCountBox = () => {
+const SetMeetingFanCountBox = ({ notBlackCnt }: { notBlackCnt: number }) => {
   return (
     <div className='flex gap-14 py-5 border-b items-center'>
       <div className='w-40'>
@@ -7,7 +7,7 @@ const SetMeetingFanCountBox = () => {
         </span>
       </div>
       <div>
-        <span className='text-xl'>50</span>
+        <span className='text-xl'>{notBlackCnt}</span>
       </div>
     </div>
   )
