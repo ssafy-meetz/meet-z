@@ -81,7 +81,6 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
     if (!notBlackList || notBlackList === null || !blackList || blackList === null) {
       loadCleanFanList();
     } else {
-      console.log("first")
       setExcelFile(excelFile);
       loadCleanFanList();
     }

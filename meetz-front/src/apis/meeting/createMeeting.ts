@@ -9,7 +9,6 @@ interface CreateMeetingDTO {
   fanList: Object;
 }
 
-
 const postMeetingToCreate = async ({ meetingName, meetingStart, meetingDuration, term, starList, fanList }: CreateMeetingDTO, accessToken: string) => {
   try {
     const { data } = await instance.post('/api/meeting', {
@@ -20,7 +19,7 @@ const postMeetingToCreate = async ({ meetingName, meetingStart, meetingDuration,
       }
     })
 
-    if (data.status === 200) {
+    if (data.code === 200) {
       return data.data // 받아서 쓸 땐 {meetingId} = post... 이런식으로 쓰면 될듯
     }
   } catch (error: any) {

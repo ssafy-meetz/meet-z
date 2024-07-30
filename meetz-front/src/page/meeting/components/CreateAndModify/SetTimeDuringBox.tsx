@@ -5,6 +5,7 @@ import { durationOptions, customStyles } from './TimeOptions';
 
 const SetTimeDuringBox = () => {
   const { selectedDuration, setSelectedDuration } = useMeetingTimeStore();
+
   return (
     <div className='flex gap-14 py-5 border-b items-center'>
       <div className='w-40'>
