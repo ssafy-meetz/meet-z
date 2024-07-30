@@ -15,6 +15,7 @@ import useMeetingSettingStore from '../../../zustand/useMeetingSettingStore';
 import useMeetingTimeStore from '../../../zustand/useMeetingTimeStore';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../../zustand/useUserStore';
+import postMeetingToCreate from '../../../apis/meeting/createMeeting';
 // import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
 
 
@@ -22,7 +23,7 @@ const CreateMeeting: React.FC = () => {
 
   // useCheckAuth('MANAGER');
   const navigate = useNavigate();
-  const { isOpenModal, notBlackCnt } = useMeetingSettingStore();
+  const { isOpenModal, meetingName, stars, notBlackList } = useMeetingSettingStore();
   const { selectedDate, selectedDuration, selectedTime, selectedBreak } = useMeetingTimeStore();
   const { accessToken } = useUserStore();
 
@@ -48,9 +49,32 @@ const CreateMeeting: React.FC = () => {
     console.log(selectedTime && convertTo24H(selectedTime.value))
     console.log(selectedDuration?.value)
     console.log(selectedBreak && convertToSeconds(selectedBreak?.value))
-    // try {
-    //   await postMeetingToCreate(, accessToken);
-    // }
+    const meetingStart = `${selectedDate && selectedDate.toISOString().split('T')[0]} ${(selectedTime && convertTo24H(selectedTime.value))}`
+    const starList = stars.map(star => {
+      return { name: star };
+    })
+
+    const requestData = {
+      meetingName,
+      meetingStart,
+      meetingDuration: selectedDuration ? parseInt(selectedDuration.value) : 0,
+      term: selectedBreak ? parseInt(selectedBreak.value) : 0,
+      starList,
+      fanList: notBlackList,
+    }
+    try {
+      const { data, code } = await postMeetingToCreate(requestData, accessToken);
+      if (code === 200) {
+        const { meetingId } = data;
+        navigate(`/meeting/detail/${meetingId}`)
+      }
+    } catch (error: any) {
+      if (error.response && error.response.data.message) {
+        const eMsg = error.response.data.message;
+        alert(eMsg);
+        return;
+      }
+    }
 
   }
 
@@ -70,7 +94,7 @@ const CreateMeeting: React.FC = () => {
             <SetMeetingNameBox />
             <SetMeetingStarBox />
             <SetMeetingFansBox />
-            <SetMeetingFanCountBox notBlackCnt={notBlackCnt} />
+            <SetMeetingFanCountBox />
           </div>
           <div>
             <SetTimeHeader />
