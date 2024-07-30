@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { FanDto } from '../types/types';
 
-interface MeetingSeetingState {
+interface MeetingSettingState {
     meetingName: string;
     stars: string[];
     newStar: string;
@@ -12,6 +12,7 @@ interface MeetingSeetingState {
     notBlackList: FanDto[];
     notBlackCnt: number;
     excelFile: File | null;
+    tempNotBlackList: FanDto[];
     setMeetingName: (meetingName: string) => void;
     setStars: (stars: string[]) => void;
     setNewStar: (newStar: string) => void;
@@ -22,9 +23,12 @@ interface MeetingSeetingState {
     setNotBlackList: (notBlackList: FanDto[]) => void;
     setNotBlackCnt: (notBlackCnt: number) => void;
     setExcelFile: (excelFile: File | null) => void;
+    setTempNotBlackList: (tempNotBlackList: FanDto[]) => void;
+    resetTempNotBlackList: () => void;
+    saveNotBlackList: () => void;
 }
 
-const useMeetingSettingStore = create<MeetingSeetingState>((set) => ({
+const useMeetingSettingStore = create<MeetingSettingState>((set) => ({
     meetingName: '',
     stars: [],
     newStar: '',
@@ -35,6 +39,7 @@ const useMeetingSettingStore = create<MeetingSeetingState>((set) => ({
     notBlackList: [],
     notBlackCnt: 0,
     excelFile: null,
+    tempNotBlackList: [],
     setMeetingName: (meetingName) => set({ meetingName }),
     setStars: (stars) => set({ stars }),
     setNewStar: (newStar) => set({ newStar }),
@@ -44,7 +49,10 @@ const useMeetingSettingStore = create<MeetingSeetingState>((set) => ({
     setBlackList: (blackList) => set({ blackList }),
     setNotBlackList: (notBlackList) => set({ notBlackList }),
     setNotBlackCnt: (notBlackCnt) => set({ notBlackCnt }),
-    setExcelFile: (excelFile) => set({ excelFile })
+    setExcelFile: (excelFile) => set({ excelFile }),
+    setTempNotBlackList: (tempNotBlackList) => set({ tempNotBlackList }),
+    resetTempNotBlackList: () => set({ tempNotBlackList: [] }),
+    saveNotBlackList: () => set((state) => ({ notBlackList: state.tempNotBlackList })),
 }));
 
 export default useMeetingSettingStore;

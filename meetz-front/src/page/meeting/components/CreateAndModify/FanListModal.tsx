@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { IoMdClose } from "react-icons/io";
 import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
 import ExcelBox from "./ExcelBox";
@@ -6,7 +6,7 @@ import CleanFanList from "./CleanFanList";
 import AddFanInputBox from "./AddFanInputBox";
 
 const FanListModal = () => {
-  const { setIsOpenModal, setNotBlackList } = useMeetingSettingStore();
+  const { setExcelFile, setIsOpenModal, resetTempNotBlackList, saveNotBlackList, tempNotBlackList, notBlackList } = useMeetingSettingStore();
   const modalRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToBottom = () => {
@@ -18,10 +18,18 @@ const FanListModal = () => {
     }
   };
 
+  const saveHandler = () => {
+    saveNotBlackList();
+    setIsOpenModal();
+  };
+
   const closeHandler = () => {
     setIsOpenModal();
-    setNotBlackList([]);
-  }
+    resetTempNotBlackList();
+    if (notBlackList.length === 0 || !notBlackList) {
+      setExcelFile(null);
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -36,16 +44,16 @@ const FanListModal = () => {
         </div>
         <ExcelBox scrollToBottom={scrollToBottom} />
         <AddFanInputBox />
-        <CleanFanList />
+        <CleanFanList fanList={tempNotBlackList.length !== notBlackList.length ? tempNotBlackList : notBlackList} />
         <div className="flex justify-center mt-8 gap-4">
-          <button onClick={setIsOpenModal} className="font-semibold text-white bg-[#ff4f5d] rounded-lg px-14 py-3">저장</button>
+          <button onClick={saveHandler} className="font-semibold text-white bg-[#ff4f5d] rounded-lg px-14 py-3">저장</button>
           <button
             onClick={closeHandler}
             className="font-semibold text-[#ff4f5d] border border-[#ff4f5d] rounded-lg px-14 py-3">취소</button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default FanListModal
+export default FanListModal;
