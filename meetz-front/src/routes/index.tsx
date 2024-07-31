@@ -9,9 +9,8 @@ import DetailPage from '../page/meeting/page/DetailPage';
 import MonitorPage from '../page/meeting/page/MonitorPage';
 import CreatePage from '../page/meeting/page/CreatePage';
 import ModifyPage from '../page/meeting/page/ModifyPage';
-import SessionPage from "../page/session/SessionPage";
-import { Ignore } from 'glob';
- 
+import SessionPage from '../page/session/SessionPage';
+
 const Router: React.FC = () => {
   return (
     <BrowserRouter>
@@ -29,7 +28,7 @@ const Router: React.FC = () => {
           <Route path='end' element={<EndMeetingPage />} />
           <Route path='monitor/:id' element={<MonitorPage />} />
         </Route>
-        <Route path='session' element={<SessionPage/>} />
+        <Route path ='session' element={<SessionPage />}/>
       </Routes>
     </BrowserRouter>
   );
