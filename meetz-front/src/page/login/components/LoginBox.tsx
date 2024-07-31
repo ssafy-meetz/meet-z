@@ -8,11 +8,9 @@ import { useUserStore } from '../../../zustand/useUserStore';
 
 const LoginBox = () => {
   const navigate = useNavigate();
-
   const [isManager, setIsManager] = useState(false);
   const { email, isValidEmail, handleEmailChange } = useEmailValidation();
-  const { password, isValidPassword, handlePasswordChange } =
-    usePasswordValidation();
+  const { password, isValidPassword, handlePasswordChange } = usePasswordValidation();
   const { setUserData } = useUserStore();
 
   const onChangeRadioBtn = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,6 +49,8 @@ const LoginBox = () => {
 
       //스타 또는 팬이라면 미팅 페이지로 이동
       navigate('');
+      alert('어디로 보낼까')
+
     } catch (error: any) {
       if (error.message === '존재하지 않는 회원입니다.') {
         alert('존재하지 않는 회원입니다.');
