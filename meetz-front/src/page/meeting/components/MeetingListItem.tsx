@@ -19,12 +19,12 @@ const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
           {meeting.meetingName}
         </div>
         <div className='text-[20px] font-medium text-[#7d7d7d] cursor-default'>
-          14:00 ~
+          {`${meeting.meetingStart.split(" ")[1]} ~${meeting.meetingEnd.split(" ")[0].split("-")[0] === '0001' ? '' : meeting.meetingEnd.split(" ")[1]}`}
         </div>
       </div>
       <div className='text-right'>
         <div className='text-[20px] text-[#7d7d7d] cursor-default'>
-          {meeting.meetingEnd === "" ? `참여인원 : ${meeting.cnt}명` : `참여인원 : ${meeting.cnt}명 예정`}
+          {meeting.meetingEnd.split(" ")[0].split("-")[0] !== '0001' ? `참여인원 : ${meeting.cnt}명` : `참여인원 : ${meeting.cnt}명 예정`}
         </div>
         <button
           onClick={() => clickRouter('modify')}
