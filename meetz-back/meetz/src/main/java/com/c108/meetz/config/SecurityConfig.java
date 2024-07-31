@@ -77,10 +77,12 @@ public class SecurityConfig {
                     }
                 }));
 
-        //csrf disable
+//        //csrf disable
         http
                 .csrf((auth) -> auth.disable());
-
+        //sse enable
+//        http
+//                .csrf((auth) -> auth.ignoringRequestMatchers("api/sessions/emitter"));
         //Form 로그인 방식 disable
         http
                 .formLogin((auth) -> auth.disable());
@@ -97,6 +99,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/manager/authemail", "/api/manager/checkemail").permitAll()
                         .requestMatchers("/api/manager/checkauth", "/api/manager/test").permitAll()
                         .requestMatchers("/api/sessions/**").permitAll()
+                        .requestMatchers("/api/sse/**", "/api/sse/broadcast").permitAll()
                         .anyRequest().authenticated());
         // 예외 처리 설정
         http.exceptionHandling(exceptionHandling -> exceptionHandling
