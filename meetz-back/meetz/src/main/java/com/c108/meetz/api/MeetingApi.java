@@ -37,8 +37,8 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
 
-    @PostMapping("/file")
-    public ApiResponse<ExcelResponseDto> readExcelFile(@RequestParam("file") MultipartFile file){
+    @PostMapping(value = "/file", consumes = "multipart/form-data")
+    public ApiResponse<ExcelResponseDto> readExcelFile(@RequestPart("file") MultipartFile file){
         ExcelResponseDto response = meetingService.readExcelFile(file);
         return ApiResponse.success(OK, response);
     }
@@ -62,14 +62,14 @@ public class MeetingApi {
     }
 
     @GetMapping("/completed")
-    public ApiResponse<CompletedMeetingListResponseDto> getCompletedMeetings() {
-        CompletedMeetingListResponseDto response = meetingService.getCompletedMeetings();
+    public ApiResponse<MeetingListResponseDto> getCompletedMeetings() {
+        MeetingListResponseDto response = meetingService.getMeetingList(true);
         return ApiResponse.success(OK, response);
     }
 
     @GetMapping("/incomplete")
-    public ApiResponse<IncompleteMeetingListResponseDto> getIncompleteMeetings() {
-        IncompleteMeetingListResponseDto response = meetingService.getIncompleteMeetings();
+    public ApiResponse<MeetingListResponseDto> getIncompleteMeetings() {
+        MeetingListResponseDto response = meetingService.getMeetingList(false);
         return ApiResponse.success(OK, response);
     }
 
@@ -89,5 +89,11 @@ public class MeetingApi {
     public ApiResponse<MeetingSaveResponseDto> updateMeeting(@PathVariable int meetingId, @RequestBody MeetingSaveRequestDto meetingSaveRequestDto) {
         MeetingSaveResponseDto response = meetingService.updateMeeting(meetingId, meetingSaveRequestDto);
         return ApiResponse.success(OK, response);
+    }
+
+    @DeleteMapping("/{meetingId}")
+    public ApiResponse<Void> deleteMeeting(@PathVariable int meetingId) {
+        meetingService.deleteMeeting(meetingId);
+        return ApiResponse.success(OK);
     }
 }

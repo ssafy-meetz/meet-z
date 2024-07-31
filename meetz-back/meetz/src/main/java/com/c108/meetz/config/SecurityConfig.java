@@ -98,8 +98,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/refresh").permitAll()
                         .requestMatchers("/api/manager/authemail", "/api/manager/checkemail").permitAll()
                         .requestMatchers("/api/manager/checkauth", "/api/manager/test").permitAll()
-                        .requestMatchers("/api/sessions/**").permitAll()
-                        .requestMatchers("/api/sse/**", "/api/sse/broadcast").permitAll()
+                        .requestMatchers("/api/sessions", "/api/sessions/{sessionId}/connections").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated());
         // 예외 처리 설정
         http.exceptionHandling(exceptionHandling -> exceptionHandling
