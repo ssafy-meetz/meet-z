@@ -77,10 +77,12 @@ public class SecurityConfig {
                     }
                 }));
 
-        //csrf disable
+//        //csrf disable
         http
                 .csrf((auth) -> auth.disable());
-
+        //sse enable
+//        http
+//                .csrf((auth) -> auth.ignoringRequestMatchers("api/sessions/emitter"));
         //Form 로그인 방식 disable
         http
                 .formLogin((auth) -> auth.disable());
