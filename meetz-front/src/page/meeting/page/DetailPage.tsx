@@ -1,6 +1,5 @@
 import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
-import { useMonitorStore } from '../../../zustand/useMonitorStore';
-import SendEmailModal from '../components/CreateAndModify/SendEmailModal';
+import SendEmailModal from '../components/Detail/SendEmailModal';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import getMeetingDetail from '../../../apis/meeting/getMeetingDetail';
 import { useUserStore } from '../../../zustand/useUserStore';
@@ -9,10 +8,13 @@ import { MeetingDetailDto } from '../../../types/types';
 import DetailHeader from '../components/Detail/DetailHeader';
 import DetailRoomList from '../components/Detail/DetailRoomList';
 import CleanFanList from '../components/CreateAndModify/CleanFanList';
+import LoadEmailModal from '../components/Detail/LoadEmailModal';
+import CompleteEmailModal from '../components/Detail/CompleteEmailModal';
+import { useDetailstore } from '../../../zustand/useDetailStore';
 const DetailPage = () => {
-  // useCheckAuth('MANAGER');
+  useCheckAuth('MANAGER');
   const { id } = useParams();
-  const { sendModalOpend, openMailModal } = useMonitorStore();
+  const { sendModalOpend, modalStep, openMailModal, setModalStep } = useDetailstore();
   const { accessToken } = useUserStore();
   const [meetingData, setMeetingData] = useState<MeetingDetailDto>();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -21,7 +23,6 @@ const DetailPage = () => {
     if (ref.current) {
       ref.current.scrollTo({
         top: 0,
-        behavior: 'smooth'
       });
     }
   };
@@ -71,7 +72,9 @@ const DetailPage = () => {
           <CleanFanList fanList={meetingData?.fanList} />
         </div>
       </main>
-      {sendModalOpend && <SendEmailModal />}
+      {sendModalOpend && modalStep === 0 && <SendEmailModal meetingId={meetingData?.meetingId} />}
+      {sendModalOpend && modalStep === 1 && <LoadEmailModal />}
+      {sendModalOpend && modalStep === 2 && <CompleteEmailModal />}
     </div>
   );
 };

@@ -1,7 +1,12 @@
-import { useMonitorStore } from '../../../../zustand/useMonitorStore';
+import { useDetailstore } from '../../../../zustand/useDetailStore';
 
 const CompleteEmailModal = () => {
-  const { closeMailModal } = useMonitorStore();
+  const { closeMailModal, setModalStep } = useDetailstore();
+
+  const closeHandler = () => {
+    closeMailModal();
+    setModalStep(0);
+  }
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
@@ -22,7 +27,7 @@ const CompleteEmailModal = () => {
           </div>
           <div className='flex justify-center mt-7'>
             <button
-              onClick={closeMailModal}
+              onClick={closeHandler}
               className='text-xl text-white bg-[#ff4f5d] border px-5 py-1 border-[#FF4F5D] rounded-lg '
             >
               닫기

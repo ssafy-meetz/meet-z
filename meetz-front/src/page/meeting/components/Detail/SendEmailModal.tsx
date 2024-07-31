@@ -1,11 +1,33 @@
 import Alert from '/src/assets/images/alert.png';
-import { useMonitorStore } from '../../../../zustand/useMonitorStore';
+import { useDetailstore } from '../../../../zustand/useDetailStore';
+import sendEmailToFans from '../../../../apis/meeting/sendEmailToFans';
+import { useUserStore } from '../../../../zustand/useUserStore';
 
-const SendEmailModal = () => {
-  const { closeMailModal } = useMonitorStore();
+const SendEmailModal = ({ meetingId }: { meetingId: number | undefined }) => {
+  const { closeMailModal, setModalStep } = useDetailstore();
+  const { accessToken } = useUserStore();
+
+  const getSendEmailToFans = async () => {
+    setModalStep(1);
+    try {
+      if (!meetingId) {
+        return;
+      }
+      const result = await sendEmailToFans(meetingId, accessToken);
+
+      if (result) {
+        setModalStep(2);
+      }
+    } catch (error) {
+      setModalStep(0);
+      closeMailModal();
+      alert("메일 전송에 실패했습니다.");
+    }
+  }
+
 
   const continueBtnHandler = () => {
-    alert('진행');
+    getSendEmailToFans();
   };
 
   return (
