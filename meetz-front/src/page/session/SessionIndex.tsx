@@ -1,16 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './SessionPage';
-import * as serviceWorkerRegistration from './component/serviceWorkerRegistration';
-import reportWebVitals from './component/reportWebVitals';
+import SessionPage from './SessionPage';
+import * as serviceWorkerRegistration from './components/serviceWorkerRegistration';
+import reportWebVitals from './components/reportWebVitals';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <SessionPage />
   </React.StrictMode>
 );
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Publisher, Subscriber } from 'openvidu-browser';
-import Video from './Video';
+import Video from '../../page/session/components/Video';
 
 interface SessionProps {
 	subscriber: Subscriber;
