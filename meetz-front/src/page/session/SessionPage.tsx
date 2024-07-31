@@ -1,22 +1,18 @@
-import Form from '../../hooks/session/Form';
-import Session from '../../hooks/session/Session';
+
+import Session from './components/Session';
 import { Session as OVSession, Subscriber, Publisher } from 'openvidu-browser';
 import { useOpenvidu } from '../../hooks/session/useOpenvidu';
+import { useEffect } from 'react';
 
 function FanMeeting() {
-  const { session, sessionId, publisher, subscriber, joinSession, sessionIdChangeHandler } = useOpenvidu();
-
+  const { session, sessionId, publisher, subscriber, joinSession} = useOpenvidu();
+  useEffect(() => {
+	joinSession();
+  }, []);
   return (
 	<div>
-		<h1>진행화면</h1>
+		<h1></h1>
 		<>
-			{!session && (
-				<Form
-					joinSession={joinSession}
-					sessionId={sessionId}
-					sessionIdChangeHandler={sessionIdChangeHandler}
-				/>
-			)}
 			{session && (
 				<Session
 					publisher={publisher as Publisher}
