@@ -2,12 +2,12 @@ package com.c108.meetz.api;
 
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 //@CrossOrigin(origins = "*")
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/sessions")
 public class OpenviduApi {
@@ -28,8 +29,6 @@ public class OpenviduApi {
     private OpenVidu openvidu;
 
     private Map<String, List<Session>> meetingrooms = new ConcurrentHashMap<>();
-
-
 
     @PostConstruct
     public void init() {
@@ -50,7 +49,7 @@ public class OpenviduApi {
         //방관리를 위해 넣어준거
         if (session != null) { //세션 생성 됐으면
             String str = session.getSessionId();
-            String roomPoint = str.split("LcodeL")[0]; //방 이름별로 분리하자.
+            String roomPoint = str.split("0seper0")[0]; //방 이름별로 분리하자.
             if (!meetingrooms.containsKey(roomPoint)) { //미팅룸이 없으면 List 등록
                 meetingrooms.put(roomPoint, new ArrayList<>());
                 meetingrooms.get(roomPoint).add(session);
@@ -105,9 +104,8 @@ public class OpenviduApi {
                 sb.append("------------").append("\n");
             }
         }
-
-
         return new ResponseEntity<>(sb.toString(), HttpStatus.OK);
     }
+
 
 }
