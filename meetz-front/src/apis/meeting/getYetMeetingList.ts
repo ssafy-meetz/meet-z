@@ -2,7 +2,7 @@ import instance from "../axios"
 
 const getYetMeetingList = async (accessToken: string) => {
   try {
-    const { data, status } = await instance.get('/api/meeting/incompleted', {
+    const { data, status } = await instance.get('/api/meeting/incomplete', {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }
