@@ -14,7 +14,7 @@ public class StarListResponseDto {
         this.starList = starList;
     }
 
-    public static StarListResponseDto of(List<StarList> starList){
+    public static StarListResponseDto from(List<StarList> starList){
         return new StarListResponseDto(starList);
     }
 
@@ -27,7 +27,7 @@ public class StarListResponseDto {
         private String email;
         private String password;
 
-        public static StarList of(User user){
+        public static StarList from(User user){
             StarList starList = new StarList();
             starList.name = user.getName();
             starList.email = user.getEmail();

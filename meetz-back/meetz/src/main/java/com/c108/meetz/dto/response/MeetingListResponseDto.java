@@ -18,7 +18,7 @@ public class MeetingListResponseDto {
         this.month = month;
     }
 
-    public static MeetingListResponseDto of(Map<String, List<MeetingList>> month){
+    public static MeetingListResponseDto from(Map<String, List<MeetingList>> month){
         return new MeetingListResponseDto(month);
     }
 
