@@ -99,6 +99,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/manager/authemail", "/api/manager/checkemail").permitAll()
                         .requestMatchers("/api/manager/checkauth", "/api/manager/test").permitAll()
                         .requestMatchers("/api/sessions", "/api/sessions/{sessionId}/connections").permitAll()
+                        .requestMatchers("/api/sse/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated());
         // 예외 처리 설정
