@@ -3,9 +3,7 @@ package com.c108.meetz.api;
 import com.c108.meetz.dto.ApiResponse;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
-import com.c108.meetz.dto.response.ExcelResponseDto;
-import com.c108.meetz.dto.response.MeetingDetailResponseDto;
-import com.c108.meetz.dto.response.MeetingSaveResponseDto;
+import com.c108.meetz.dto.response.*;
 import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.service.MailService;
 import com.c108.meetz.service.MeetingService;
@@ -15,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -37,8 +37,8 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
 
-    @PostMapping("/file")
-    public ApiResponse<ExcelResponseDto> readExcelFile(@RequestParam("file") MultipartFile file){
+    @PostMapping(value = "/file", consumes = "multipart/form-data")
+    public ApiResponse<ExcelResponseDto> readExcelFile(@RequestPart("file") MultipartFile file){
         ExcelResponseDto response = meetingService.readExcelFile(file);
         return ApiResponse.success(OK, response);
     }
@@ -61,9 +61,39 @@ public class MeetingApi {
         return ApiResponse.success(OK);
     }
 
+    @GetMapping("/completed")
+    public ApiResponse<MeetingListResponseDto> getCompletedMeetings() {
+        MeetingListResponseDto response = meetingService.getMeetingList(true);
+        return ApiResponse.success(OK, response);
+    }
+
+    @GetMapping("/incomplete")
+    public ApiResponse<MeetingListResponseDto> getIncompleteMeetings() {
+        MeetingListResponseDto response = meetingService.getMeetingList(false);
+        return ApiResponse.success(OK, response);
+    }
+
+    @GetMapping("/{meetingId}/star")
+    public ApiResponse<StarListResponseDto> getStarList(@PathVariable int meetingId) {
+        StarListResponseDto response = meetingService.getStarList(meetingId);
+        return ApiResponse.success(OK, response);
+    }
+
+    @GetMapping("/{meetingId}/fan")
+    public ApiResponse<FanListResponseDto> getFanList(@PathVariable int meetingId) {
+        FanListResponseDto response = meetingService.getFanList(meetingId);
+        return ApiResponse.success(OK, response);
+    }
+
     @PutMapping("/{meetingId}")
     public ApiResponse<MeetingSaveResponseDto> updateMeeting(@PathVariable int meetingId, @RequestBody MeetingSaveRequestDto meetingSaveRequestDto) {
         MeetingSaveResponseDto response = meetingService.updateMeeting(meetingId, meetingSaveRequestDto);
         return ApiResponse.success(OK, response);
+    }
+
+    @DeleteMapping("/{meetingId}")
+    public ApiResponse<Void> deleteMeeting(@PathVariable int meetingId) {
+        meetingService.deleteMeeting(meetingId);
+        return ApiResponse.success(OK);
     }
 }

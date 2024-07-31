@@ -1,14 +1,18 @@
+import { FanDto } from "../../types/types";
 import instance from "../axios"
+
+type starNameDto = {
+  name: string;
+}
 
 interface CreateMeetingDTO {
   meetingName: string;
   meetingStart: string;
   meetingDuration: number;
   term: number;
-  starList: Object;
-  fanList: Object;
+  starList: starNameDto[];
+  fanList: FanDto[];
 }
-
 
 const postMeetingToCreate = async ({ meetingName, meetingStart, meetingDuration, term, starList, fanList }: CreateMeetingDTO, accessToken: string) => {
   try {
@@ -20,8 +24,8 @@ const postMeetingToCreate = async ({ meetingName, meetingStart, meetingDuration,
       }
     })
 
-    if (data.status === 200) {
-      return data.data // 받아서 쓸 땐 {meetingId} = post... 이런식으로 쓰면 될듯
+    if (data.code === 200) {
+      return data // 받아서 쓸 땐 {meetingId} = post... 이런식으로 쓰면 될듯
     }
   } catch (error: any) {
     if (error.response) {
@@ -41,3 +45,5 @@ const postMeetingToCreate = async ({ meetingName, meetingStart, meetingDuration,
     }
   }
 }
+
+export default postMeetingToCreate;

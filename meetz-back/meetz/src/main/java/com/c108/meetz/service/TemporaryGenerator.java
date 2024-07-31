@@ -10,9 +10,9 @@ public class TemporaryGenerator {
     private static final int PASSWORD_LENGTH = 12;
 
     public static String generateTemporaryPassword() {
-        byte[] bytes = new byte[PASSWORD_LENGTH];
+        byte[] bytes = new byte[PASSWORD_LENGTH-1];
         random.nextBytes(bytes);
-        String encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes).substring(0, PASSWORD_LENGTH);
+        String encoded = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes).substring(0, PASSWORD_LENGTH-1) + "!";
         if (encoded.length() > PASSWORD_LENGTH) {
             return encoded.substring(0, PASSWORD_LENGTH);
         } else {

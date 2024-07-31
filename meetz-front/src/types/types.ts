@@ -15,3 +15,17 @@ export type SignupResDto = {
     status: string;
     message: string;
 }
+
+export type MeetingDto = {
+    meetingId: number;
+    meetingName: string;
+    meetingStart: string;
+    meetingEnd: string;
+    cnt: number;
+}
+
+export type FanDto = {
+    name: string;
+    email: string;
+    phone: string;
+}
