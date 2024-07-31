@@ -17,7 +17,7 @@ export default {
           '100%': { width: '100%', left: '0' },
         },
       },
-      
+
       animation: {
         slideIn: 'slideIn 0.5s forwards',
       },
