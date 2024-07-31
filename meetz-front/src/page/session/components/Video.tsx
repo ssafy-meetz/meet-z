@@ -16,7 +16,7 @@ function Video({ streamManager }: Props) {
 	}, [streamManager]);
 
 	return (
-		<video autoPlay={autoplay} ref={videoRef} style={{ width: '100%' }}>
+		<video autoPlay={autoplay} ref={videoRef} style={{ width: '30%' }}>
 			<track kind="captions" />
 		</video>
 	);
