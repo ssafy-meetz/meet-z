@@ -26,6 +26,7 @@ interface MeetingSettingState {
     setTempNotBlackList: (tempNotBlackList: FanDto[]) => void;
     resetTempNotBlackList: () => void;
     saveNotBlackList: () => void;
+    resetStore: () => void;
 }
 
 const useMeetingSettingStore = create<MeetingSettingState>((set) => ({
@@ -53,6 +54,19 @@ const useMeetingSettingStore = create<MeetingSettingState>((set) => ({
     setTempNotBlackList: (tempNotBlackList) => set({ tempNotBlackList }),
     resetTempNotBlackList: () => set({ tempNotBlackList: [] }),
     saveNotBlackList: () => set((state) => ({ notBlackList: state.tempNotBlackList })),
+    resetStore: () => set({
+        meetingName: '',
+        stars: [],
+        newStar: '',
+        inputValue: '',
+        inputWidth: 70,
+        isOpenModal: false,
+        blackList: [],
+        notBlackList: [],
+        notBlackCnt: 0,
+        excelFile: null,
+        tempNotBlackList: [],
+    }),
 }));
 
 export default useMeetingSettingStore;
