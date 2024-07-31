@@ -24,7 +24,32 @@ export type MeetingDto = {
     cnt: number;
 }
 
+export type MeetingDetailDto = {
+    meetingId: number;
+    meetingName: string;
+    meetingStart: string;
+    meetingEnd: string;
+    meetingDuration: number;
+    term: string;
+    starList: StarDto[];
+    fanList: DetailFanDto[];
+    cnt: number;
+}
+
+export type StarDto = {
+    name: string;
+    email: string;
+    password: string;
+}
+
 export type FanDto = {
+    name: string;
+    email: string;
+    phone: string;
+}
+
+export type DetailFanDto = {
+    userId: number | undefined;
     name: string;
     email: string;
     phone: string;
