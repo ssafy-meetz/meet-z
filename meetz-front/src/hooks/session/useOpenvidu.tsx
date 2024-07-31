@@ -20,7 +20,11 @@ export const useOpenvidu = () => {
     }, [session]);
 
     const joinSession = () => {
+        
+        console.log(sessionId)
+        if(sessionId!='')return;
         const OVs = new OpenVidu();
+        sessionIdChangeHandler();
         setOV(OVs);
         setSession(OVs.initSession());
     };
@@ -34,9 +38,9 @@ export const useOpenvidu = () => {
     }, [leaveSession]);
 
     const sessionIdChangeHandler = (
-        event: React.ChangeEvent<HTMLInputElement>,
+        // event: React.ChangeEvent<HTMLInputElement>,
     ) => {
-        setSessionId(event.target.value);
+        setSessionId('meetz');
     };
 
     useEffect(() => {
@@ -99,7 +103,7 @@ export const useOpenvidu = () => {
         subscriber,
         joinSession,
         setSessionId,
-        sessionIdChangeHandler
+        leaveSession
       };
 
 }
