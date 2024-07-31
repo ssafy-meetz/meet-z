@@ -6,7 +6,7 @@ const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
   const { pathname } = useLocation();
 
   const clickRouter = (to: string) => {
-    let path = '/meeting/' + to + '/3';
+    let path = '/meeting/' + to + `/${meeting.meetingId}`;
     navigate(path);
   }
 

@@ -1,23 +1,22 @@
 import instance from "../axios"
 
-
-const getMeetingDetail = async (id: number, accessToken: string) => {
+const getMeetingDetail = async (meetingId: number, accessToken: string) => {
   try {
-    const { data, status } = await instance.get(`/api/meeting/${id}`, {
+    const { data, status } = await instance.get(`/api/meeting/${meetingId}`, {
       headers: {
         'Authorization': `Bearer ${accessToken}`
       }
     })
 
-    if (status === 200 && data.code === 200) {
-      return data.data;
+    if (status === 200) {
+      return data;
     }
   } catch (error: any) {
     if (error.response) {
       const status = error.response.status;
       switch (status) {
         case 401:
-          throw new Error("접근 권한이 없습니다.");
+          throw new Error("접근 권한이 없습니다."); 7
         case 404:
           throw new Error("Meeting not found");
         default:
@@ -28,3 +27,5 @@ const getMeetingDetail = async (id: number, accessToken: string) => {
     }
   }
 }
+
+export default getMeetingDetail;
