@@ -16,15 +16,15 @@ import useMeetingTimeStore from '../../../zustand/useMeetingTimeStore';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../../zustand/useUserStore';
 import postMeetingToCreate from '../../../apis/meeting/createMeeting';
-// import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
+import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
 
 
 const CreateMeeting: React.FC = () => {
 
-  // useCheckAuth('MANAGER');
+  useCheckAuth('MANAGER');
   const navigate = useNavigate();
-  const { isOpenModal, meetingName, stars, notBlackList } = useMeetingSettingStore();
-  const { selectedDate, selectedDuration, selectedTime, selectedBreak } = useMeetingTimeStore();
+  const { isOpenModal, meetingName, stars, notBlackList, resetStore } = useMeetingSettingStore();
+  const { selectedDate, selectedDuration, selectedTime, selectedBreak, resetTimeStore } = useMeetingTimeStore();
   const { accessToken } = useUserStore();
 
   function convertTo24H(time: string): string {
@@ -44,11 +44,6 @@ const CreateMeeting: React.FC = () => {
   }
 
   const saveHandler = async () => {
-
-    console.log(selectedDate?.toISOString().split('T')[0])
-    console.log(selectedTime && convertTo24H(selectedTime.value))
-    console.log(selectedDuration?.value)
-    console.log(selectedBreak && convertToSeconds(selectedBreak?.value))
     const meetingStart = `${selectedDate && selectedDate.toISOString().split('T')[0]} ${(selectedTime && convertTo24H(selectedTime.value))}`
     const starList = stars.map(star => {
       return { name: star };
@@ -66,6 +61,8 @@ const CreateMeeting: React.FC = () => {
       const { data, code } = await postMeetingToCreate(requestData, accessToken);
       if (code === 200) {
         const { meetingId } = data;
+        resetStore();
+        resetTimeStore();
         navigate(`/meeting/detail/${meetingId}`)
       }
     } catch (error: any) {
@@ -75,7 +72,6 @@ const CreateMeeting: React.FC = () => {
         return;
       }
     }
-
   }
 
   const cancelHandler = () => {
