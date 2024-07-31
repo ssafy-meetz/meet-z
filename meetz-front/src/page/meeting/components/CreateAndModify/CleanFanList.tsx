@@ -1,6 +1,6 @@
-import { FanDto } from "../../../../types/types";
+import { DetailFanDto, FanDto } from "../../../../types/types";
 
-const CleanFanList = ({ fanList }: { fanList: FanDto[] }) => {
+const CleanFanList = ({ fanList }: { fanList: FanDto[] | DetailFanDto[] | undefined }) => {
   const formatPhoneNumber = (phoneNumber: string) => {
     if (phoneNumber.length !== 11) {
       return phoneNumber; // 전화번호가 11자리가 아닌 경우 원본 그대로 반환
@@ -20,7 +20,7 @@ const CleanFanList = ({ fanList }: { fanList: FanDto[] }) => {
           </tr>
         </thead>
         <tbody>
-          {fanList.map((fan, index) => (
+          {fanList && fanList.map((fan, index) => (
             <tr key={fan.email}>
               <td className="p2 pl-10">{index + 1}</td>
               <td className="p2 pl-4">{fan.name}</td>
