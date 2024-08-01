@@ -65,11 +65,7 @@ const CreateMeeting: React.FC = () => {
         navigate(`/meeting/detail/${meetingId}`)
       }
     } catch (error: any) {
-      if (error.response && error.response.data.message) {
-        const eMsg = error.response.data.message;
-        alert(eMsg);
-        return;
-      }
+      alert('항목을 모두 입력하세요');
     }
   }
 
