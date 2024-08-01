@@ -5,7 +5,7 @@ import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
 
 const AddFanInputBox = () => {
   const { accessToken } = useUserStore();
-  const { tempNotBlackList, setTempNotBlackList } = useMeetingSettingStore();
+  const { tempNotBlackList, setTempNotBlackList, setBlackList, blackList } = useMeetingSettingStore();
   const [addBtnClicked, setAddBtnClicked] = useState(false);
   const [isBlacked, setIsBlacked] = useState(false);
   const [name, setName] = useState("");
@@ -21,6 +21,7 @@ const AddFanInputBox = () => {
       }
     } catch (error) {
       setIsBlacked(true);
+      setBlackList([...blackList, { name, email, phone }])
     } finally {
       setAddBtnClicked(true);
       setName("");

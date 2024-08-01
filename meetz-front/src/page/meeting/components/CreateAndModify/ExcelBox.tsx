@@ -4,12 +4,15 @@ import Loading from "../../../../common/Loading";
 import sendExcelFile from "../../../../apis/meeting/sendExcelFile";
 import { useUserStore } from "../../../../zustand/useUserStore";
 import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
+import ShowBlackList from "./ShowBlackList";
+import NoBlackList from "./NoBlackList";
 
 const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showCheckBlackList, setShowCheckBlackList] = useState(false);
   const { accessToken } = useUserStore();
-  const { excelFile, setExcelFile, setTempNotBlackList, setNotBlackCnt } = useMeetingSettingStore();
+  const { excelFile, setExcelFile, setTempNotBlackList, setNotBlackCnt, setBlackList, blackList } = useMeetingSettingStore();
 
   const attachExcelFile = () => {
     if (inputRef.current) {
@@ -57,9 +60,11 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
     formData.append("file", file);
 
     try {
-      const { NotBlackList, cnt } = await sendExcelFile(formData, accessToken);
+      const { NotBlackList, cnt, BlackList } = await sendExcelFile(formData, accessToken);
       setTempNotBlackList(NotBlackList);
       setNotBlackCnt(cnt);
+      setBlackList(BlackList);
+      setShowCheckBlackList(true);
       setTimeout(() => {
         scrollToBottom();
       }, 200);
@@ -93,9 +98,10 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
           </>
         )}
       </div>
-      <div className="flex gap-3 justify-center mb-14">
+      <div className="flex gap-3 justify-center mb-6">
         <button onClick={clearFileHandler} className={`text-[#ff4f5d] bg-white w-72 py-3 border border-[#ff4f5d] rounded-xl mb-6 ${excelFile ? '' : 'hidden'}`}>초기화</button>
       </div>
+      {showCheckBlackList ? <ShowBlackList blackList={blackList} /> : <NoBlackList />}
       <input
         onChange={fileChangeHandler}
         type="file"
