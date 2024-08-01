@@ -136,7 +136,8 @@ public class MailService {
             body += "<p>비밀번호: " + user.getPassword() + "</p>";
             body += "</div>";
             body += "</div>";
-            body += "<p style='font-size: 16px; color: #333;'>위 로그인 정보는 보안을 위해 타인과 공유하지 마세요.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>팬싸인회 당일 <a href='https://i11c108.p.ssafy.io/'>https://i11c108.p.ssafy.io/</a> 사이트로 접속 후 위 계정으로 로그인해주세요.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>또한 안내드린 임시 계정은 보안을 위해 타인과 공유하지 마세요.</p>";
             body += "<p style='font-size: 16px; color: #333;'>감사합니다.<br>MEET:Z 팀</p>";
             body += "<div style='text-align: center; margin-top: 30px;'></div>";
             body += "</div>";
