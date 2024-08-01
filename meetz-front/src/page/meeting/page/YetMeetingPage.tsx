@@ -19,7 +19,7 @@ const YetMeetingPage = () => {
   const [nextMeetingData, setNextMeetingData] = useState<MeetingMonthData>({});
   const { accessToken } = useUserStore();
 
-  // useCheckAuth('MANAGER');
+  useCheckAuth('MANAGER');
 
   const fetchYetMeetingData = async () => {
     const { data } = await getYetMeetingList(accessToken);
@@ -46,8 +46,6 @@ const YetMeetingPage = () => {
       const nextData = transformMeetingData(data, [nextMonth]);
       setCurMeetingData(curData);
       setNextMeetingData(nextData);
-      console.log("Current Month Data:", curData);
-      console.log("Next Month Data:", nextData);
     };
 
     fetchData();
