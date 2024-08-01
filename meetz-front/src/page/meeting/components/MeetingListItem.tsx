@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom";
 import { MeetingDto } from "../../../types/types";
 
 const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
@@ -11,7 +11,7 @@ const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
   }
 
   return (
-    <div className='p-4 bg-[#FFFFFF] rounded-2xl flex justify-between items-center'>
+    <div className='p-4 bg-[#FFFFFF] rounded-2xl flex justify-between items-center w-full'>
       <div className="flex flex-col">
         <div
           onClick={() => clickRouter(pathname.includes('end') ? 'monitor' : 'detail')}
@@ -37,4 +37,4 @@ const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
   )
 }
 
-export default MeetingListItem
+export default MeetingListItem;
