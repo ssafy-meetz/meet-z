@@ -23,13 +23,12 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int chatId;
 
-    @Embedded
-    private UserMeetingId userMeetingId;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumns({@JoinColumn(name="user_id", referencedColumnName = "userId"), @JoinColumn(name="meeting_id", referencedColumnName ="meetingId")})
+    @JoinColumn(name="chat_room_id")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ChatRoom chatRoom;
+
+    private Role role;
 
     private String content;
 
