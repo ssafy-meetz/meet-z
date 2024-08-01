@@ -12,7 +12,7 @@ const MeetingDayBox = ({ date }: { date: string }) => {
       <div className='text-[28px] font-bold whitespace-nowrap'>
         {newDay}일
       </div>
-      <div className='text-[28px] font-semibold text-[#7d7d7d]'>
+      <div className='text-[20px] font-semibold text-[#7d7d7d]'>
         {newWeek}
       </div>
     </div>

@@ -12,10 +12,10 @@ const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
 
   return (
     <div className='p-4 bg-[#FFFFFF] rounded-2xl flex justify-between items-center w-full'>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-2">
         <div
           onClick={() => clickRouter(pathname.includes('end') ? 'monitor' : 'detail')}
-          className='text-[20px] font-semibold hover:text-[#FF4F5D] cursor-pointer'>
+          className='text-[22px] font-semibold hover:text-[#FF4F5D] cursor-pointer'>
           {meeting.meetingName}
         </div>
         <div className='text-[20px] font-medium text-[#7d7d7d] cursor-default'>

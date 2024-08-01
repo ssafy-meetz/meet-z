@@ -40,7 +40,7 @@ const MeetingList = ({ isEnd, month, meetings }: MeetingListProps) => {
               days.map(day => (
                 <div key={day} className="flex flex-col gap-5">
                   {meetings[day].map((dayMeets: MeetingDto, index: number) => (
-                    <div className="flex items-center" key={dayMeets.meetingId}>
+                    <div className="flex items-center gap-12" key={dayMeets.meetingId}>
                       {index === 0 ? (
                         <div className="w-20">
                           <MeetingDayBox date={new Date(dayMeets.meetingStart).toString()} />
