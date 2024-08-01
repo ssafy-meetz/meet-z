@@ -19,7 +19,7 @@ const SetTimeDateBox = () => {
         <span className='text-xl text-[#3a3a3a] font-semibold'>날짜</span>
       </div>
       <div>
-        <input type="date" onChange={(e) => setSelectedDate(new Date(e.target.value))} />
+        <input className='w-40' type="date" onChange={(e) => setSelectedDate(new Date(e.target.value))} />
       </div>
     </div>
   );
