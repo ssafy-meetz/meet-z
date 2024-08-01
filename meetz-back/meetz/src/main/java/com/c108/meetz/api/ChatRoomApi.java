@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/chatroom")
 public class ChatRoomApi {
 
-    @GetMapping("")
+
 }
