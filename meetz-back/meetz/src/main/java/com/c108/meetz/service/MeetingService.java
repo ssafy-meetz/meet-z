@@ -211,8 +211,13 @@ public class MeetingService {
                     })
                     .collect(Collectors.toList());
         }
-        Map<String, List<MeetingList>> month = meetings.stream()
-                .collect(Collectors.groupingBy(meeting -> meeting.getMeetingStart().format(DateTimeFormatter.ofPattern("MM"))));
+        Map<String, Map<String, List<MeetingList>>> month = meetings.stream()
+                .collect(Collectors.groupingBy(
+                        meeting -> meeting.getMeetingStart().format(DateTimeFormatter.ofPattern("MM")),
+                        Collectors.groupingBy(
+                                meeting -> meeting.getMeetingStart().format(DateTimeFormatter.ofPattern("dd"))
+                        )
+                ));
 
         return MeetingListResponseDto.from(month);
     }

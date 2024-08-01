@@ -12,13 +12,13 @@ import java.util.Map;
 
 @Getter
 public class MeetingListResponseDto {
-    private Map<String, List<MeetingList>> month;
+    private Map<String, Map<String, List<MeetingList>>> month;
 
-    private MeetingListResponseDto(Map<String, List<MeetingList>> month) {
+    private MeetingListResponseDto(Map<String, Map<String, List<MeetingList>>> month) {
         this.month = month;
     }
 
-    public static MeetingListResponseDto from(Map<String, List<MeetingList>> month){
+    public static MeetingListResponseDto from(Map<String, Map<String, List<MeetingList>>> month){
         return new MeetingListResponseDto(month);
     }
 
