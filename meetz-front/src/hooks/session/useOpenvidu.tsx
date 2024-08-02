@@ -58,6 +58,8 @@ export const useOpenvidu = () => {
 
 		session.on('streamCreated', event => {
 			const subscribers = session.subscribe(event.stream, '');
+            console.log("!!");
+            console.log(subscribers)
 			setSubscriber(subscribers);
 		});
 
@@ -82,7 +84,7 @@ export const useOpenvidu = () => {
 								videoSource: undefined,
 								publishAudio: true,
 								publishVideo: true,
-								mirror: true,
+								mirror: false,
 							});
 
 							setPublisher(publishers);
