@@ -84,7 +84,8 @@ export const useOpenvidu = () => {
 								videoSource: undefined,
 								publishAudio: true,
 								publishVideo: true,
-								mirror: false,
+								mirror: true,
+                                
 							});
 
 							setPublisher(publishers);
