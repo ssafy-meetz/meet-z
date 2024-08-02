@@ -1,5 +1,6 @@
 package com.c108.meetz.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,6 +34,7 @@ public class ChatRoom {
     private Meeting meeting;
 
     @CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime recentChat;
 
     @Builder
