@@ -1,10 +1,10 @@
 import { useState } from "react";
 import checkNotBlackedFan from "../../../../apis/meeting/CheckNotBlackedFan";
-import { useUserStore } from "../../../../zustand/useUserStore";
 import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
+import fetchUserData from "../../../../lib/fetchUserData";
 
 const AddFanInputBox = () => {
-  const { accessToken } = useUserStore();
+  const { accessToken } = fetchUserData();
   const { tempNotBlackList, setTempNotBlackList, setBlackList, blackList } = useMeetingSettingStore();
   const [addBtnClicked, setAddBtnClicked] = useState(false);
   const [isBlacked, setIsBlacked] = useState(false);
@@ -14,7 +14,7 @@ const AddFanInputBox = () => {
 
   const checkFanHandler = async () => {
     try {
-      const result = await checkNotBlackedFan(name, email, phone, accessToken);
+      const result = await checkNotBlackedFan(name, email, phone, accessToken || "");
       if (result) {
         setIsBlacked(false);
         setTempNotBlackList([...tempNotBlackList, { name, email, phone }]);
