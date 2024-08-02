@@ -9,7 +9,7 @@ import { useSessionStore } from '../../zustand/useSessionStore';
 
 function FanMeeting() {
   const { session, sessionId, publisher, subscriber, joinSession} = useOpenvidu();
-  const {myNickname,yourNickname,setMyNickname, setYourNickname} = useSessionStore();
+  const { setMyNickname, setYourNickname} = useSessionStore();
   const [takePhoto,setTakePhoto] = useState(false);
   useEffect(() => {
 	setMyNickname("하이");

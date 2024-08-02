@@ -93,19 +93,63 @@ export const useOpenvidu = () => {
                 .then(() => { })
                 .catch(() => { });
             }
-          })
-          .catch(() => { });
-      })
-      .catch(() => { });
-  }, [session, OV, sessionId]);
-  return {
-    session,
-    sessionId,
-    publisher,
-    subscriber,
-    joinSession,
-    setSessionId,
-    leaveSession
-  };
+        });
+    }, [subscriber, session]);
+
+    useEffect(() => {
+		if (session === '') return;
+
+		session.on('streamCreated', event => {
+			const subscribers = session.subscribe(event.stream, '');
+            console.log("!!");
+            console.log(subscribers)
+			setSubscriber(subscribers);
+		});
+
+		const getToken = async (): Promise<string> => {
+			try {
+				const sessionIds = await createSession(sessionId);
+				const token = await createToken(sessionIds);
+				return token;
+			} catch (error) {
+				throw new Error('Failed to get token.');
+			}
+		};
+
+		getToken()
+			.then(token => {
+				session
+					.connect(token)
+					.then(() => {
+						if (OV) {
+							const publishers = OV.initPublisher(undefined, {
+								audioSource: undefined,
+								videoSource: undefined,
+								publishAudio: true,
+								publishVideo: true,
+								mirror: true,
+                                
+							});
+
+							setPublisher(publishers);
+							session
+								.publish(publishers)
+								.then(() => {})
+								.catch(() => {});
+						}
+					})
+					.catch(() => {});
+			})
+			.catch(() => {});
+	}, [session, OV, sessionId]);
+    return {
+        session,
+        sessionId,
+        publisher,
+        subscriber,
+        joinSession,
+        setSessionId,
+        leaveSession
+      };
 
 }
