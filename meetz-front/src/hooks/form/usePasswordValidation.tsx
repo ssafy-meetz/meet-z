@@ -7,7 +7,7 @@ const usePasswordValidation = () => {
     const [password, setPassword] = useState("");
     const [isValidPassword, setIsValidPassword] = useState(false);
 
-    const passwordRegex = /^(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+    const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*-?_]).{8,16}$/;
 
     const validatePassword = (password: string) => {
         return passwordRegex.test(password);
@@ -16,11 +16,12 @@ const usePasswordValidation = () => {
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newPassword = e.target.value;
         setPassword(newPassword);
-        setIsValidPassword(validatePassword(newPassword));
+        const valid = validatePassword(newPassword);
+        setIsValidPassword(valid);
     }
 
     return {
-        password, setPassword, isValidPassword, handlePasswordChange
+        password, isValidPassword, setPassword, handlePasswordChange
     }
 }
 

@@ -1,8 +1,7 @@
-const SetMeetingFansBox = () => {
+import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
 
-  const handleClick = () => {
-    alert('버튼 클릭');
-  };
+const SetMeetingFansBox = () => {
+  const { setIsOpenModal } = useMeetingSettingStore();
 
   return (
     <div className='flex gap-14 py-5 border-b items-center'>
@@ -13,7 +12,7 @@ const SetMeetingFansBox = () => {
       </div>
       <div>
         <button
-          onClick={handleClick}
+          onClick={setIsOpenModal}
           className='bg-[#ff4f5d] text-white rounded-xl px-3 py-1'>
           팬 목록 관리
         </button>

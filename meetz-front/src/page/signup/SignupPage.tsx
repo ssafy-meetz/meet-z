@@ -1,17 +1,21 @@
 import SignupBox from './components/SignupBox';
 import loginImage from '/src/assets/images/login_image.png';
+
 const SignupPage = () => {
   return (
-    <div className='min-h-screen bg-gradient-to-br from-[#FE9374] to-[#FE4D5C] w-full h-screen flex flex-col justify-center '>
-      <div className='flex justify-center '>
-      <div className='flex justify-between max-w-screen-xl items-center px-28 gap-20'>
-        <div className='w-full'>
-        <img src={loginImage} alt='로그인 로고'/>
+    <div className='bg-gradient-to-br from-[#FE9374] to-[#FE4D5C] w-full h-screen flex flex-col justify-center items-center'>
+      <div className='flex flex-col lg:flex-row justify-center items-center w-full max-w-screen-xl px-5 lg:px-28 gap-5 lg:gap-20'>
+        <div className='w-full  justify-center lg:justify-end lg:flex hidden'>
+          <img src={loginImage} alt='로그인 로고' className='w-3/4 lg:w-full' />
         </div>
-        <div>
-          <SignupBox />
+        <div className='w-full flex flex-col items-center lg:justify-start'>
+          <div className='lg:mt-[50px]'>
+            <SignupBox />
+            <p className='text-white text-center text-xl mt-8 lg:hidden text-shadow-glow'>
+              해당 서비스는 PC에서만 이용 가능합니다.
+            </p>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

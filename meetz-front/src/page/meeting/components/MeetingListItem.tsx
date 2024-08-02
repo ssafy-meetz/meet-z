@@ -1,29 +1,30 @@
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom";
+import { MeetingDto } from "../../../types/types";
 
-const MeetingListItem = () => {
+const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const clickRouter = (to: string) => {
-    let path = '/meeting/' + to + '/3';
+    let path = '/meeting/' + to + `/${meeting.meetingId}`;
     navigate(path);
   }
 
   return (
-    <div className='p-4 bg-[#FFFFFF] rounded-2xl flex justify-between items-center'>
-      <div className="flex flex-col">
+    <div className='p-4 bg-[#FFFFFF] rounded-2xl flex justify-between items-center w-full'>
+      <div className="flex flex-col gap-2">
         <div
           onClick={() => clickRouter(pathname.includes('end') ? 'monitor' : 'detail')}
-          className='text-[20px] font-semibold hover:text-[#FF4F5D] cursor-pointer'>
-          우주최강 이승원 앨범 출시 팬싸인회
+          className='text-[22px] font-semibold hover:text-[#FF4F5D] cursor-pointer'>
+          {meeting.meetingName}
         </div>
         <div className='text-[20px] font-medium text-[#7d7d7d] cursor-default'>
-          14:00 ~
+          {`${meeting.meetingStart.split(" ")[1]} ~${meeting.meetingEnd.split(" ")[0].split("-")[0] === '0001' ? '' : meeting.meetingEnd.split(" ")[1]}`}
         </div>
       </div>
       <div className='text-right'>
         <div className='text-[20px] text-[#7d7d7d] cursor-default'>
-          참여인원 : 50명 예정
+          {meeting.meetingEnd.split(" ")[0].split("-")[0] !== '0001' ? `참여인원 : ${meeting.cnt}명` : `참여인원 : ${meeting.cnt}명 예정`}
         </div>
         <button
           onClick={() => clickRouter('modify')}
@@ -36,4 +37,4 @@ const MeetingListItem = () => {
   )
 }
 
-export default MeetingListItem
+export default MeetingListItem;

@@ -62,7 +62,9 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000"));
+                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:3000",
+                                "http://i11c108.p.ssafy.io:5173", "http://i11c108.p.ssafy.io:3000",
+                                "https://i11c108.p.ssafy.io"));
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         configuration.setAllowCredentials(true);
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
@@ -75,10 +77,12 @@ public class SecurityConfig {
                     }
                 }));
 
-        //csrf disable
+//        //csrf disable
         http
                 .csrf((auth) -> auth.disable());
-
+        //sse enable
+//        http
+//                .csrf((auth) -> auth.ignoringRequestMatchers("api/sessions/emitter"));
         //Form 로그인 방식 disable
         http
                 .formLogin((auth) -> auth.disable());
@@ -94,6 +98,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/refresh").permitAll()
                         .requestMatchers("/api/manager/authemail", "/api/manager/checkemail").permitAll()
                         .requestMatchers("/api/manager/checkauth", "/api/manager/test").permitAll()
+                        .requestMatchers("/api/sessions", "/api/sessions/{sessionId}/connections").permitAll()
+                        .requestMatchers("/api/sse/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated());
         // 예외 처리 설정
         http.exceptionHandling(exceptionHandling -> exceptionHandling

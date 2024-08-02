@@ -5,6 +5,7 @@ import { durationOptions, customStyles } from './TimeOptions';
 
 const SetTimeDuringBox = () => {
   const { selectedDuration, setSelectedDuration } = useMeetingTimeStore();
+
   return (
     <div className='flex gap-14 py-5 border-b items-center'>
       <div className='w-40'>
@@ -18,7 +19,7 @@ const SetTimeDuringBox = () => {
           value={selectedDuration}
           onChange={(option) => setSelectedDuration(option)}
           styles={customStyles}
-          className='text-xl'
+          className='text-xl w-40'
           placeholder='선택'
         />
       </div>

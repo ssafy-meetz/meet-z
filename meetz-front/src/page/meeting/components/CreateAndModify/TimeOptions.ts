@@ -33,25 +33,25 @@ export const timeOptions = [
 ];
 
 export const durationOptions = [
-  { value: '1:00', label: '1분' },
-  { value: '1:30', label: '1분 30초' },
-  { value: '2:00', label: '2분' },
-  { value: '2:30', label: '2분 30초' },
-  { value: '3:00', label: '3분' },
-  { value: '3:30', label: '3분 30초' },
-  { value: '4:00', label: '4분' },
-  { value: '4:30', label: '4분 30초' },
-  { value: '5:00', label: '5분' },
-  { value: '5:30', label: '5분 30초' },
-  { value: '6:00', label: '6분' },
-  { value: '6:30', label: '6분 30초' },
-  { value: '7:00', label: '7분' },
-  { value: '7:30', label: '7분 30초' },
-  { value: '8:00', label: '8분' },
-  { value: '8:30', label: '8분 30초' },
-  { value: '9:00', label: '9분' },
-  { value: '9:30', label: '9분 30초' },
-  { value: '10:00', label: '10분' },
+  { value: '60', label: '1분' },
+  { value: '90', label: '1분 30초' },
+  { value: '120', label: '2분' },
+  { value: '150', label: '2분 30초' },
+  { value: '180', label: '3분' },
+  { value: '210', label: '3분 30초' },
+  { value: '240', label: '4분' },
+  { value: '270', label: '4분 30초' },
+  { value: '300', label: '5분' },
+  { value: '330', label: '5분 30초' },
+  { value: '360', label: '6분' },
+  { value: '490', label: '6분 30초' },
+  { value: '420', label: '7분' },
+  { value: '450', label: '7분 30초' },
+  { value: '480', label: '8분' },
+  { value: '510', label: '8분 30초' },
+  { value: '540', label: '9분' },
+  { value: '570', label: '9분 30초' },
+  { value: '600', label: '10분' },
 ];
 
 
@@ -77,7 +77,7 @@ export const customStyles = {
   control: (provided: any) => ({
     ...provided,
     borderRadius: '10px', // 둥근 경계
-    
+
     boxShadow: 'none',
     cursor: 'pointer', // 커서 포인터 추가
     '&:hover': {

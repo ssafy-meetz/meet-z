@@ -9,6 +9,7 @@ interface MeetingTimeState {
     setSelectedDuration: (duration: { value: string; label: string } | null) => void;
     setSelectedTime: (time: { value: string; label: string } | null) => void;
     setSelectedBreak: (breakTime: { value: string; label: string } | null) => void;
+    resetTimeStore: () => void;
 }
 
 const useMeetingTimeStore = create<MeetingTimeState>((set) => ({
@@ -20,6 +21,12 @@ const useMeetingTimeStore = create<MeetingTimeState>((set) => ({
     setSelectedDuration: (duration) => set({ selectedDuration: duration }),
     setSelectedTime: (time) => set({ selectedTime: time }),
     setSelectedBreak: (breakTime) => set({ selectedBreak: breakTime }),
+    resetTimeStore: () => set({
+        selectedDate: null,
+        selectedDuration: null,
+        selectedTime: null,
+        selectedBreak: null,
+    }),
 }));
 
 export default useMeetingTimeStore;

@@ -9,7 +9,6 @@ import SetTimeDateBox from '../components/CreateAndModify/SetTimeDateBox';
 import SetTimeStartBox from '../components/CreateAndModify/SetTimeStartBox';
 import SetTimeDuringBox from '../components/CreateAndModify/SetTimeDuringBox';
 import SetTimeBreakBox from '../components/CreateAndModify/SetTimeBreakBox';
-import 'react-datepicker/dist/react-datepicker.css';
 import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
 
 

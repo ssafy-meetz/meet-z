@@ -8,7 +8,7 @@ const checkNotBlackedFan = async (name: string, email: string, phone: string, ac
       }
     })
 
-    if (data.status === 200) {
+    if (data.code === 200) {
       return true;
     }
 
@@ -26,3 +26,5 @@ const checkNotBlackedFan = async (name: string, email: string, phone: string, ac
     }
   }
 }
+
+export default checkNotBlackedFan
