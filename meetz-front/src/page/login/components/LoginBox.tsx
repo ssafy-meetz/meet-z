@@ -4,14 +4,13 @@ import { useState } from 'react';
 import useEmailValidation from '../../../hooks/form/useEmailValidation';
 import usePasswordValidation from '../../../hooks/form/usePasswordValidation';
 import postUserLogin from '../../../apis/auth/login';
-import { useUserStore } from '../../../zustand/useUserStore';
+import setUserData from '../../../lib/setUserData';
 
 const LoginBox = () => {
   const navigate = useNavigate();
   const [isManager, setIsManager] = useState(false);
   const { email, isValidEmail, handleEmailChange } = useEmailValidation();
   const { password, isValidPassword, handlePasswordChange } = usePasswordValidation();
-  const { setUserData } = useUserStore();
 
   const onChangeRadioBtn = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsManager(e.target.value === 'manager');
@@ -40,7 +39,7 @@ const LoginBox = () => {
       alert('로그인에 성공했습니다.');
 
       localStorage.setItem('rt', refreshToken);
-      setUserData(accessToken, expireAt, role);
+      setUserData(role, expireAt, accessToken);
 
       if (role === 'MANAGER') {
         navigate('/meeting/yet');

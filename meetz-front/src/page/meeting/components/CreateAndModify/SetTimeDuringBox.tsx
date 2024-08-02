@@ -2,7 +2,6 @@ import Select from 'react-select';
 import useMeetingTimeStore from '../../../../zustand/useMeetingTimeStore';
 import { durationOptions, customStyles } from './TimeOptions';
 
-
 const SetTimeDuringBox = () => {
   const { selectedDuration, setSelectedDuration } = useMeetingTimeStore();
 

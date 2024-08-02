@@ -1,7 +1,24 @@
+import { useNavigate } from 'react-router-dom';
 import LoginBox from './components/LoginBox';
 import loginImage from '/src/assets/images/login_image.png';
+import fetchUserData from '../../lib/fetchUserData';
+import clearUserData from '../../lib/clearUserData';
+import { useEffect } from 'react';
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const { accessToken } = fetchUserData();
+
+  useEffect(() => {
+    if (accessToken) {
+      if (window.confirm('현재 로그인 상태입니다. 로그아웃 후 로그인 페이지로 이동하시겠습니까?')) {
+        clearUserData();
+        navigate('/', { replace: true });
+        return;
+      }
+    }
+  }, [])
+
   return (
     <div className='bg-gradient-to-br from-[#FE9374] to-[#FE4D5C] w-full h-screen flex flex-col justify-center items-center'>
       <div className='flex flex-col lg:flex-row justify-center items-center w-full max-w-screen-xl px-5 lg:px-28 gap-5 lg:gap-20'>

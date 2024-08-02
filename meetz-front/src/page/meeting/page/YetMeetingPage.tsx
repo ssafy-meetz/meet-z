@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
-import { useUserStore } from "../../../zustand/useUserStore";
 import MeetingList from "../components/MeetingList";
 import MeetingListTitle from "../components/MeetingListTitle";
 import getYetMeetingList from "../../../apis/meeting/getYetMeetingList";
 import { MeetingDto } from "../../../types/types";
+import fetchUserData from "../../../lib/fetchUserData";
 
 interface MeetingMonthData {
   [key: string]: {
@@ -17,12 +17,12 @@ const YetMeetingPage = () => {
   const nextMonth = (`0${new Date().getMonth() + 2}`).slice(-2);
   const [curMeetingData, setCurMeetingData] = useState<MeetingMonthData>({});
   const [nextMeetingData, setNextMeetingData] = useState<MeetingMonthData>({});
-  const { accessToken } = useUserStore();
+  const { accessToken } = fetchUserData();
 
   useCheckAuth('MANAGER');
 
   const fetchYetMeetingData = async () => {
-    const { data } = await getYetMeetingList(accessToken);
+    const { data } = await getYetMeetingList(accessToken || "");
     return data.month;
   };
 
