@@ -1,9 +1,11 @@
 package com.c108.meetz.dto.response;
 
+import com.c108.meetz.domain.Chat;
 import com.c108.meetz.domain.ChatRoom;
 import com.c108.meetz.domain.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +22,7 @@ public class ChatRoomListResponseDto {
     }
 
     @Getter
+    @Setter
     public static class ChatRoomList {
         int chatRoomId;
         String name; //팬 이름
@@ -27,15 +30,18 @@ public class ChatRoomListResponseDto {
         @JsonFormat(pattern="MM/dd HH:mm")
         LocalDateTime recentDate;
 
-        public ChatRoomList(ChatRoom chatRoom, User user, String recentChat){
-            this.chatRoomId = chatRoom.getChatRoomId();
-            this.name = user.getName();
-            this.recentChat = recentChat;
-            if(recentChat == null){
-                this.recentDate = null;
-            }else{
-                this.recentDate = chatRoom.getRecentChat();
+        public static ChatRoomList of (ChatRoom chatRoom, Chat chat) {
+            ChatRoomList chatRoomList = new ChatRoomList();
+            chatRoomList.setChatRoomId(chatRoom.getChatRoomId());
+            chatRoomList.setName(chatRoom.getUser().getName());
+            if (chat == null) {
+                chatRoomList.setRecentChat(null);
+                chatRoomList.setRecentDate(null);
+            } else {
+                chatRoomList.setRecentChat(chat.getContent());
+                chatRoomList.setRecentDate(chat.getCreatedAt());
             }
+            return chatRoomList;
         }
 
     }

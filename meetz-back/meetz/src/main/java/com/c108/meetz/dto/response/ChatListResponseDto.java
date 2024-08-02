@@ -3,6 +3,7 @@ package com.c108.meetz.dto.response;
 import com.c108.meetz.domain.Chat;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,6 +20,7 @@ public class ChatListResponseDto {
         return new ChatListResponseDto(chats);
     }
     @Getter
+    @Setter
     public static class ChatList {
         int chatId;
         boolean sender;
@@ -27,11 +29,14 @@ public class ChatListResponseDto {
         @JsonFormat(pattern = "MM/dd HH:mm")
         LocalDateTime createdAt;
 
-        public ChatList(Chat chat, boolean sender){
-            this.chatId = chat.getChatId();
-            this.sender = sender;
-            this.content = chat.getContent();
-            this.createdAt = chat.getCreatedAt();
+        public static ChatList of (Chat chat, boolean sender){
+            ChatList chatList = new ChatList();
+            chatList.setChatId(chat.getChatId());
+            chatList.setSender(sender);
+            chatList.setContent(chat.getContent());
+            chatList.setCreatedAt(chat.getCreatedAt());
+            return chatList;
+
         }
 
     }
