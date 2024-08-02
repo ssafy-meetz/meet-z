@@ -19,12 +19,12 @@ export const useOpenvidu = () => {
         setPublisher(null);
     }, [session]);
 
-    const joinSession = () => {
-        
-        console.log(sessionId)
+    const joinSession = (id:string) => {
         if(sessionId!='')return;
         const OVs = new OpenVidu();
-        sessionIdChangeHandler();
+        console.log("!!");
+        console.log(id);
+        setSessionId(id);
         setOV(OVs);
         setSession(OVs.initSession());
     };
@@ -36,12 +36,6 @@ export const useOpenvidu = () => {
             window.removeEventListener('beforeunload', leaveSession);
         };
     }, [leaveSession]);
-
-    const sessionIdChangeHandler = (
-        // event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        setSessionId('meetz');
-    };
 
     useEffect(() => {
         if (session === '') return;
@@ -58,12 +52,11 @@ export const useOpenvidu = () => {
 
 		session.on('streamCreated', event => {
 			const subscribers = session.subscribe(event.stream, '');
-            console.log("!!");
-            console.log(subscribers)
 			setSubscriber(subscribers);
 		});
 
 		const getToken = async (): Promise<string> => {
+            // 지금은 openvidu한테 바로 만들어달라고 하지만 여기서 백엔드랑 통신할거임
 			try {
 				const sessionIds = await createSession(sessionId);
 				const token = await createToken(sessionIds);
@@ -85,7 +78,7 @@ export const useOpenvidu = () => {
 								publishAudio: true,
 								publishVideo: true,
 								mirror: true,
-                                
+
 							});
 
 							setPublisher(publishers);

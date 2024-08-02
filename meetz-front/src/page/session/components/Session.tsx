@@ -4,19 +4,33 @@ import { Publisher, Subscriber } from 'openvidu-browser';
 import Video from './Video';
 import { useSessionStore } from '../../../zustand/useSessionStore';
 import html2canvas from 'html2canvas';
+import camera_icon from '/src/assets/images/camera.png';
 import NoBlackList from '../../meeting/components/CreateAndModify/NoBlackList';
 
 interface SessionProps {
 	subscriber: Subscriber;
 	publisher: Publisher;
-	takePhoto:boolean;
-	completeCapture:()=>void;
 }
 
 
-function Session({ subscriber, publisher, takePhoto,completeCapture }: SessionProps) {
-	const {myNickname,yourNickname} = useSessionStore();
+function Session({ subscriber, publisher }: SessionProps) {
 	const [count,setCount] = useState(0);
+	const {starName, setStartName} = useSessionStore();
+	const [fanName, setFanName] = useState("");
+	const [role,setRole] = useState("");
+	const [memo,setMemo] = useState("");
+	const [takePhoto,setTakePhoto] = useState(false);
+	const toggleTakePhoto=()=>{setTakePhoto(true);}
+	const handleCompleteTakePhoto=()=>{setTakePhoto(false);}
+	
+	useEffect(()=>{
+		// localStorage에서 가져올 데이터 값들
+		setRole("star");
+		setFanName("밍경잉");
+		setStartName("라이언");
+		setMemo("이어닝 너무 귀여워ㅠㅠ");
+
+	},[]);
 	useEffect(()=>{
 		if(!takePhoto)return;
 		
@@ -32,7 +46,6 @@ function Session({ subscriber, publisher, takePhoto,completeCapture }: SessionPr
 			  if (prevCount <= 1) {
 				clearInterval(timerId);
 				capturePhoto();
-				completeCapture();
 				return 0;
 			  }
 			  return prevCount - 1;
@@ -40,7 +53,7 @@ function Session({ subscriber, publisher, takePhoto,completeCapture }: SessionPr
 		  }, 1000);;
 
 		return () => clearInterval(timerId);
-	},[takePhoto,completeCapture])
+	},[takePhoto])
 
 	const capturePhoto = async () => {
 		console.log("찰칵!");
@@ -109,31 +122,66 @@ function Session({ subscriber, publisher, takePhoto,completeCapture }: SessionPr
 					}
 				}
 			}
+			handleCompleteTakePhoto();
 		}
 	  };
 	const renderSubscribers = () => {
-		return (
-			<div className='flex'>
-				
-				<div className='relative w-1/2'   id='meetingVideo-star'>
-					<Video streamManager={subscriber} />
-					{	subscriber&&!takePhoto&&
-						<p className='absolute top-0 right-0 p-1 text-white bg-black bg-opacity-75 rounded'>
-							{yourNickname}
-						</p>
-					}
-				</div>
-				<div className='relative w-1/2'  id='meetingVideo-fan'>
-					<Video streamManager={publisher} />
-					{	!takePhoto&&
-						<p className='absolute top-0 left-0 p-1 text-white bg-black bg-opacity-75 rounded'>
-							{myNickname}
-						</p>
-					}
+		if(role=='star'){
+			return (
+				<div className='flex'>
 					
+					<div className='relative w-1/2'   id='meetingVideo-star'>
+						<Video streamManager={publisher} />
+						{	!takePhoto&&
+							<p className='absolute top-0 left-0 p-1 text-white bg-black bg-opacity-75 rounded'>
+								{starName}
+							</p>
+						}
+					</div>
+					<div className='relative w-1/2'  id='meetingVideo-fan'>
+						<Video streamManager={subscriber} />
+						{	subscriber&&!takePhoto&&
+							<p className='absolute top-0 right-0 p-1 text-white bg-black bg-opacity-75 rounded'>
+								{fanName}
+							</p>
+						}
+						
+					</div>
 				</div>
-			</div>
-		);
+			);
+		}else{
+			return (
+				<div>
+					<div className='flex'>
+						<div className='relative w-1/2'  id='meetingVideo-fan'>
+							<Video streamManager={subscriber} />
+							{	subscriber&&!takePhoto&&
+								<p className='absolute top-0 left-0 p-1 text-white bg-black bg-opacity-75 rounded'>
+									{starName}
+								</p>
+							}
+							
+						</div>
+						<div className='relative w-1/2'   id='meetingVideo-star'>
+							<Video streamManager={publisher} />
+							{	!takePhoto&&
+								<p className='absolute top-0 right-0 p-1 text-white bg-black bg-opacity-75 rounded'>
+									{fanName}
+								</p>
+							}
+						</div>
+					</div>
+					
+					<div className='flex flex-col justify-center items-center m-4'>
+						<div className="w-[846px] h-[80px] bg-[#FE9374] mt-2 p-4">
+							<p>{memo}</p>
+						</div>
+						<img className='w[48px] h-[48px]' src={camera_icon} onClick={toggleTakePhoto}/>
+					</div>
+				</div>
+			);
+		}
+		
 		
 	};
 	//3초 카운트 보여주는 html
