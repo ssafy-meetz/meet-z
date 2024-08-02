@@ -21,7 +21,7 @@ public class TemporaryGenerator {
     }
 
     public static String generateTemporaryEmail() {
-        String uuid = UUID.randomUUID().toString().replace("-", "");
+        String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
         return uuid + "@meetz.com";
     }
 }
