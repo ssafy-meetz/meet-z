@@ -1,5 +1,7 @@
 package com.c108.meetz.api;
 
+import com.c108.meetz.dto.ApiResponse;
+import com.c108.meetz.service.OpenviduService;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +30,21 @@ public class OpenviduApi {
 
     private OpenVidu openvidu;
 
-    private Map<String, List<Session>> meetingrooms = new ConcurrentHashMap<>();
+    private final OpenviduService openviduService;
 
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
+
+    @PostMapping("/initroom/{meetingId}")
+    public ApiResponse<Void> initRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
+
+        openviduService.initSession(meetingId);
+
+        return ApiResponse.success(HttpStatus.OK);
+    }
+
 
     /**
      * @param params The Session properties
@@ -44,19 +55,6 @@ public class OpenviduApi {
             throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
         Session session = openvidu.createSession(properties);
-
-
-        //방관리를 위해 넣어준거
-        if (session != null) { //세션 생성 됐으면
-            String str = session.getSessionId();
-            String roomPoint = str.split("0seper0")[0]; //방 이름별로 분리하자.
-            if (!meetingrooms.containsKey(roomPoint)) { //미팅룸이 없으면 List 등록
-                meetingrooms.put(roomPoint, new ArrayList<>());
-                meetingrooms.get(roomPoint).add(session);
-            } else { //미팅룸이 있으면
-                meetingrooms.get(roomPoint).add(session);
-            }
-        }
 
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
     }
@@ -91,20 +89,21 @@ public class OpenviduApi {
 
         return new ResponseEntity<>(sb.toString(), HttpStatus.OK);
     }
-    @GetMapping("/all/{roomPoint}")
-    public ResponseEntity<String> getRoomSessions(@PathVariable("roomPoint") String roomPoint) {
 
-        List<Session> activeSessions = meetingrooms.get(roomPoint);
+    @GetMapping("/all/{meetingId}")
+    public ApiResponse<String> getRoomSessions(@PathVariable("meetingId") int meetingId) {
 
+        List<Session> sessions = openviduService.getMeetingRooms(meetingId);
         StringBuilder sb = new StringBuilder();
-        if (activeSessions != null) {
-            log.info("size = {}", activeSessions.size());
-            for (Session session : activeSessions) {
+        if (sessions != null) {
+            log.info("size = {}", sessions.size());
+            for (Session session : sessions) {
                 sb.append(session.getSessionId()).append("\n");
                 sb.append("------------").append("\n");
             }
         }
-        return new ResponseEntity<>(sb.toString(), HttpStatus.OK);
+
+        return ApiResponse.success(HttpStatus.OK, sb.toString());
     }
 
 
