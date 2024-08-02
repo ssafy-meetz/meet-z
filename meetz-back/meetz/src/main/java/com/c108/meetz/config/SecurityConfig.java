@@ -98,7 +98,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/refresh").permitAll()
                         .requestMatchers("/api/manager/authemail", "/api/manager/checkemail").permitAll()
                         .requestMatchers("/api/manager/checkauth", "/api/manager/test").permitAll()
-                        .requestMatchers("/api/sessions", "/api/sessions/{sessionId}/connections").permitAll()
+                        .requestMatchers("/api/sessions/**", "/api/sessions/{sessionId}/connections").permitAll()
                         .requestMatchers("/api/sse/**").permitAll()
                         .requestMatchers("/ws/**").permitAll()
                         .anyRequest().authenticated());
