@@ -16,7 +16,7 @@ function Video({ streamManager }: Props) {
 	}, [streamManager]);
 
 	return (
-		<video autoPlay={autoplay} ref={videoRef} className="w-full max-h-[318px]">
+		<video autoPlay={autoplay} ref={videoRef} className="w-full max-h-[318px]" style={{transform:'scaleX(-1)'}}>
 			<track kind="captions" />
 		</video>
 	);

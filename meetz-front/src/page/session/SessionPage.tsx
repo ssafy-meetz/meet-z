@@ -2,15 +2,27 @@
 import Session from './components/Session';
 import { Session as OVSession, Subscriber, Publisher } from 'openvidu-browser';
 import { useOpenvidu } from '../../hooks/session/useOpenvidu';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import logo_white from '/src/assets/images/logo-white.png'
-import camera_icon from '/src/assets/images/camera.png'
+import camera_icon from '/src/assets/images/camera.png';
+import { useSessionStore } from '../../zustand/useSessionStore';
 
 function FanMeeting() {
   const { session, sessionId, publisher, subscriber, joinSession} = useOpenvidu();
+  const {myNickname,yourNickname,setMyNickname, setYourNickname} = useSessionStore();
+  const [takePhoto,setTakePhoto] = useState(false);
   useEffect(() => {
+	setMyNickname("하이");
+	setYourNickname("하이하이");
 	joinSession();
+	
   }, []);
+  const toggleTakePhoto=()=>{
+	setTakePhoto(true);
+  }
+  const handleCompleteTakePhoto=()=>{
+	setTakePhoto(false);
+  }
   return (
 	<div>
 		<div className='flex flex-col justify-center items-center h-screen bg-black'>
@@ -22,11 +34,13 @@ function FanMeeting() {
 				<p className='text-2xl text-[#FE9374] font-semibold'>01:00</p>
 			</div>
 
-			<div className='flex w-[846px]'>
+			<div className='flex w-[846px]' style={{transform:'none'}}>
 				{session && (
 					<Session
 						publisher={publisher as Publisher}
 						subscriber={subscriber as Subscriber}
+						takePhoto={takePhoto}
+						completeCapture={handleCompleteTakePhoto}
 					/>
 				)}
 			</div>
@@ -34,7 +48,7 @@ function FanMeeting() {
 				<div className="w-[846px] h-[80px] bg-[#FE9374] mt-4">
 					<p>MEMO</p>
 				</div>
-				<img className='w[48px] h-[48px]' src={camera_icon} />
+				<img className='w[48px] h-[48px]' src={camera_icon} onClick={toggleTakePhoto}/>
 			</div>
 			
 		</div>
