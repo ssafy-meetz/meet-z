@@ -25,7 +25,7 @@ const postMeetingToCreate = async ({ meetingName, meetingStart, meetingDuration,
     })
 
     if (data.code === 200) {
-      return data // 받아서 쓸 땐 {meetingId} = post... 이런식으로 쓰면 될듯
+      return data
     }
   } catch (error: any) {
     if (error.response) {
