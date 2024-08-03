@@ -202,5 +202,4 @@ function Session({ subscriber, publisher }: SessionProps) {
 
 	return <>{renderSubscribers()}</>;
 }
-
 export default Session;
