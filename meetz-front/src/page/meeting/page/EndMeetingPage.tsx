@@ -3,8 +3,8 @@ import MeetingListTitle from '../components/MeetingListTitle';
 import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 import { useEffect, useState } from 'react';
 import getEndMeetingList from '../../../apis/meeting/getEndMeetingList';
-import { useUserStore } from '../../../zustand/useUserStore';
 import { MeetingDto } from '../../../types/types';
+import fetchUserData from '../../../lib/fetchUserData';
 
 interface MeetingMonthData {
   [key: string]: {
@@ -17,12 +17,12 @@ const EndMeetingPage = () => {
   const beforeMonth = (`0${new Date().getMonth()}`).slice(-2);
   const [curMeetingData, setCurMeetingData] = useState<MeetingMonthData>({});
   const [beforetMeetingData, setBeforeMeetingData] = useState<MeetingMonthData>({});
-  const { accessToken } = useUserStore();
+  const { accessToken } = fetchUserData();
 
   useCheckAuth('MANAGER');
 
   const fetchEndMeetingData = async () => {
-    const { data } = await getEndMeetingList(accessToken);
+    const { data } = await getEndMeetingList(accessToken || "");
     return data.month;
   };
 
@@ -49,7 +49,7 @@ const EndMeetingPage = () => {
     };
 
     fetchData();
-  }, [accessToken, curMonth, beforeMonth]);
+  }, [curMonth, beforeMonth]);
 
   return (
     <div className='mb-40'>

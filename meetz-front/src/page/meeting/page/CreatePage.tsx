@@ -13,9 +13,9 @@ import FanListModal from '../components/CreateAndModify/FanListModal';
 import useMeetingSettingStore from '../../../zustand/useMeetingSettingStore';
 import useMeetingTimeStore from '../../../zustand/useMeetingTimeStore';
 import { useNavigate } from 'react-router-dom';
-import { useUserStore } from '../../../zustand/useUserStore';
 import postMeetingToCreate from '../../../apis/meeting/createMeeting';
 import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
+import fetchUserData from '../../../lib/fetchUserData';
 
 
 const CreateMeeting: React.FC = () => {
@@ -24,7 +24,7 @@ const CreateMeeting: React.FC = () => {
   const navigate = useNavigate();
   const { isOpenModal, meetingName, stars, notBlackList, resetStore } = useMeetingSettingStore();
   const { selectedDate, selectedDuration, selectedTime, selectedBreak, resetTimeStore } = useMeetingTimeStore();
-  const { accessToken } = useUserStore();
+  const { accessToken } = fetchUserData();
 
   function convertTo24H(time: string): string {
     let [timePart, modifier] = time.split(' ');
@@ -35,11 +35,6 @@ const CreateMeeting: React.FC = () => {
     if (modifier.toUpperCase() === 'AM' && hoursNum === 12) hoursNum = 0;
 
     return `${hoursNum.toString().padStart(2, '0')}:${minutes}`;
-  }
-
-  function convertToSeconds(time: string): number {
-    let [minutes, seconds] = time.split(':').map(Number);
-    return (minutes * 60) + seconds;
   }
 
   const saveHandler = async () => {
@@ -57,7 +52,7 @@ const CreateMeeting: React.FC = () => {
       fanList: notBlackList,
     }
     try {
-      const { data, code } = await postMeetingToCreate(requestData, accessToken);
+      const { data, code } = await postMeetingToCreate(requestData, accessToken || "");
       if (code === 200) {
         const { meetingId } = data;
         resetStore();
@@ -70,7 +65,7 @@ const CreateMeeting: React.FC = () => {
   }
 
   const cancelHandler = () => {
-    navigate('/yet');
+    navigate('/meeting/yet');
   }
 
   return (

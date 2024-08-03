@@ -2,16 +2,16 @@ import { useRef, useState } from "react";
 import { FaFileExcel, FaRegCircleCheck } from "react-icons/fa6";
 import Loading from "../../../../common/Loading";
 import sendExcelFile from "../../../../apis/meeting/sendExcelFile";
-import { useUserStore } from "../../../../zustand/useUserStore";
 import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
 import ShowBlackList from "./ShowBlackList";
 import NoBlackList from "./NoBlackList";
+import fetchUserData from "../../../../lib/fetchUserData";
 
 const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showCheckBlackList, setShowCheckBlackList] = useState(false);
-  const { accessToken } = useUserStore();
+  const { accessToken } = fetchUserData();
   const { excelFile, setExcelFile, setTempNotBlackList, setNotBlackCnt, setBlackList, blackList } = useMeetingSettingStore();
 
   const attachExcelFile = () => {
@@ -60,7 +60,7 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
     formData.append("file", file);
 
     try {
-      const { NotBlackList, cnt, BlackList } = await sendExcelFile(formData, accessToken);
+      const { NotBlackList, cnt, BlackList } = await sendExcelFile(formData, accessToken || "");
       setTempNotBlackList(NotBlackList);
       setNotBlackCnt(cnt);
       setBlackList(BlackList);

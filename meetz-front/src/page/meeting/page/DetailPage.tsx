@@ -2,7 +2,6 @@ import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 import SendEmailModal from '../components/Detail/SendEmailModal';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import getMeetingDetail from '../../../apis/meeting/getMeetingDetail';
-import { useUserStore } from '../../../zustand/useUserStore';
 import { useParams } from 'react-router-dom';
 import { MeetingDetailDto } from '../../../types/types';
 import DetailHeader from '../components/Detail/DetailHeader';
@@ -11,11 +10,14 @@ import CleanFanList from '../components/CreateAndModify/CleanFanList';
 import LoadEmailModal from '../components/Detail/LoadEmailModal';
 import CompleteEmailModal from '../components/Detail/CompleteEmailModal';
 import { useDetailstore } from '../../../zustand/useDetailStore';
+import fetchUserData from '../../../lib/fetchUserData';
+import Loading from '../../../common/Loading';
+
 const DetailPage = () => {
   useCheckAuth('MANAGER');
   const { id } = useParams();
-  const { sendModalOpend, modalStep, openMailModal, setModalStep } = useDetailstore();
-  const { accessToken } = useUserStore();
+  const { sendModalOpend, modalStep, openMailModal } = useDetailstore();
+  const { accessToken } = fetchUserData();
   const [meetingData, setMeetingData] = useState<MeetingDetailDto>();
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -33,7 +35,7 @@ const DetailPage = () => {
     }
 
     try {
-      const { data, code } = await getMeetingDetail(+id, accessToken);
+      const { data, code } = await getMeetingDetail(+id, accessToken || "");
       if (code === 200) {
         setMeetingData(data);
       }
@@ -53,12 +55,19 @@ const DetailPage = () => {
     fetchMeetingData();
   }, [])
 
+  if (!meetingData) {
+    return (
+      <div className='flex justify-center items-center w-full h-screen'>
+        <Loading width={160} height={160} />
+      </div>
+    )
+  }
+
   return (
     <div ref={ref}>
       <DetailHeader meetingData={meetingData} />
       <main className='flex flex-col items-center'>
         <DetailRoomList starList={meetingData?.starList} />
-
         <div className='max-w-screen-xl w-screen px-24 pt-24 pb-60'>
           <div className='flex justify-between pt-8 items-center'>
             <span className='text-2xl font-semibold'>팬 리스트</span>

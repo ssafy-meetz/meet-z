@@ -1,11 +1,11 @@
 import Alert from '/src/assets/images/alert.png';
 import { useDetailstore } from '../../../../zustand/useDetailStore';
 import sendEmailToFans from '../../../../apis/meeting/sendEmailToFans';
-import { useUserStore } from '../../../../zustand/useUserStore';
+import fetchUserData from '../../../../lib/fetchUserData';
 
 const SendEmailModal = ({ meetingId }: { meetingId: number | undefined }) => {
   const { closeMailModal, setModalStep } = useDetailstore();
-  const { accessToken } = useUserStore();
+  const { accessToken } = fetchUserData();
 
   const getSendEmailToFans = async () => {
     setModalStep(1);
@@ -13,7 +13,7 @@ const SendEmailModal = ({ meetingId }: { meetingId: number | undefined }) => {
       if (!meetingId) {
         return;
       }
-      const result = await sendEmailToFans(meetingId, accessToken);
+      const result = await sendEmailToFans(meetingId, accessToken || "");
 
       if (result) {
         setModalStep(2);
