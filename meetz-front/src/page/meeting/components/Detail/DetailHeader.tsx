@@ -3,8 +3,10 @@ import { MeetingDetailDto } from "../../../../types/types"
 import { IoCalendarNumberOutline } from "react-icons/io5"
 import { MdOutlineTimer } from "react-icons/md"
 import { FaRegHourglass } from "react-icons/fa6"
+import { useNavigate } from "react-router-dom"
 
-const DetailHeader = ({ meetingData }: { meetingData: MeetingDetailDto | undefined }) => {
+const DetailHeader = ({ meetingData, id }: { meetingData: MeetingDetailDto | undefined; id: string | undefined; }) => {
+  const navigate = useNavigate();
 
   const formatDate = (date: string): string => {
     return `${date.split(" ")[0].split("-")[1]}시 ${date.split(" ")[0].split("-")[1]}분`;
@@ -24,6 +26,10 @@ const DetailHeader = ({ meetingData }: { meetingData: MeetingDetailDto | undefin
     return `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
   };
 
+  const routeToModify = () => {
+    navigate(`/meeting/modify/${id}`);
+  }
+
   return (
     <header className='flex flex-col items-center border-b pb-7'>
       <div className='max-w-screen-xl w-screen px-24 '>
@@ -40,16 +46,22 @@ const DetailHeader = ({ meetingData }: { meetingData: MeetingDetailDto | undefin
               <span className='text-3xl font-semibold'>{`${meetingData && formatDate(meetingData?.meetingStart)}`}</span>
               <span className='text-xl font-semibold'>{`${meetingData && convertTo12HourFormat(meetingData.meetingStart.split(" ")[1])} ~`}</span>
             </div>
-            <div className='flex items-center gap-2 '>
+            <div className='flex items-center gap-3'>
               <MdOutlineTimer className='text-[#ff4f5d] text-xl' />
-              <span className='text-xl font-semibold'>{`${meetingData?.meetingDuration && convertToMinutesSeconds(meetingData.meetingDuration + '')}분`}</span>
-              <FaRegHourglass className='text-[#ff4f5d] text-xl' />
-              <span className='text-xl font-semibold'>{`${meetingData?.term && convertToMinutesSeconds(meetingData.term)}초`}</span>
+              <span className='text-xl font-semibold'>{`${meetingData?.meetingDuration && convertToMinutesSeconds(meetingData.meetingDuration + '')}`}</span>
+              <FaRegHourglass className='text-[#ff4f5d] text-xl ml-2' />
+              <span className='text-xl font-semibold'>{`${meetingData?.term && convertToMinutesSeconds(meetingData.term)}`}</span>
             </div>
           </div>
-          <div>
-            <button className='border border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white text-[#ff4f5d] rounded-3xl px-4 py-2'>
+          <div className="flex gap-3">
+            <button
+              onClick={routeToModify}
+              className='border border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white text-[#ff4f5d] rounded-3xl px-4 py-2'>
               미팅방 수정
+            </button>
+            <button
+              className='border border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white text-[#ff4f5d] rounded-3xl px-4 py-2'>
+              미팅 시작하기
             </button>
           </div>
         </div>
