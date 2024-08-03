@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SetMeetingHeader from '../components/CreateAndModify/SetMeetingHeader';
 import SetMeetingNameBox from '../components/CreateAndModify/SetMeetingNameBox';
 import SetMeetingStarBox from '../components/CreateAndModify/SetMeetingStarBox';
@@ -67,6 +67,11 @@ const CreatePage: React.FC = () => {
   const cancelHandler = () => {
     navigate('/meeting/yet');
   }
+
+  useEffect(() => {
+    resetStore();
+    resetTimeStore();
+  }, [])
 
   return (
     <div className='flex flex-col items-center'>
