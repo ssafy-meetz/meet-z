@@ -16,7 +16,7 @@ const getMeetingDetail = async (meetingId: number, accessToken: string) => {
       const status = error.response.status;
       switch (status) {
         case 401:
-          throw new Error("접근 권한이 없습니다."); 7
+          throw new Error("접근 권한이 없습니다.");
         case 404:
           throw new Error("Meeting not found");
         default:
