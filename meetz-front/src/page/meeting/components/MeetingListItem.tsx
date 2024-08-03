@@ -26,12 +26,12 @@ const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
         <div className='text-[20px] text-[#7d7d7d] cursor-default'>
           {meeting.meetingEnd.split(" ")[0].split("-")[0] !== '0001' ? `참여인원 : ${meeting.cnt}명` : `참여인원 : ${meeting.cnt}명 예정`}
         </div>
-        <button
+        {meeting.meetingEnd.split(" ")[0].split("-")[0] !== '0001' ? '' : (<button
           onClick={() => clickRouter('modify')}
           className='mt-2 bg-transparent border border-[#FF4F5D] text-[#FF4F5D] py-1 px-2 rounded-full transition duration-200 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105'
         >
           이벤트 수정
-        </button>
+        </button>)}
       </div>
     </div>
   )

@@ -18,7 +18,7 @@ import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
 import fetchUserData from '../../../lib/fetchUserData';
 
 
-const CreateMeeting: React.FC = () => {
+const CreatePage: React.FC = () => {
 
   useCheckAuth('MANAGER');
   const navigate = useNavigate();
@@ -108,4 +108,4 @@ const CreateMeeting: React.FC = () => {
   );
 };
 
-export default CreateMeeting;
+export default CreatePage;
