@@ -65,7 +65,7 @@ const DetailPage = () => {
 
   return (
     <div ref={ref}>
-      <DetailHeader meetingData={meetingData} />
+      <DetailHeader meetingData={meetingData} id={id} />
       <main className='flex flex-col items-center'>
         <DetailRoomList starList={meetingData?.starList} />
         <div className='max-w-screen-xl w-screen px-24 pt-24 pb-60'>

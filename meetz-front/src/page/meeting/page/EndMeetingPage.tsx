@@ -18,12 +18,13 @@ const EndMeetingPage = () => {
   const [curMeetingData, setCurMeetingData] = useState<MeetingMonthData>({});
   const [beforetMeetingData, setBeforeMeetingData] = useState<MeetingMonthData>({});
   const { accessToken } = fetchUserData();
+  const [meetingCompay, setMeetingCompany] = useState("");
 
   useCheckAuth('MANAGER');
 
   const fetchEndMeetingData = async () => {
     const { data } = await getEndMeetingList(accessToken || "");
-    return data.month;
+    return data;
   };
 
   const transformMeetingData = (data: any, months: string[]) => {
@@ -41,9 +42,10 @@ const EndMeetingPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchEndMeetingData();
-      const curData = transformMeetingData(data, [curMonth]);
-      const beforeData = transformMeetingData(data, [beforeMonth]);
+      const { month, company } = await fetchEndMeetingData();
+      setMeetingCompany(company);
+      const curData = transformMeetingData(month, [curMonth]);
+      const beforeData = transformMeetingData(month, [beforeMonth]);
       setCurMeetingData(curData);
       setBeforeMeetingData(beforeData);
     };
@@ -53,7 +55,7 @@ const EndMeetingPage = () => {
 
   return (
     <div className='mb-40'>
-      <MeetingListTitle />
+      <MeetingListTitle company={meetingCompay} />
       <MeetingList isEnd={true} month={curMonth} meetings={curMeetingData[curMonth] || {}} />
       <MeetingList isEnd={true} month={beforeMonth} meetings={beforetMeetingData[beforeMonth] || {}} />
     </div>
