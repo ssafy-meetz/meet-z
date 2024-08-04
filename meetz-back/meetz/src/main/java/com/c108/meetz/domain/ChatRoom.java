@@ -28,16 +28,9 @@ public class ChatRoom {
     @OnDelete(action=OnDeleteAction.CASCADE)
     private Meeting meeting;
 
-    @CreatedDate
-    private LocalDateTime recentChat;
-
     @Builder
     public ChatRoom (Meeting meeting) {
         this.meeting = meeting;
-    }
-
-    public void updateRecentChat(LocalDateTime recentChat) {
-        this.recentChat = recentChat;
     }
 
 }
