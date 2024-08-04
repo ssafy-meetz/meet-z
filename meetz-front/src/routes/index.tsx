@@ -13,6 +13,7 @@ import SessionPage from '../page/session/SessionPage';
 import SettingPage from '../page/setting/page/SettingPage';
 import ChatPage from '../page/meeting/page/ChatPage';
 import LoadChatPage from '../page/meeting/page/LoadChatPage';
+import SessionSwitchPage from '../page/session/SessionSwitchPage';
 
 const Router: React.FC = () => {
   return (
@@ -35,6 +36,7 @@ const Router: React.FC = () => {
           <Route path='monitor/:meetingId' element={<MonitorPage />} />
         </Route>
         <Route path='/session' element={<SessionPage />} />
+        <Route path='/switch' element={<SessionSwitchPage/>}/>
       </Routes>
     </BrowserRouter>
   );
