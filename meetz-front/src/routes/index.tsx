@@ -13,6 +13,7 @@ import SessionPage from '../page/session/SessionPage';
 import ChatPage from '../page/meeting/page/ChatPage';
 import LoadChatPage from '../page/meeting/page/LoadChatPage';
 import FanSettingPage from '../page/setting/page/FanSettingPage';
+import SessionSwitchPage from '../page/session/SessionSwitchPage';
 
 const Router: React.FC = () => {
   return (
