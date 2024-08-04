@@ -30,22 +30,28 @@ public class Chat {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ChatRoom chatRoom;
 
-    private String role;
+    @Column(name="sender_role")
+    private String senderRole; //팬이 보냈는지 매니저가 보냈는지
 
+    @Column(name="sender_id")
     private int senderId;
+
+    @Column(name="receiver_id")
+    private int receiverId;
 
     private String content;
 
     @CreatedDate
     @Column(name= "created_at", updatable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+
     private LocalDateTime createdAt;
 
     @Builder
-    public Chat(ChatRoom chatRoom, String role, int senderId, String content) {
+    public Chat(ChatRoom chatRoom, String senderRole, int senderId, int receiverId, String content) {
         this.chatRoom = chatRoom;
-        this.role = role;
+        this.senderRole = senderRole;
         this.senderId = senderId;
+        this.receiverId = receiverId;
         this.content = content;
     }
 
