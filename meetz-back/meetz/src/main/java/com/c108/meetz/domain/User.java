@@ -23,6 +23,7 @@ public class User {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Meeting meeting;
 
+    @Column(name="origin_email")
     private String originEmail;
 
     private String email;
