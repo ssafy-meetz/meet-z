@@ -1,7 +1,7 @@
 import useMeetingTimeStore from "../../../../zustand/useMeetingTimeStore";
 
 const SetTimeDateBox = () => {
-  const { setSelectedDate } = useMeetingTimeStore();
+  const { setSelectedDate, selectedDate } = useMeetingTimeStore();
 
   return (
     <div className='flex gap-14 py-5 border-b items-center'>
@@ -9,7 +9,12 @@ const SetTimeDateBox = () => {
         <span className='text-xl text-[#3a3a3a] font-semibold'>날짜</span>
       </div>
       <div>
-        <input className='w-40' type="date" onChange={(e) => setSelectedDate(new Date(e.target.value))} />
+        <input
+          value={selectedDate ? selectedDate.toISOString().split("T")[0] : ''}
+          className='w-40'
+          type="date"
+          onChange={(e) => setSelectedDate(new Date(e.target.value))}
+        />
       </div>
     </div>
   );

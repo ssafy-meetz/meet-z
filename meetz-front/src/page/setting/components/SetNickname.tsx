@@ -56,8 +56,8 @@ const SetNickname: React.FC = () => {
   return (
     <div className='flex flex-col w-[790px] items-center justify-center'>
       <div className='w-full flex flex-col px-24 h-full justify-center gap-1'>
-        <span className='text-3xl font-semibold'>오늘 팬 싸인회에서</span>
-        <span className='text-3xl font-semibold'>
+        <span className='text-3xl font-semibold cursor-default'>오늘 팬 싸인회에서</span>
+        <span className='text-3xl font-semibold cursor-default'>
           사용할 닉네임을 설정해 주세요.
         </span>
         <input
@@ -66,7 +66,7 @@ const SetNickname: React.FC = () => {
           onChange={handleNicknameChange}
           className='p-3 mt-5 bg-white border rounded-md hover:border-[#ff4f5d] focus:border-[#FF4F5D] focus:outline-none border-[#7d7d7d]'
         />
-        <span className='text-[#7d7d7d] mt-2'>
+        <span className='text-[#7d7d7d] mt-2 cursor-default'>
           공백/기호를 제외하고 10자 이내
         </span>
       </div>

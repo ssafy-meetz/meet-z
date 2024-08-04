@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SetCam from '../components/SetCam';
 import SetMemo from '../components/SetMemo';
 import SetNickname from '../components/SetNickname';
@@ -7,9 +7,11 @@ import ChattingBox from '../components/ChattingBox';
 import StepBox from '../components/StepBox';
 import logo from '/src/assets/images/logo.png';
 import useEnvSettingStore from '../../../zustand/useEnvSettingStore';
+import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 
-const SettingPage: React.FC = () => {
-  const { currentStep, setStep, isChattingBoxVisible, toggleChattingBox } =
+const FanSettingPage: React.FC = () => {
+  useCheckAuth('FAN');
+  const { currentStep, isChattingBoxVisible, toggleChattingBox } =
     useEnvSettingStore();
 
   const steps = [
@@ -24,7 +26,7 @@ const SettingPage: React.FC = () => {
       <div className='max-w-screen-xl w-screen px-24 '>
         <div className='flex justify-between items-end font-medium text-xl mb-2'>
           <img src={logo} alt='logo' className='w-[169px] h-[32px]' />
-          <span className='text-[#ff7777] font-semibold text-shadow-shine'>
+          <span className='text-[#ff7777] font-semibold text-shadow-shine cursor-default'>
             우주 최강 이승원 앨범 출시 팬 싸인회
           </span>
         </div>
@@ -35,7 +37,6 @@ const SettingPage: React.FC = () => {
             <StepBox
               steps={steps}
               currentStep={currentStep}
-              setStep={setStep}
               toggleChattingBox={toggleChattingBox}
             />
           )}
@@ -50,4 +51,4 @@ const SettingPage: React.FC = () => {
   );
 };
 
-export default SettingPage;
+export default FanSettingPage;

@@ -53,7 +53,7 @@ const useMeetingSettingStore = create<MeetingSettingState>((set) => ({
   setExcelFile: (excelFile) => set({ excelFile }),
   setTempNotBlackList: (tempNotBlackList) => set({ tempNotBlackList }),
   resetTempNotBlackList: () => set({ tempNotBlackList: [] }),
-  saveNotBlackList: () => set((state) => ({ notBlackList: state.tempNotBlackList })),
+  saveNotBlackList: () => set((state) => ({ notBlackList: [...state.tempNotBlackList] })),
   resetStore: () => set({
     meetingName: '',
     stars: [],

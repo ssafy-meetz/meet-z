@@ -46,10 +46,17 @@ const LoginBox = () => {
         return;
       }
 
-      //스타 또는 팬이라면 미팅 페이지로 이동
-      else{
+      //팬이라면 미팅 설정페이지로 이동
+      if (role === 'FAN') {
         navigate('/setting');
+        return;
       }
+
+      // 스타라면 미팅 대기 페이지로 이동
+      if (role === 'STAR') {
+
+      }
+
     } catch (error: any) {
       if (error.message === '존재하지 않는 회원입니다.') {
         alert('존재하지 않는 회원입니다.');

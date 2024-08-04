@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SetMeetingHeader from '../components/CreateAndModify/SetMeetingHeader';
 import SetMeetingNameBox from '../components/CreateAndModify/SetMeetingNameBox';
 import SetMeetingStarBox from '../components/CreateAndModify/SetMeetingStarBox';
@@ -18,7 +18,7 @@ import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
 import fetchUserData from '../../../lib/fetchUserData';
 
 
-const CreateMeeting: React.FC = () => {
+const CreatePage: React.FC = () => {
 
   useCheckAuth('MANAGER');
   const navigate = useNavigate();
@@ -68,6 +68,11 @@ const CreateMeeting: React.FC = () => {
     navigate('/meeting/yet');
   }
 
+  useEffect(() => {
+    resetStore();
+    resetTimeStore();
+  }, [])
+
   return (
     <div className='flex flex-col items-center'>
       <div className='max-w-screen-xl w-screen px-24'>
@@ -108,4 +113,4 @@ const CreateMeeting: React.FC = () => {
   );
 };
 
-export default CreateMeeting;
+export default CreatePage;
