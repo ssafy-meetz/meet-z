@@ -4,7 +4,7 @@ import com.c108.meetz.dto.ApiResponse;
 import com.c108.meetz.dto.response.ChatListResponseDto;
 import com.c108.meetz.dto.response.ChatRoomListResponseDto;
 import com.c108.meetz.service.ChatRoomService;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,22 +14,25 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api/chatroom")
+@RequiredArgsConstructor
 public class ChatRoomApi {
     private final ChatRoomService chatRoomService;
 
-    public ChatRoomApi(ChatRoomService chatRoomService) {
-        this.chatRoomService = chatRoomService;
-    }
-
-    @GetMapping("{meetingId}")
+    @GetMapping("/{meetingId}")
     ApiResponse<ChatRoomListResponseDto> getChatRoomList(@PathVariable int meetingId){
         ChatRoomListResponseDto response = chatRoomService.getChatRoomList(meetingId);
         return ApiResponse.success(OK, response);
     }
 
-    @GetMapping("{chatRoomId}")
-    ApiResponse<ChatListResponseDto> getChatList(@PathVariable int chatRoomId){
-        ChatListResponseDto response = chatRoomService.getChatList(chatRoomId);
+    @GetMapping("/{meetingId}/{userId}")
+    ApiResponse<ChatListResponseDto> getChatListForManager(@PathVariable int meetingId, @PathVariable int userId){
+        ChatListResponseDto response = chatRoomService.getChatListForManager(meetingId, userId);
+        return ApiResponse.success(OK, response);
+    }
+
+    @GetMapping("/{meetingId}/fan")
+    ApiResponse<ChatListResponseDto> getChatListForFan(@PathVariable int meetingId){
+        ChatListResponseDto response = chatRoomService.getChatListForFan(meetingId);
         return ApiResponse.success(OK, response);
     }
 
