@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ public class Meeting {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Manager manager;
 
     @NotNull

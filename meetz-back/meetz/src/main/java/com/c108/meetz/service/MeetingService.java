@@ -1,5 +1,6 @@
 package com.c108.meetz.service;
 
+import com.c108.meetz.domain.ChatRoom;
 import com.c108.meetz.domain.Manager;
 import com.c108.meetz.domain.Meeting;
 import com.c108.meetz.domain.User;
@@ -8,10 +9,7 @@ import com.c108.meetz.dto.request.MeetingSaveRequestDto;
 import com.c108.meetz.dto.response.*;
 import com.c108.meetz.dto.response.StarListResponseDto.StarList;
 import com.c108.meetz.exception.*;
-import com.c108.meetz.repository.BlackListRepository;
-import com.c108.meetz.repository.ManagerRepository;
-import com.c108.meetz.repository.MeetingRepository;
-import com.c108.meetz.repository.UserRepository;
+import com.c108.meetz.repository.*;
 import com.c108.meetz.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -36,6 +34,7 @@ public class MeetingService {
     private final MeetingRepository meetingRepository;
     private final ManagerRepository managerRepository;
     private final UserRepository userRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final BlackListRepository blackListRepository;
 
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("xls", "xlsx");
@@ -58,7 +57,10 @@ public class MeetingService {
                 .map(fanSaveDto -> fanSaveDto.toUser(meeting))
                 .collect(Collectors.toList());
         userRepository.saveAll(fans);
-
+        ChatRoom chatRoom = ChatRoom.builder()
+                .meeting(meeting)
+                .build();
+        chatRoomRepository.save(chatRoom); //채팅방 함께 생성
         return new MeetingSaveResponseDto(meeting.getMeetingId());
     }
 
