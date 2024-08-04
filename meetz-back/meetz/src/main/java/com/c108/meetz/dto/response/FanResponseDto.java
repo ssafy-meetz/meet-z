@@ -10,6 +10,6 @@ public record FanResponseDto(
 ) {
 
     public static FanResponseDto from(User user) {
-        return new FanResponseDto(user.getUserId(), user.getName(), user.getEmail(), user.getPhone());
+        return new FanResponseDto(user.getUserId(), user.getName(), user.getOriginEmail(), user.getPhone());
     }
 }

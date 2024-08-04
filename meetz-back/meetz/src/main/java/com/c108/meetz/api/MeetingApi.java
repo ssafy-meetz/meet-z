@@ -96,4 +96,10 @@ public class MeetingApi {
         meetingService.deleteMeeting(meetingId);
         return ApiResponse.success(OK);
     }
+
+    @GetMapping("/info")
+    public ApiResponse<MeetingInfoResponseDto> getMeetingInfo() {
+        MeetingInfoResponseDto response = meetingService.getMeetingInfo();
+        return ApiResponse.success(OK, response);
+    }
 }

@@ -13,7 +13,8 @@ public record FanSaveDto(String name, String email, String phone) {
         User user = new User();
         user.setMeeting(meeting);
         user.setName(this.name);
-        user.setEmail(this.email);
+        user.setOriginEmail(this.email);
+        user.setEmail(TemporaryGenerator.generateTemporaryEmail());
         user.setPhone(this.phone);
         user.setPassword(TemporaryGenerator.generateTemporaryPassword());
         user.setRole(FAN);

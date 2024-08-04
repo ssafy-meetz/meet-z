@@ -47,16 +47,20 @@ public class ChatRoomService {
         return ChatRoomListResponseDto.from(rooms);
     }
     public ChatListResponseDto getChatListForManager(int meetingId, int userId){
+        Manager manager = getManager();
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meetingId).orElseThrow(()-> new NotFoundException("chatRoom not found"));
+        if(manager.getManagerId() != chatRoom.getMeeting().getManager().getManagerId()){
+            throw new BadRequestException("접근 권한이 없습니다.");
+        }
         List<ChatList> chats = chatRepository.findAllByChatRoomAndUserId(chatRoom, userId).stream()
                 .map(chat -> ChatList.of(chat, chat.getSenderRole().equals("MANAGER")))
                 .toList();
         return ChatListResponseDto.from(chats);
     }
 
-    public ChatListResponseDto getChatListForFan(int meetingId){
-        ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meetingId).orElseThrow(()-> new NotFoundException("chatRoom not found"));
-        User user = getUser(meetingId);
+    public ChatListResponseDto getChatListForFan(){
+        User user = getUser();
+        ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(user.getMeeting().getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
         List<ChatList> chats = chatRepository.findAllByChatRoomAndUserId(chatRoom, user.getUserId()).stream()
                 .map(chat -> ChatList.of(chat, chat.getSenderRole().equals("FAN")))
                 .toList();
@@ -67,9 +71,9 @@ public class ChatRoomService {
         return managerRepository.findByEmail(email).orElseThrow(()->
                 new NotFoundException("manager not found"));
     }
-    private User getUser(int meetingId){
+    private User getUser(){
         String email = SecurityUtil.getCurrentUserEmail();
-        return userRepository.findByEmailAndMeeting_MeetingId(email, meetingId).orElseThrow(()->
+        return userRepository.findByEmail(email).orElseThrow(()->
                 new NotFoundException("user not found"));
     }
 
