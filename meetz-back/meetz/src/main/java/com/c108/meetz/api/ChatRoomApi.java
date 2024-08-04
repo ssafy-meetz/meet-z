@@ -30,9 +30,9 @@ public class ChatRoomApi {
         return ApiResponse.success(OK, response);
     }
 
-    @GetMapping("/{meetingId}/fan")
-    ApiResponse<ChatListResponseDto> getChatListForFan(@PathVariable int meetingId){
-        ChatListResponseDto response = chatRoomService.getChatListForFan(meetingId);
+    @GetMapping("/fan")
+    ApiResponse<ChatListResponseDto> getChatListForFan(){
+        ChatListResponseDto response = chatRoomService.getChatListForFan();
         return ApiResponse.success(OK, response);
     }
 
