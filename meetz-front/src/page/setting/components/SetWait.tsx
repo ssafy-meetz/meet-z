@@ -2,6 +2,7 @@ import useEnvSettingStore from '../../../zustand/useEnvSettingStore';
 
 const SetWait = () => {
   const { beforeStep } = useEnvSettingStore();
+  //SSE 수신 기다림 수신 되면, sessionId, starName localStorage로 이동!!
   return (
     <div className='flex flex-col w-[790px] items-center justify-center  '>
       <div className='w-full flex flex-col px-24 h-full justify-center gap-12'>

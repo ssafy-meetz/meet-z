@@ -8,14 +8,17 @@ import { useSessionStore } from '../../zustand/useSessionStore';
 
 function FanMeeting() {
   const { session, publisher, subscriber, joinSession} = useOpenvidu();
+  const {starName, setStartName} = useSessionStore();
   const [sessionId,setSessionId] = useState("");
   const [time,setTime] = useState(0);
   const [formatTime,setFormatTime] = useState("");
   useEffect(() => {
 	//백엔드 SSE 이벤트 수신 후 해당 값 설정(local Storage에도 저장?)
 	setSessionId("meetz")
-	//백엔드 통신 후 설정
+	//백엔드 통신 후 설정 Local storage에도 저장
 	setTime(90);
+	setStartName("라이언");
+	//
 	const secondId = setInterval(() => {
 		setTime(prevTime => {
 		  if (prevTime <= 1) {
@@ -59,6 +62,7 @@ function FanMeeting() {
 					<Session
 						publisher={publisher as Publisher}
 						subscriber={subscriber as Subscriber}
+						starName={starName}
 					/>
 				)}
 			</div>

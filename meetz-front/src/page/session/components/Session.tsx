@@ -10,24 +10,30 @@ import NoBlackList from '../../meeting/components/CreateAndModify/NoBlackList';
 interface SessionProps {
 	subscriber: Subscriber;
 	publisher: Publisher;
+	starName:String;
 }
 
 
-function Session({ subscriber, publisher }: SessionProps) {
+function Session({ subscriber, publisher,starName }: SessionProps) {
 	const [count,setCount] = useState(0);
-	const {starName, setStartName} = useSessionStore();
-	const [fanName, setFanName] = useState("");
-	const [role,setRole] = useState("");
-	const [memo,setMemo] = useState("");
-	const [takePhoto,setTakePhoto] = useState(false);
+	
+	const [fanName, setFanName] = useState<String|null>("");
+	const [role,setRole] = useState<String|null>("");
+	const [memo,setMemo] = useState<String|null>("");
+	const [takePhoto,setTakePhoto] = useState<boolean>(false);
 	const toggleTakePhoto=()=>{setTakePhoto(true);}
 	const handleCompleteTakePhoto=()=>{setTakePhoto(false);}
 	
 	useEffect(()=>{
-		// localStorage에서 가져올 데이터 값들
-		setRole("fan");
+
+		// const storedRole:String|null = window.sessionStorage.getItem('rl');
+		// const storedFanName:String|null = localStorage.getItem('nickname');
+		// const storedMemos:String|null = localStorage.getItem('memos');
+		// setRole(storedRole);
+		// setFanName(storedFanName);
+		// setMemo(storedMemos);
+		setRole("FAN");
 		setFanName("밍경잉");
-		setStartName("라이언");
 		setMemo("이어닝 너무 귀여워ㅠㅠ");
 
 	},[]);
@@ -126,7 +132,7 @@ function Session({ subscriber, publisher }: SessionProps) {
 		}
 	  };
 	const renderSubscribers = () => {
-		if(role=='star'){
+		if(role=='STAR'){
 			return (
 				<div className='flex'>
 					
@@ -172,8 +178,8 @@ function Session({ subscriber, publisher }: SessionProps) {
 						</div>
 					</div>
 					
-					<div className='flex flex-col justify-center items-center m-4'>
-						<div className="w-[846px] h-[80px] bg-[#FE9374] mt-2 p-4">
+					<div className='flex flex-col justify-center items-center mt-4'>
+						<div className="w-[846px] h-[80px] bg-[#FE9374] mb-4 p-4">
 							<p>{memo}</p>
 						</div>
 						<img className='w[48px] h-[48px]' src={camera_icon} onClick={toggleTakePhoto}/>
