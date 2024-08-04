@@ -22,8 +22,6 @@ export const useOpenvidu = () => {
     const joinSession = (id:string) => {
         if(sessionId!='')return;
         const OVs = new OpenVidu();
-        console.log("!!");
-        console.log(id);
         setSessionId(id);
         setOV(OVs);
         setSession(OVs.initSession());
