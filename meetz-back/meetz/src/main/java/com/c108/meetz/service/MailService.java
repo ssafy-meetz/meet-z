@@ -108,7 +108,7 @@ public class MailService {
 
         try {
             message.setFrom(senderEmail);
-            message.setRecipients(MimeMessage.RecipientType.TO, user.getEmail());
+            message.setRecipients(MimeMessage.RecipientType.TO, user.getOriginEmail());
             message.setSubject("[MEET:Z]팬싸인회 참여 안내 메일");
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm");
