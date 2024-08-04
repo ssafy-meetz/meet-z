@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import SetMeetingHeader from '../components/CreateAndModify/SetMeetingHeader';
 import SetMeetingNameBox from '../components/CreateAndModify/SetMeetingNameBox';
 import SetMeetingStarBox from '../components/CreateAndModify/SetMeetingStarBox';
-import SetMeetingFansBox from '../components/CreateAndModify/SetMeetingFansBox';
 import SetMeetingFanCountBox from '../components/CreateAndModify/SetMeetingFanCountBox';
 import SetTimeHeader from '../components/CreateAndModify/SetTimeHeader';
 import SetTimeDateBox from '../components/CreateAndModify/SetTimeDateBox';
@@ -22,7 +21,7 @@ import putMeetingToModify from '../../../apis/meeting/modifyMeeting';
 
 const ModifyPage: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
+  const { meetingId } = useParams<{ meetingId: string }>();
 
   useCheckAuth('MANAGER');
   const { isOpenModal, meetingName, stars, notBlackList, setTempNotBlackList, resetStore, setStars, saveNotBlackList, setMeetingName } = useMeetingSettingStore();
@@ -75,15 +74,15 @@ const ModifyPage: React.FC = () => {
     }
 
     try {
-      if (!id) {
+      if (!meetingId) {
         return;
       }
 
-      const { code } = await putMeetingToModify(requestData, +id, accessToken || "");
+      const { code } = await putMeetingToModify(requestData, +meetingId, accessToken || "");
       if (code === 200) {
         resetStore();
         resetTimeStore();
-        navigate(`/meeting/detail/${id}`)
+        navigate(`/meeting/detail/${meetingId}`)
       }
     } catch (error: any) {
       alert('항목을 모두 입력하세요');
@@ -95,8 +94,8 @@ const ModifyPage: React.FC = () => {
   }
 
   const fetchMeetingDetail = async () => {
-    if (id) {
-      const meetingIdNumber = parseInt(id, 10);
+    if (meetingId) {
+      const meetingIdNumber = parseInt(meetingId, 10);
       const { data, code } = await getMeetingDetail(meetingIdNumber, accessToken || "");
       if (code === 200) {
         const { meetingName, meetingStart, meetingDuration, term, starList, fanList } = data;

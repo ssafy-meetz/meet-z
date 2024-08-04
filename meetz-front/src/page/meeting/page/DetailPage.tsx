@@ -15,7 +15,7 @@ import Loading from '../../../common/Loading';
 
 const DetailPage = () => {
   useCheckAuth('MANAGER');
-  const { id } = useParams();
+  const { meetingId } = useParams();
   const { sendModalOpend, modalStep, openMailModal } = useDetailstore();
   const { accessToken } = fetchUserData();
   const [meetingData, setMeetingData] = useState<MeetingDetailDto>();
@@ -30,12 +30,12 @@ const DetailPage = () => {
   };
 
   const fetchMeetingData = async () => {
-    if (!id) {
+    if (!meetingId) {
       return;
     }
 
     try {
-      const { data, code } = await getMeetingDetail(+id, accessToken || "");
+      const { data, code } = await getMeetingDetail(+meetingId, accessToken || "");
       if (code === 200) {
         setMeetingData(data);
       }
@@ -65,7 +65,7 @@ const DetailPage = () => {
 
   return (
     <div ref={ref}>
-      <DetailHeader meetingData={meetingData} id={id} />
+      <DetailHeader meetingData={meetingData} meetingId={meetingId} />
       <main className='flex flex-col items-center'>
         <DetailRoomList starList={meetingData?.starList} />
         <div className='max-w-screen-xl w-screen px-24 pt-24 pb-60'>
