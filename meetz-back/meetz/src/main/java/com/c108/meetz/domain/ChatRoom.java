@@ -23,23 +23,16 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int chatRoomId;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="user_id")
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="meeting_id")
     @OnDelete(action=OnDeleteAction.CASCADE)
     private Meeting meeting;
 
     @CreatedDate
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime recentChat;
 
     @Builder
-    public ChatRoom (User user, Meeting meeting) {
-        this.user = user;
+    public ChatRoom (Meeting meeting) {
         this.meeting = meeting;
     }
 
