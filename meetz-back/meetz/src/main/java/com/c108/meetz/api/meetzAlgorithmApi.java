@@ -51,21 +51,6 @@ public class meetzAlgorithmApi {
         }
 
 
-//
-//        while (!que.isEmpty()) {
-//            int[] cur = que.poll();
-//            System.out.println("팬: " + cur[0] + ", 아이돌:" + cur[1]);
-//        }
-
-
-        //보내질 정보
-//        SessionResponseDto sessionResponseDto = new SessionResponseDto("승원",
-//                180,
-//                "승팬싸");
-//
-
-
-
     }
 
 }
