@@ -9,28 +9,39 @@ import { useSessionStore } from '../../zustand/useSessionStore';
 function FanMeeting() {
   const { session, publisher, subscriber, joinSession} = useOpenvidu();
   const [sessionId,setSessionId] = useState("");
-  const [second,setSecond] = useState(0);
+  const [time,setTime] = useState(0);
+  const [formatTime,setFormatTime] = useState("");
   useEffect(() => {
-	//localStorage에 가져올 값들
+	//백엔드 SSE 이벤트 수신 후 해당 값 설정(local Storage에도 저장?)
 	setSessionId("meetz")
-	setSecond(90);
+	//백엔드 통신 후 설정
+	setTime(90);
 	const secondId = setInterval(() => {
-		setSecond(prevSecond => {
-		  if (prevSecond <= 1) {
+		setTime(prevTime => {
+		  if (prevTime <= 1) {
 			clearInterval(secondId);
 			return 0;
 		  }
-		  return prevSecond - 1;
+		  return prevTime - 1;
 		});
 	  }, 1000);;
 
 	return () => clearInterval(secondId);
   }, []);
   useEffect(()=>{
+	const formatTime = (totalTime:number)=>{
+		const minutes = Math.floor(totalTime/60);
+		const seconds = Math.floor(totalTime%60);
+		return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`
+	}
+	setFormatTime(formatTime(time));
+  },[time])
+  useEffect(()=>{
 	if(sessionId==='')return;
 	joinSession(sessionId);
   },[sessionId])
   
+
 
   return (
 	<div>
@@ -40,7 +51,7 @@ function FanMeeting() {
 			</div>
 			<div className='flex w-[846px] justify-between'>
 				<p className='text-xl text-white font-bold'>MEETZMEETZ 팬싸인회</p>
-				<p className='text-2xl text-[#FE9374] font-semibold'>{(second/60).toFixed()}:{second%60}</p>
+				<p className='text-2xl text-[#FE9374] font-semibold'>{formatTime}</p>
 			</div>
 
 			<div className='flex w-[846px]' style={{transform:'none'}}>

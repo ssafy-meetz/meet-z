@@ -36,6 +36,7 @@ const Router: React.FC = () => {
           <Route path='monitor/:meetingId' element={<MonitorPage />} />
         </Route>
         <Route path='/session' element={<SessionPage />} />
+        <Route path='/switch' element={<SessionSwitchPage/>}/>
       </Routes>
     </BrowserRouter>
   );

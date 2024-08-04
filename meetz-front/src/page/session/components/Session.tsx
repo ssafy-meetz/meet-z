@@ -25,7 +25,7 @@ function Session({ subscriber, publisher }: SessionProps) {
 	
 	useEffect(()=>{
 		// localStorage에서 가져올 데이터 값들
-		setRole("star");
+		setRole("fan");
 		setFanName("밍경잉");
 		setStartName("라이언");
 		setMemo("이어닝 너무 귀여워ㅠㅠ");

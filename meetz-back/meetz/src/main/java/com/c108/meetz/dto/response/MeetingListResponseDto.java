@@ -12,14 +12,16 @@ import java.util.Map;
 
 @Getter
 public class MeetingListResponseDto {
+    private String company;
     private Map<String, Map<String, List<MeetingList>>> month;
 
-    private MeetingListResponseDto(Map<String, Map<String, List<MeetingList>>> month) {
+    private MeetingListResponseDto(String company, Map<String, Map<String, List<MeetingList>>> month) {
         this.month = month;
+        this.company = company;
     }
 
-    public static MeetingListResponseDto from(Map<String, Map<String, List<MeetingList>>> month){
-        return new MeetingListResponseDto(month);
+    public static MeetingListResponseDto from(String company, Map<String, Map<String, List<MeetingList>>> month){
+        return new MeetingListResponseDto(company, month);
     }
 
     @Getter
@@ -48,10 +50,5 @@ public class MeetingListResponseDto {
             meetingList.setCnt(cnt);
             return meetingList;
         }
-
     }
-
-
-
-
 }
