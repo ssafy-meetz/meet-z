@@ -268,14 +268,45 @@ public class MeetingService {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
 
-        // 추후 채팅방 구현 시 미팅에 속한 사용자와 채팅방 삭제 쿼리 추가 논의 필요
         meetingRepository.delete(meeting);
+    }
+
+    public MeetingInfoResponseDto getMeetingInfo() {
+        if(!SecurityUtil.getCurrentUserRole().equals("FAN")){
+            throw new BadRequestException("접근 권한이 없습니다.");
+        }
+        User currentUser = getUser();
+        Meeting meeting = meetingRepository.findById(currentUser.getMeeting().getMeetingId()).orElseThrow(() ->
+                new NotFoundException("Meeting not found"));
+        List<User> fanList = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN);
+        int userPosition = 0;
+        for(int i = 0; i<fanList.size(); i++){
+            if(fanList.get(i).getUserId()==currentUser.getUserId()){
+                userPosition = i+1;
+                break;
+            }
+        }
+        List<StarList> starList = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), STAR).stream()
+                .map(user-> {
+                    StarList star = StarList.from(user);
+                    star.setEmail(null);
+                    star.setPassword(null);
+                    return star;
+                })
+                .toList();
+        return MeetingInfoResponseDto.of(meeting, starList, userPosition);
     }
 
     private Manager getManager(){
         String email = SecurityUtil.getCurrentUserEmail();
         return managerRepository.findByEmail(email).orElseThrow(()->
                 new NotFoundException("manager not found"));
+    }
+
+    private User getUser(){
+        String email = SecurityUtil.getCurrentUserEmail();
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new NotFoundException("user not found"));
     }
 
 }
