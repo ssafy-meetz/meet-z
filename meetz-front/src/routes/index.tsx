@@ -10,9 +10,9 @@ import MonitorPage from '../page/meeting/page/MonitorPage';
 import CreatePage from '../page/meeting/page/CreatePage';
 import ModifyPage from '../page/meeting/page/ModifyPage';
 import SessionPage from '../page/session/SessionPage';
-import SettingPage from '../page/setting/page/SettingPage';
 import ChatPage from '../page/meeting/page/ChatPage';
 import LoadChatPage from '../page/meeting/page/LoadChatPage';
+import FanSettingPage from '../page/setting/page/FanSettingPage';
 import SessionSwitchPage from '../page/session/SessionSwitchPage';
 
 const Router: React.FC = () => {
@@ -21,7 +21,7 @@ const Router: React.FC = () => {
       <Routes>
         <Route path='/' element={<LoginPage />} />
         <Route path='/signup' element={<SignupPage />} />
-        <Route path='/setting' element={<SettingPage />} />
+        <Route path='/setting' element={<FanSettingPage />} />
         <Route path='/manage/:meetingId' element={<ChatPage />} />
         <Route path='/meeting' element={<MeetingLayout />}>
           {/* 미팅 미완료 */}
