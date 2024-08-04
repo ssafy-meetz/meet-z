@@ -23,13 +23,13 @@ public class User {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Meeting meeting;
 
+    private String originEmail;
+
     private String email;
 
     private String password;
 
     private String name;
-
-    private String nickname;
 
     private String phone;
 
