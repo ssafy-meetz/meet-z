@@ -9,11 +9,15 @@ import com.c108.meetz.exception.NotFoundException;
 import com.c108.meetz.repository.*;
 import com.c108.meetz.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import static com.c108.meetz.domain.Role.FAN;
 import static com.c108.meetz.dto.response.ChatListResponseDto.*;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -31,37 +35,33 @@ public class ChatRoomService {
         if(meeting.getManager().getManagerId() != manager.getManagerId()){
             throw new BadRequestException("접근 권한이 없습니다.");
         }
-        List<ChatRoomList> rooms = chatRoomRepository.findByMeetingId(meetingId).stream()
-                .map(room -> {
-                    Chat chat = chatRepository.findFirstChatByChatRoomId(room.getChatRoomId());
-                    return ChatRoomList.of(room, chat);
+        ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meetingId).orElseThrow(()-> new NotFoundException("chatRoom not found"));
+        List<User> users = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
+        List<ChatRoomList> rooms = users.stream()
+                .map(user -> {
+                    Chat chat = chatRepository.findRecentChatByChatRoomAndUserId(chatRoom, user.getUserId(), PageRequest.of(0, 1)).stream().findFirst().orElse(null);
+                    return ChatRoomList.of(chatRoom, chat, user);
                 })
-                .toList();
+                .sorted(ChatRoomList.BY_RECENT_DATE_DESC)
+                .collect(Collectors.toList());
         return ChatRoomListResponseDto.from(rooms);
     }
-
-
-    public ChatListResponseDto getChatList(int chatRoomId){
-        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(()-> new NotFoundException("chatRoom not found"));
-        String role = SecurityUtil.getCurrentUserRole();
-        List<ChatList> chats = chatRepository.findAllChatByChatRoomId(chatRoomId).stream()
-                .map(chat -> ChatList.of(chat, chat.getRole().equals(role)))
+    public ChatListResponseDto getChatListForManager(int meetingId, int userId){
+        ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meetingId).orElseThrow(()-> new NotFoundException("chatRoom not found"));
+        List<ChatList> chats = chatRepository.findAllByChatRoomAndUserId(chatRoom, userId).stream()
+                .map(chat -> ChatList.of(chat, chat.getSenderRole().equals("MANAGER")))
                 .toList();
         return ChatListResponseDto.from(chats);
-//        if(role.equals("FAN")){
-//            User user = getUser(meetingId);
-//            chats = chatRepository.findAllChatByChatRoomId(chatRoomId).stream()
-//                    .map(chat -> ChatList.of(chat, chat.getRole().equals(role)))
-//                    .toList();
-//        }else{
-//            Manager manager = getManager();
-//            chats = chatRepository.findAllChatByChatRoomId(chatRoomId).stream()
-//                    .map(chat -> ChatList.of(chat, chat.getRole().equals(role)))
-//                    .toList();
-//        }
-
     }
 
+    public ChatListResponseDto getChatListForFan(int meetingId){
+        ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meetingId).orElseThrow(()-> new NotFoundException("chatRoom not found"));
+        User user = getUser(meetingId);
+        List<ChatList> chats = chatRepository.findAllByChatRoomAndUserId(chatRoom, user.getUserId()).stream()
+                .map(chat -> ChatList.of(chat, chat.getSenderRole().equals("FAN")))
+                .toList();
+        return ChatListResponseDto.from(chats);
+    }
     private Manager getManager(){
         String email = SecurityUtil.getCurrentUserEmail();
         return managerRepository.findByEmail(email).orElseThrow(()->
