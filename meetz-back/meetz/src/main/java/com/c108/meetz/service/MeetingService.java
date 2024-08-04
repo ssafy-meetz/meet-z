@@ -219,7 +219,7 @@ public class MeetingService {
                         )
                 ));
 
-        return MeetingListResponseDto.from(month);
+        return MeetingListResponseDto.from(manager.getCompany(), month);
     }
 
     //DTO 내부클래스를 사용하는 방법
