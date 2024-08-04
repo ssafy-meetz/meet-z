@@ -60,3 +60,10 @@ export type UserDto = {
   expireAt: string;
   accessToken: string;
 } | undefined
+
+export type ChatFanDto = {
+  id: number;
+  name: string;
+  Message: string;
+  time: string;
+}
