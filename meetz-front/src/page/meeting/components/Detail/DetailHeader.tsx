@@ -5,7 +5,7 @@ import { MdOutlineTimer } from "react-icons/md"
 import { FaRegHourglass } from "react-icons/fa6"
 import { useNavigate } from "react-router-dom"
 
-const DetailHeader = ({ meetingData, id }: { meetingData: MeetingDetailDto | undefined; id: string | undefined; }) => {
+const DetailHeader = ({ meetingData, meetingId }: { meetingData: MeetingDetailDto | undefined; meetingId: string | undefined; }) => {
   const navigate = useNavigate();
 
   const formatDate = (date: string): string => {
@@ -27,7 +27,14 @@ const DetailHeader = ({ meetingData, id }: { meetingData: MeetingDetailDto | und
   };
 
   const routeToModify = () => {
-    navigate(`/meeting/modify/${id}`);
+    navigate(`/meeting/modify/${meetingId}`);
+  }
+
+  const startMeeting = () => {
+    if (window.confirm('미팅을 시작하시겠습니까?')) {
+      // 채팅방 웹소켓 서버에 연결
+      navigate(`/meeting/load/${meetingId}`);
+    }
   }
 
   return (
@@ -60,6 +67,7 @@ const DetailHeader = ({ meetingData, id }: { meetingData: MeetingDetailDto | und
               미팅방 수정
             </button>
             <button
+              onClick={startMeeting}
               className='border border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white text-[#ff4f5d] rounded-3xl px-4 py-2'>
               미팅 시작하기
             </button>
