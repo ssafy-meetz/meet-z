@@ -3,11 +3,11 @@ package com.c108.meetz.dto.response;
 import com.c108.meetz.domain.Chat;
 import com.c108.meetz.domain.ChatRoom;
 import com.c108.meetz.domain.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -26,14 +26,17 @@ public class ChatRoomListResponseDto {
     public static class ChatRoomList {
         int chatRoomId;
         String name; //팬 이름
+        int userId;
         String recentChat;
-        @JsonFormat(pattern="MM/dd HH:mm")
         LocalDateTime recentDate;
 
-        public static ChatRoomList of (ChatRoom chatRoom, Chat chat) {
+        public static final Comparator<ChatRoomList> BY_RECENT_DATE_DESC = Comparator
+                .comparing(ChatRoomList::getRecentDate, Comparator.nullsLast(Comparator.reverseOrder()));
+        public static ChatRoomList of (ChatRoom chatRoom, Chat chat, User user) {
             ChatRoomList chatRoomList = new ChatRoomList();
             chatRoomList.setChatRoomId(chatRoom.getChatRoomId());
-            chatRoomList.setName(chatRoom.getUser().getName());
+            chatRoomList.setName(user.getName());
+            chatRoomList.setUserId(user.getUserId());
             if (chat == null) {
                 chatRoomList.setRecentChat(null);
                 chatRoomList.setRecentDate(null);
