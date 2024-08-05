@@ -155,12 +155,12 @@ public class MeetingService {
         }
         // 미팅 번호에 따라 팬과 스타 리스트를 조회
         // 팬 리스트와 스타 리스트를 DTO로 변환
-        List<StarResponseDto> starList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR).stream()
-                .map(StarResponseDto::from)
+        List<StarInfo> starList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR).stream()
+                .map(StarInfo::from)
                 .toList();
 
-        List<FanResponseDto> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
-                .map(FanResponseDto::from)
+        List<FanInfo> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
+                .map(FanInfo::from)
                 .toList();
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
         return MeetingDetailResponseDto.of(meeting, chatRoom.getChatRoomId(), starList, fanList);
@@ -251,8 +251,8 @@ public class MeetingService {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
 
-        List<FanResponseDto> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
-                .map(FanResponseDto::from)
+        List<FanInfo> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
+                .map(FanInfo::from)
                 .toList();
 
         return new FanListResponseDto(fanList);
@@ -271,7 +271,7 @@ public class MeetingService {
         meetingRepository.delete(meeting);
     }
 
-    public MeetingInfoResponseDto getMeetingInfo() {
+    public MeetingInfoFanResponseDto getMeetingInfo() {
         if(!SecurityUtil.getCurrentUserRole().equals("FAN")){
             throw new BadRequestException("접근 권한이 없습니다.");
         }
@@ -295,7 +295,7 @@ public class MeetingService {
                 })
                 .toList();
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
-        return MeetingInfoResponseDto.of(meeting, starList, userPosition, chatRoom.getChatRoomId(), currentUser.getNickname());
+        return MeetingInfoFanResponseDto.of(meeting, starList, userPosition, chatRoom.getChatRoomId(), currentUser.getNickname());
     }
 
     private Manager getManager(){
@@ -315,4 +315,17 @@ public class MeetingService {
         userRepository.updateNickname(user.getUserId(), nickname);
     }
 
+    public MeetingInfoStarResponseDto getMeetingInfoStar() {
+        if(!SecurityUtil.getCurrentUserRole().equals("STAR")){
+            throw new BadRequestException("접근 권한이 없습니다.");
+        }
+        User user = getUser();
+        Meeting meeting = meetingRepository.findById(user.getMeeting().getMeetingId()).orElseThrow(() ->
+                new NotFoundException("Meeting not found"));
+        List<FanNameInfo> fanList = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).stream()
+                .map(FanNameInfo::from)
+                .toList();
+        return MeetingInfoStarResponseDto.of(meeting, fanList);
+
+    }
 }
