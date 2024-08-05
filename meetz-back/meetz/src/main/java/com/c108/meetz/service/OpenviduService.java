@@ -91,13 +91,13 @@ public class OpenviduService {
     //스케줄러 테스트
     //cron(초 분 시 일 월 요일 (년))
     // * : 모든 값, /: 증분 값(0/15, 0부터 시작해 15마다), -: 범위
-    @Scheduled(cron = "1 0/5 * * * ?") //5분마다 실행
-    public void scheduleTaskTest() {
-        log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
-        //1. 미팅 시작 시간 30분 전에 방에 대한 모든 세션 생성(미팅 테이블에서 시작 시간 범위를 (현재 시간 + 30 == 미팅 시작 시간)인거 불러오기)
-        //2. 만약 미팅 세션이 안만들어진 방이라면 만들기
-        //3. 미팅 시작시간이 된 방들에 대해선 현재 접속중인 사람들에게 방 이동 명령을 하게 만들어주는 함수 실행
-    }
+//    @Scheduled(cron = "1 0/5 * * * ?") //5분마다 실행
+//    public void scheduleTaskTest() {
+//        log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
+//        //1. 미팅 시작 시간 30분 전에 방에 대한 모든 세션 생성(미팅 테이블에서 시작 시간 범위를 (현재 시간 + 30 == 미팅 시작 시간)인거 불러오기)
+//        //2. 만약 미팅 세션이 안만들어진 방이라면 만들기
+//        //3. 미팅 시작시간이 된 방들에 대해선 현재 접속중인 사람들에게 방 이동 명령을 하게 만들어주는 함수 실행
+//    }
 
     //미팅방 자동화 시스템 핵심 함수 (미팅 시작 시간이 되면 자동으로 실행된다.)
     public void automateMeetingRoom(int meetingId) {
