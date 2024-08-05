@@ -5,6 +5,7 @@ import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
 import com.c108.meetz.dto.response.*;
 import com.c108.meetz.exception.BadRequestException;
+import com.c108.meetz.service.AudioProcessingService;
 import com.c108.meetz.service.MailService;
 import com.c108.meetz.service.MeetingService;
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ public class MeetingApi {
 
     private final MeetingService meetingService;
     private final MailService mailService;
+    private final AudioProcessingService audioProcessingService;
 
     @PostMapping("")
     public ApiResponse<MeetingSaveResponseDto> createMeeting(@Valid @RequestBody MeetingSaveRequestDto meetingSaveRequestDto, BindingResult bindingResult) {
