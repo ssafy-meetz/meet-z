@@ -14,10 +14,10 @@ public record MeetingDetailResponseDto(
         int meetingDuration,
         int term,
         int chatRoomId,
-        List<StarResponseDto> starList,
-        List<FanResponseDto> fanList
+        List<StarInfo> starList,
+        List<FanInfo> fanList
 ) {
-    public static MeetingDetailResponseDto of(Meeting meeting, int chatRoomId, List<StarResponseDto> starList, List<FanResponseDto> fanList) {
+    public static MeetingDetailResponseDto of(Meeting meeting, int chatRoomId, List<StarInfo> starList, List<FanInfo> fanList) {
         return new MeetingDetailResponseDto(
                 meeting.getMeetingId(),
                 meeting.getMeetingName(),
