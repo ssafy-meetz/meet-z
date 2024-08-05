@@ -17,4 +17,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findByMeeting_MeetingIdAndRole(int meetingId, Role role);
 
     Optional<User> findByEmailAndMeeting_MeetingId(String email, int meetingId);
+
 }
