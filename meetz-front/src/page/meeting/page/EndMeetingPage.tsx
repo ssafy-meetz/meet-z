@@ -1,7 +1,7 @@
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import MeetingList from '../components/MeetingList';
 import MeetingListTitle from '../components/MeetingListTitle';
 import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
-import { useEffect, useState } from 'react';
 import getEndMeetingList from '../../../apis/meeting/getEndMeetingList';
 import { MeetingDto } from '../../../types/types';
 import fetchUserData from '../../../lib/fetchUserData';
@@ -18,14 +18,14 @@ const EndMeetingPage = () => {
   const [curMeetingData, setCurMeetingData] = useState<MeetingMonthData>({});
   const [beforetMeetingData, setBeforeMeetingData] = useState<MeetingMonthData>({});
   const { accessToken } = fetchUserData();
-  const [meetingCompay, setMeetingCompany] = useState("");
+  const [meetingCompany, setMeetingCompany] = useState("");
 
   useCheckAuth('MANAGER');
 
-  const fetchEndMeetingData = async () => {
+  const fetchEndMeetingData = useCallback(async () => {
     const { data } = await getEndMeetingList(accessToken || "");
     return data;
-  };
+  }, [accessToken]);
 
   const transformMeetingData = (data: any, months: string[]) => {
     const transformedData: MeetingMonthData = {};
@@ -51,11 +51,13 @@ const EndMeetingPage = () => {
     };
 
     fetchData();
-  }, [curMonth, beforeMonth]);
+  }, [accessToken, curMonth, beforeMonth]);
+
+  const memoizedMeetingCompany = useMemo(() => meetingCompany, [meetingCompany]);
 
   return (
     <div className='mb-40'>
-      <MeetingListTitle company={meetingCompay} />
+      <MeetingListTitle company={memoizedMeetingCompany} />
       <MeetingList isEnd={true} month={curMonth} meetings={curMeetingData[curMonth] || {}} />
       <MeetingList isEnd={true} month={beforeMonth} meetings={beforetMeetingData[beforeMonth] || {}} />
     </div>
