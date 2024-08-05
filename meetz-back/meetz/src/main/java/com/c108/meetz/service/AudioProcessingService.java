@@ -38,10 +38,10 @@ public class AudioProcessingService {
     @Value("${azure.speech.region}")
     private String serviceRegion;
 
-    @Value("${naver.api.client.id}")
+    @Value("${naver.client.id}")
     private String naverClientId;
 
-    @Value("${naver.api.client.secret}")
+    @Value("${naver.client.secret}")
     private String naverClientSecret;
 
     /**
