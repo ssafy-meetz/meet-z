@@ -52,8 +52,8 @@ const LoginBox = () => {
         try {
           const meetingInfo = await getMeetingInfoAtEnterFan(accessToken);
           if (meetingInfo && meetingInfo.meetingId !== null) {
-            const { meetingId, meetingStart, starList, chatRoomId, userPosition, meetingDuration, meetingName } = meetingInfo;
-            sessionStorage.setItem('mi', meetingId.toString());
+
+            sessionStorage.setItem('mi', JSON.stringify(meetingInfo));
             navigate('/setting');
           } else {
             throw new Error('미팅 정보를 불러오는 데 실패했습니다.');
