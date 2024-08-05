@@ -10,32 +10,25 @@ import NoBlackList from '../../../meeting/components/CreateAndModify/NoBlackList
 interface SessionProps {
 	subscriber: Subscriber;
 	publisher: Publisher;
-	starName:String;
 }
 interface Memo {
 	star: string;
 	text: string;
   }
 
-function Session({ subscriber, publisher,starName }: SessionProps) {
+function FanSession({ subscriber, publisher }: SessionProps) {
 	const [count,setCount] = useState(0);
-	
 	const [fanName, setFanName] = useState<String|null>("");
-	const [role,setRole] = useState<String|null>("");
 	const [memo,setMemo] = useState<String|null>("");
 	const [takePhoto,setTakePhoto] = useState<boolean>(false);
+	const {starName} = useSessionStore();
 	const toggleTakePhoto=()=>{setTakePhoto(true);}
 	const handleCompleteTakePhoto=()=>{setTakePhoto(false);}
 	
 	useEffect(()=>{
-
-		const storedRole:String|null = window.sessionStorage.getItem('rl');
 		const storedFanName:String|null = localStorage.getItem('nickname');
 		const storedMemos = localStorage.getItem('memos');
-		setRole(storedRole);
 		setFanName(storedFanName);
-		console.log("!!");
-		console.log(storedMemos);
 		if(storedMemos){
 			try{
 				const memos:Memo[] = JSON.parse(storedMemos);
@@ -147,30 +140,6 @@ function Session({ subscriber, publisher,starName }: SessionProps) {
 		}
 	  };
 	const renderSubscribers = () => {
-		if(role=='STAR'){
-			return (
-				<div className='flex'>
-					
-					<div className='relative w-1/2'   id='meetingVideo-star'>
-						<Video streamManager={publisher} />
-						{	!takePhoto&&
-							<p className='absolute top-0 left-0 p-1 text-white bg-black bg-opacity-75 rounded'>
-								{starName}
-							</p>
-						}
-					</div>
-					<div className='relative w-1/2'  id='meetingVideo-fan'>
-						<Video streamManager={subscriber} />
-						{	subscriber&&!takePhoto&&
-							<p className='absolute top-0 right-0 p-1 text-white bg-black bg-opacity-75 rounded'>
-								{fanName}
-							</p>
-						}
-						
-					</div>
-				</div>
-			);
-		}else{
 			return (
 				<div>
 					<div className='flex'>
@@ -200,9 +169,7 @@ function Session({ subscriber, publisher,starName }: SessionProps) {
 						<img className='w[48px] h-[48px]' src={camera_icon} onClick={toggleTakePhoto}/>
 					</div>
 				</div>
-			);
-		}
-		
+			)
 		
 	};
 	//3초 카운트 보여주는 html
@@ -223,4 +190,4 @@ function Session({ subscriber, publisher,starName }: SessionProps) {
 
 	return <>{renderSubscribers()}</>;
 }
-export default Session;
+export default FanSession;
