@@ -1,24 +1,17 @@
-import Session from '../components/Session';
 import { Session as OVSession, Subscriber, Publisher } from 'openvidu-browser';
 import { useOpenvidu } from '../../../../hooks/session/useOpenvidu';
 import { useEffect, useState } from 'react';
 import logo_white from '/src/assets/images/logo-white.png'
-
 import { useSessionStore } from '../../../../zustand/useSessionStore';
+import FanSession from '../components/FanSession';
 
-function FanMeeting() {
+function FanSessionPage() {
   const { session, publisher, subscriber, joinSession} = useOpenvidu();
-  const {starName, setStartName} = useSessionStore();
-  const [sessionId,setSessionId] = useState("");
   const [time,setTime] = useState(0);
   const [formatTime,setFormatTime] = useState("");
+  const {timer, token} = useSessionStore();
   useEffect(() => {
-	//백엔드 SSE 이벤트 수신 후 해당 값 설정(local Storage에도 저장?)
-	setSessionId("meetz")
-	//백엔드 통신 후 설정 Local storage에도 저장
-	setTime(90);
-	setStartName("이승원");
-	//
+	setTime(timer);
 	const secondId = setInterval(() => {
 		setTime(prevTime => {
 		  if (prevTime <= 1) {
@@ -40,9 +33,9 @@ function FanMeeting() {
 	setFormatTime(formatTime(time));
   },[time])
   useEffect(()=>{
-	if(sessionId==='')return;
-	joinSession(sessionId);
-  },[sessionId])
+	if(token==='')return;
+	joinSession(token);
+  },[token])
   
 
 
@@ -59,10 +52,9 @@ function FanMeeting() {
 
 			<div className='flex w-[846px]' style={{transform:'none'}}>
 				{session && (
-					<Session
+					<FanSession
 						publisher={publisher as Publisher}
 						subscriber={subscriber as Subscriber}
-						starName={starName}
 					/>
 				)}
 			</div>
@@ -73,4 +65,4 @@ function FanMeeting() {
 );
 }
 
-export default FanMeeting;
+export default FanSessionPage;
