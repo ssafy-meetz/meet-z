@@ -5,8 +5,8 @@ const SetMeetingFansBox = () => {
 
   const downloadFile = () => {
     const link = document.createElement('a');
-    link.href = `src/assets/fan_list.xlsx`;
-    link.download = 'fan_list.xlsx';
+    link.href = `/fanlist.xlsx`;
+    link.download = 'fanlist.xlsx';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
