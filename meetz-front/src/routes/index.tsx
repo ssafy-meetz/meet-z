@@ -15,7 +15,6 @@ import FanSettingPage from '../page/sessionContainer/setting/pages/FanSettingPag
 import RecordPage from '../page/RecordPage';
 import SessionContainerPage from '../page/sessionContainer/SessionContainerPage';
 
-
 const Router: React.FC = () => {
   return (
     <BrowserRouter>
@@ -31,8 +30,7 @@ const Router: React.FC = () => {
           <Route path='create' element={<CreatePage />} />
           <Route path='modify/:meetingId' element={<ModifyPage />} />
           <Route path='detail/:meetingId' element={<DetailPage />} />
-          {/* 블랙리스트 */}
-          <Route path='blacklist' element={<BlacklistCheckPage />} />
+
           {/* 미팅 완료 */}
           <Route path='end' element={<EndMeetingPage />} />
           <Route path='monitor/:meetingId' element={<MonitorPage />} />

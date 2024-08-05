@@ -42,6 +42,13 @@ export type StarDto = {
   password: string;
 }
 
+export type StarMeetingDto = {
+  name: string;
+  email: string;
+  password: string;
+  meetingRoomId: number;
+}
+
 export type FanDto = {
   name: string;
   email: string;
