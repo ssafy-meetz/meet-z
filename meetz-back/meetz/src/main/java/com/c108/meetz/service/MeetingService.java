@@ -162,8 +162,8 @@ public class MeetingService {
         List<FanResponseDto> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
                 .map(FanResponseDto::from)
                 .toList();
-
-        return MeetingDetailResponseDto.of(meeting, starList, fanList);
+        ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
+        return MeetingDetailResponseDto.of(meeting, chatRoom.getChatRoomId(), starList, fanList);
 
     }
 
@@ -294,7 +294,8 @@ public class MeetingService {
                     return star;
                 })
                 .toList();
-        return MeetingInfoResponseDto.of(meeting, starList, userPosition);
+        ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
+        return MeetingInfoResponseDto.of(meeting, starList, userPosition, chatRoom.getChatRoomId());
     }
 
     private Manager getManager(){
