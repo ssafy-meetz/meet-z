@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { ChatFanDto } from "../../../../types/types";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import ChatFanListItem from "./ChatFanListItem";
 
-const ChatFanList = ({ setSelectedFan, fanList }: { setSelectedFan: React.Dispatch<ChatFanDto | null>; fanList: ChatFanDto[] }) => {
+const ChatFanList = () => {
   const navigate = useNavigate();
 
   const handleButtonClick = () => {
@@ -26,7 +25,7 @@ const ChatFanList = ({ setSelectedFan, fanList }: { setSelectedFan: React.Dispat
       </div>
 
       {/* 채팅 버튼 목록 */}
-      <ChatFanListItem setSelectedFan={setSelectedFan} fanList={fanList} />
+      <ChatFanListItem />
     </div>
   )
 }

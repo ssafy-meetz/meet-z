@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { FaCircleArrowUp } from 'react-icons/fa6';
 import ChatWindowHeader from './ChatWindowHeader';
-import { ChatFanDto } from '../../../../types/types';
+import { useManagerChatStore } from '../../../../zustand/useManagerChatStore';
 
-interface ChatWindowProps {
-  fan: ChatFanDto | null;
-}
-
-const ChatWindow: React.FC<ChatWindowProps> = ({ fan }) => {
+const ChatWindow: React.FC = () => {
+  const { selectedFan } = useManagerChatStore();
   const [message, setMessage] = useState(''); // 입력된 메시지를 관리하는 상태
   const [managerResponses, setManagerResponses] = useState<string[]>([]); // 매니저의 답변 메시지 상태
 
-  if (!fan) {
+  if (!selectedFan) {
     return (
       <div className='flex-grow flex items-center justify-center h-full'>
         <img
@@ -44,7 +41,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ fan }) => {
     <div className='flex-grow'>
       <div className='h-full flex flex-col w-full'>
         {/* 선택된 팬의 이름 */}
-        <ChatWindowHeader fan={fan} />
+        <ChatWindowHeader />
 
         {/* 팬과의 대화 내용 */}
         <div
@@ -57,7 +54,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ fan }) => {
           {/* 팬이 보낸 메시지 */}
           <div className='flex justify-start'>
             <div className='bg-gray-100 p-3 max-w-sm text-lg rounded-lg shadow-sm rounded-bl-none'>
-              <span>{fan.Message}</span>
+              <span>{selectedFan.recentChat}</span>
             </div>
           </div>
 
