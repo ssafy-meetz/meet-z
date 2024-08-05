@@ -69,8 +69,9 @@ export type UserDto = {
 } | undefined
 
 export type ChatFanDto = {
-  id: number;
+  chatRoomId: number;
+  userId: number;
   name: string;
-  Message: string;
-  time: string;
+  recentChat: string;
+  recentDate: string;
 }
