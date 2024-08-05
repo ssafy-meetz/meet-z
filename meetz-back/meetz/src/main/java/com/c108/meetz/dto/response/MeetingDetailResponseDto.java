@@ -13,10 +13,11 @@ public record MeetingDetailResponseDto(
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime meetingEnd,
         int meetingDuration,
         int term,
+        int chatRoomId,
         List<StarResponseDto> starList,
         List<FanResponseDto> fanList
 ) {
-    public static MeetingDetailResponseDto of(Meeting meeting, List<StarResponseDto> starList, List<FanResponseDto> fanList) {
+    public static MeetingDetailResponseDto of(Meeting meeting, int chatRoomId, List<StarResponseDto> starList, List<FanResponseDto> fanList) {
         return new MeetingDetailResponseDto(
                 meeting.getMeetingId(),
                 meeting.getMeetingName(),
@@ -24,6 +25,7 @@ public record MeetingDetailResponseDto(
                 meeting.getMeetingEnd(),
                 meeting.getMeetingDuration(),
                 meeting.getTerm(),
+                chatRoomId,
                 starList,
                 fanList
         );
