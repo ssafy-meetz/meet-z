@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
-import useEnvSettingStore from '../../../zustand/useEnvSettingStore';
+import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
 import { TbTrashX } from 'react-icons/tb';
 
 interface Memo {
