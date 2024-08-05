@@ -177,7 +177,7 @@ public class MeetingService {
         meetingSaveRequestDto.updateMeeting(meeting);
         List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
         List<FanSaveDto> fanSaveDtoList = fans.stream()
-                .map(fan -> new FanSaveDto(fan.getName(), fan.getEmail(), fan.getPhone()))
+                .map(fan -> new FanSaveDto(fan.getName(), fan.getOriginEmail(), fan.getPhone()))
                 .collect(Collectors.toList());
         meetingSaveRequestDto.setFanList(fanSaveDtoList);
         meeting.setMeetingEnd(calculateMeetingEnd(meetingSaveRequestDto));
