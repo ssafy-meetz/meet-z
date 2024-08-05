@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import logo from '/src/assets/images/sessionlogo.png';
-import SessionLoading from '../../common/SessionLoading';
-import EndSession from './components/EndSession';
+import SessionLoading from '../../../../common/SessionLoading';
+import EndSession from '../components/EndSession';
 const SessionSwitchPage = () => {
   const [message, setMessage] = useState('스타와 팬을 연결 중이에요');
   const [fadeIn, setFadeIn] = useState(true);

@@ -2,10 +2,10 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Publisher, Subscriber } from 'openvidu-browser';
 import Video from './Video';
-import { useSessionStore } from '../../../zustand/useSessionStore';
+import { useSessionStore } from '../../../../zustand/useSessionStore';
 import html2canvas from 'html2canvas';
 import camera_icon from '/src/assets/images/camera.png';
-import NoBlackList from '../../meeting/components/CreateAndModify/NoBlackList';
+import NoBlackList from '../../../meeting/components/CreateAndModify/NoBlackList';
 
 interface SessionProps {
 	subscriber: Subscriber;

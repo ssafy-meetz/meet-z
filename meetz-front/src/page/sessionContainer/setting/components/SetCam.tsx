@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
-import useEnvSettingStore from '../../../zustand/useEnvSettingStore';
+import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
 
 const SetCam = () => {
   const { nextStep, beforeStep, currentStep } = useEnvSettingStore();

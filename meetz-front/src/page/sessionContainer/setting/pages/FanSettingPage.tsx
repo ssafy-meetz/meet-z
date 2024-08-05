@@ -6,8 +6,8 @@ import SetWait from '../components/SetWait';
 import ChattingBox from '../components/ChattingBox';
 import StepBox from '../components/StepBox';
 import logo from '/src/assets/images/logo.png';
-import useEnvSettingStore from '../../../zustand/useEnvSettingStore';
-import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
+import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
+import useCheckAuth from '../../../../hooks/meeting/useCheckAuth';
 
 const FanSettingPage: React.FC = () => {
   useCheckAuth('FAN');

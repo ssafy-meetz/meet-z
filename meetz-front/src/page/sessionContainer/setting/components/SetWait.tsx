@@ -1,4 +1,4 @@
-import useEnvSettingStore from '../../../zustand/useEnvSettingStore';
+import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
 
 const SetWait = () => {
   const { beforeStep } = useEnvSettingStore();
