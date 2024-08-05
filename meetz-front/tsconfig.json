@@ -14,6 +14,10 @@
     "noUnusedParameters": false,
     "allowJs": true, // JavaScript 파일을 허용
     "checkJs": false, // JavaScript 파일에서 타입 검사를 하지 않음
-    "jsx": "react" // JSX 지원, React를 사용하는 경우
+    "jsx": "react", // JSX 지원, React를 사용하는 경우
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ]
   }
 }

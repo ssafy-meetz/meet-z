@@ -26,15 +26,12 @@ function Session({ subscriber, publisher,starName }: SessionProps) {
 	
 	useEffect(()=>{
 
-		// const storedRole:String|null = window.sessionStorage.getItem('rl');
-		// const storedFanName:String|null = localStorage.getItem('nickname');
-		// const storedMemos:String|null = localStorage.getItem('memos');
-		// setRole(storedRole);
-		// setFanName(storedFanName);
-		// setMemo(storedMemos);
-		setRole("FAN");
-		setFanName("밍경잉");
-		setMemo("이어닝 너무 귀여워ㅠㅠ");
+		const storedRole:String|null = window.sessionStorage.getItem('rl');
+		const storedFanName:String|null = localStorage.getItem('nickname');
+		const storedMemos:String|null = localStorage.getItem('memos');
+		setRole(storedRole);
+		setFanName(storedFanName);
+		setMemo(storedMemos);
 
 	},[]);
 	useEffect(()=>{
