@@ -53,21 +53,12 @@ public class AudioProcessingService {
     public String transcribeAudio(MultipartFile file) {
         File tempWavFile = null;
         try {
-            // MP4 파일을 임시 파일로 저장
-            File tempMp4File = File.createTempFile("audio", ".mp4");
-            try (FileOutputStream fos = new FileOutputStream(tempMp4File)) {
+            // WAV 파일을 임시 파일로 저장
+            tempWavFile = File.createTempFile("audio", ".wav");
+            try (FileOutputStream fos = new FileOutputStream(tempWavFile)) {
                 // 업로드된 파일의 입력 스트림을 임시 파일의 출력 스트림으로 복사
                 IOUtils.copy(file.getInputStream(), fos);
             }
-
-            // MP4 파일을 WAV 파일로 변환
-            tempWavFile = File.createTempFile("audio", ".wav");
-            // ffmpeg 명령어를 사용하여 MP4 파일을 WAV 파일로 변환
-            String command = String.format("ffmpeg -i %s -vn -acodec pcm_s16le -ar 44100 -ac 2 %s", tempMp4File.getAbsolutePath(), tempWavFile.getAbsolutePath());
-            // 주어진 명령어 실행을 위해 새로운 프로세스 생성, 파일 변환 과정 프로세스임.
-            Process process = Runtime.getRuntime().exec(command);
-            // 변환 프로세스가 완료될 때까지 대기
-            process.waitFor();
 
             // 변환된 WAV 파일을 사용하여 음성 인식
             // 변환된 WAV 파일을 입력으로 하는 AudioConfig 생성
