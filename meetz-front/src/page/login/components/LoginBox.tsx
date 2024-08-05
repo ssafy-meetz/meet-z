@@ -5,6 +5,7 @@ import useEmailValidation from '../../../hooks/form/useEmailValidation';
 import usePasswordValidation from '../../../hooks/form/usePasswordValidation';
 import postUserLogin from '../../../apis/auth/login';
 import setUserData from '../../../lib/setUserData';
+import getMeetingInfoAtEnterFan from '../../../apis/meeting/getMeetingInfoAtEnterFan';
 
 const LoginBox = () => {
   const navigate = useNavigate();
@@ -48,8 +49,18 @@ const LoginBox = () => {
 
       //팬이라면 미팅 설정페이지로 이동
       if (role === 'FAN') {
-        navigate('/setting');
-        return;
+        try {
+          const meetingInfo = await getMeetingInfoAtEnterFan(accessToken);
+          if (meetingInfo && meetingInfo.meetingId !== null) {
+            const { meetingId, meetingStart, starList, chatRoomId, userPosition, meetingDuration, meetingName } = meetingInfo;
+            sessionStorage.setItem('mi', meetingId.toString());
+            navigate('/setting');
+          } else {
+            throw new Error('미팅 정보를 불러오는 데 실패했습니다.');
+          }
+        } catch (error) {
+          alert(error);
+        }
       }
 
       // 스타라면 미팅 대기 페이지로 이동
