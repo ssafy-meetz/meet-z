@@ -1,3 +1,4 @@
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const MeetingListTitle = ({ company }: { company: string }) => {
@@ -27,4 +28,4 @@ const MeetingListTitle = ({ company }: { company: string }) => {
   )
 }
 
-export default MeetingListTitle
+export default React.memo(MeetingListTitle);
