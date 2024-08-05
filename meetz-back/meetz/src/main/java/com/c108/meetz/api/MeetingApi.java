@@ -100,8 +100,8 @@ public class MeetingApi {
     }
 
     @GetMapping("/info")
-    public ApiResponse<MeetingInfoResponseDto> getMeetingInfo() {
-        MeetingInfoResponseDto response = meetingService.getMeetingInfo();
+    public ApiResponse<MeetingInfoFanResponseDto> getMeetingInfo() {
+        MeetingInfoFanResponseDto response = meetingService.getMeetingInfo();
         return ApiResponse.success(OK, response);
     }
 
@@ -120,5 +120,11 @@ public class MeetingApi {
     public ApiResponse<Void> updateNickname(@RequestParam(value="nickname") String nickname){
         meetingService.updateNickname(nickname);
         return ApiResponse.success(OK);
+    }
+
+    @GetMapping("/info/star")
+    public ApiResponse<MeetingInfoStarResponseDto> getMeetingInfoStar() {
+        MeetingInfoStarResponseDto response = meetingService.getMeetingInfoStar();
+        return ApiResponse.success(OK, response);
     }
 }
