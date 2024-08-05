@@ -115,4 +115,10 @@ public class MeetingApi {
         TranscriptionResponseDto response = new TranscriptionResponseDto(transcript, profanityResults);
         return ApiResponse.success(OK, response);
     }
+
+    @PutMapping("/nickname")
+    public ApiResponse<Void> updateNickname(@RequestParam(value="nickname") String nickname){
+        meetingService.updateNickname(nickname);
+        return ApiResponse.success(OK);
+    }
 }
