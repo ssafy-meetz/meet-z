@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import logo from '/src/assets/images/logo.png';
 import useEmailValidation from '../../../hooks/form/useEmailValidation';
 import usePasswordValidation from '../../../hooks/form/usePasswordValidation';
@@ -23,6 +23,7 @@ const SignupBox = () => {
     usePasswordValidation();
   const { phone, isValidPhone, handlePhoneChange } = usePhoneValidation();
   const { time, isActive, setTime, startTimer, stopTimer } = useAuthTimer(180);
+  const authCodeInputRef = useRef<HTMLInputElement>(null);
 
   const checkDuplicate = async () => {
     if (!isValidEmail) {
@@ -71,6 +72,9 @@ const SignupBox = () => {
     if (!isActive) {
       // 타이머가 작동하지 않는 상태라면
       startTimer(); //isActive = true로
+      if (authCodeInputRef.current) {
+        authCodeInputRef.current.focus();
+      }
       alert('인증 번호를 발송했습니다. 제한 시간 내에 인증을 완료해주세요.');
       await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
       return;
@@ -109,8 +113,14 @@ const SignupBox = () => {
 
   const formClickHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!notDuplicated) return;
-    if (!isAuthenticated) return;
+    if (!notDuplicated) {
+      alert('이메일을 다시 확인해주세요.')
+      return;
+    }
+    if (!isAuthenticated) {
+      alert('이메일 인증을 완료하세요.')
+      return;
+    }
     if (!isValidPassword) {
       alert(
         '비밀번호는 8글자 이상이어야 하며, 반드시 특수문자를 한 개 이상 포함해야 합니다!'
@@ -177,20 +187,21 @@ const SignupBox = () => {
           </div>
           <div className='flex items-center justify-between space-x-2 h-[48px]'>
             <input
+              ref={authCodeInputRef}
               type='password'
-              placeholder='인증번호 입력'
+              placeholder='인증번호를 입력해주세요.'
               className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-[256px]'
               value={authCode}
               onChange={(e) => setAuthCode(e.target.value)}
-              disabled={!isActive}
             />
             <button
               type='button'
-              className={`flex items-center justify-center w-[96px] h-full text-[#FF4F5D] transition duration-100 ease-in-out transform rounded-lg border border-solid border-[#FF4F5D] ${
-                isAuthenticated
-                  ? 'bg-gray-100 hover:'
+              className={`flex items-center justify-center w-[96px] h-full text-[#FF4F5D] transition duration-100 ease-in-out transform rounded-lg border border-solid border-[#FF4F5D]
+                ${isActive ? 'bg-[#ff4f5d] text-white scale-105' : ''}
+                ${isAuthenticated
+                  ? 'bg-gray-100 text-gray-400 border-gray-400'
                   : 'hover:bg-[#ff4f5d] hover:text-white hover:scale-105'
-              }`}
+                }`}
               onClick={getEmailAuthenticate}
               disabled={isAuthenticated}
             >
