@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ChatMessage from '../components/ChatMessage';
 import { HiOutlineArrowLeft } from 'react-icons/hi';
 import { FaCircleArrowUp } from 'react-icons/fa6';
-import useEnvSettingStore from '../../../zustand/useEnvSettingStore';
+import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
 
 interface Message {
   message: string;

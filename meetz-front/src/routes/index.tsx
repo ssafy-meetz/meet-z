@@ -9,13 +9,11 @@ import DetailPage from '../page/meeting/page/DetailPage';
 import MonitorPage from '../page/meeting/page/MonitorPage';
 import CreatePage from '../page/meeting/page/CreatePage';
 import ModifyPage from '../page/meeting/page/ModifyPage';
-import SessionPage from '../page/session/SessionPage';
 import ChatPage from '../page/meeting/page/ChatPage';
 import LoadChatPage from '../page/meeting/page/LoadChatPage';
-import FanSettingPage from '../page/setting/page/FanSettingPage';
-import SessionSwitchPage from '../page/session/SessionSwitchPage';
-import BlacklistCheckPage from '../page/meeting/page/BlacklistCheckPage';
+import FanSettingPage from '../page/sessionContainer/setting/pages/FanSettingPage';
 import RecordPage from '../page/RecordPage';
+import SessionContainerPage from '../page/sessionContainer/SessionContainerPage';
 
 
 const Router: React.FC = () => {
@@ -39,8 +37,7 @@ const Router: React.FC = () => {
           <Route path='end' element={<EndMeetingPage />} />
           <Route path='monitor/:meetingId' element={<MonitorPage />} />
         </Route>
-        <Route path='/session' element={<SessionPage />} />
-        <Route path='/switch' element={<SessionSwitchPage />} />
+        <Route path='/session' element={<SessionContainerPage />} />
         <Route path='/test' element={<RecordPage />} />
 
       </Routes>
