@@ -3,10 +3,10 @@ package com.c108.meetz.dto.response;
 public record SseResponseDto (
         String meetingName,
         String starName,
-        String sessionId,
+        String viduToken,
         int timer
 ){
-    public SseResponseDto(String sessionId) {
-        this("helloMeeting", "leeseungwon", sessionId, 0);
+    public SseResponseDto(String viduToken) {
+        this("helloMeeting", "leeseungwon", viduToken, 0);
     }
 }

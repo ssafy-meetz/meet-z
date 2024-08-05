@@ -54,6 +54,15 @@ public class OpenviduApi {
         return ApiResponse.success(HttpStatus.OK);
     }
 
+
+    @GetMapping("/test1/{meetingId}")
+    public ApiResponse<Void> test1(@PathVariable("meetingId") int meetingId) {
+
+        openviduService.registMeetingInfo(meetingId);
+
+        return ApiResponse.success(HttpStatus.OK);
+    }
+
     //1: 미팅방의 세션을 생성하는 api
     @PostMapping("/vidu/{meetingId}")
     public ApiResponse<Void> initRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
@@ -157,10 +166,10 @@ public class OpenviduApi {
 
 
     //2: sse연결 시작
-    @GetMapping(path = "/sse/{meetingId}/{email}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@PathVariable("meetingId") int meetingId, @PathVariable("email") String email) {
+    @GetMapping(path = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter subscribe() {
 
-        SseEmitter emitter = openviduService.subscribFan(meetingId, email);
+        SseEmitter emitter = openviduService.subscribFan();
 
         return emitter;
     }
@@ -175,9 +184,10 @@ public class OpenviduApi {
 
     //test: 특정 클라이언트에게 메세지 전달
     @GetMapping(path = "/sse/send")
-    public ApiResponse<String> sendEvent(@RequestParam("meetingId") int meetingId, @RequestParam("email") String email) throws IOException {
+    public ApiResponse<String> sendEvent(@RequestParam("meetingId") int meetingId, @RequestParam("email") String email)
+            throws IOException, OpenViduJavaClientException, OpenViduHttpException {
 
-        openviduService.sendEventToFan(meetingId, email);
+        openviduService.sendEventToFan(meetingId, email, 0);
 
         return ApiResponse.success(HttpStatus.OK, "Send completed");
     }
