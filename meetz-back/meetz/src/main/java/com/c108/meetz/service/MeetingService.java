@@ -295,7 +295,7 @@ public class MeetingService {
                 })
                 .toList();
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
-        return MeetingInfoResponseDto.of(meeting, starList, userPosition, chatRoom.getChatRoomId());
+        return MeetingInfoResponseDto.of(meeting, starList, userPosition, chatRoom.getChatRoomId(), currentUser.getNickname());
     }
 
     private Manager getManager(){
@@ -308,6 +308,11 @@ public class MeetingService {
         String email = SecurityUtil.getCurrentUserEmail();
         return userRepository.findByEmail(email).orElseThrow(() ->
                 new NotFoundException("user not found"));
+    }
+
+    public void updateNickname(String nickname){
+        User user = getUser();
+        userRepository.updateNickname(user.getUserId(), nickname);
     }
 
 }
