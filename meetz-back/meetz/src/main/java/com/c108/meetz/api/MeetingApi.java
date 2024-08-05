@@ -102,4 +102,15 @@ public class MeetingApi {
         MeetingInfoResponseDto response = meetingService.getMeetingInfo();
         return ApiResponse.success(OK, response);
     }
+
+    @PostMapping(value = "/check-profanity", consumes = "multipart/form-data")
+    public ApiResponse<TranscriptionResponseDto> checkProfanity(@RequestPart("file") MultipartFile file) {
+        // 오디오 파일을 텍스트로 변환
+        String transcript = audioProcessingService.transcribeAudio(file);
+        // 텍스트에서 비속어 검출
+        List<TranscriptionResponseDto.ProfanityCheckResult> profanityResults = audioProcessingService.checkProfanity(transcript);
+        // 변환 결과와 비속어 검출 결과를 포함한 응답 생성
+        TranscriptionResponseDto response = new TranscriptionResponseDto(transcript, profanityResults);
+        return ApiResponse.success(OK, response);
+    }
 }
