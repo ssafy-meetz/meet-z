@@ -14,6 +14,7 @@ import ChatPage from '../page/meeting/page/ChatPage';
 import LoadChatPage from '../page/meeting/page/LoadChatPage';
 import FanSettingPage from '../page/setting/page/FanSettingPage';
 import SessionSwitchPage from '../page/session/SessionSwitchPage';
+import RecordPage from '../page/RecordPage';
 
 const Router: React.FC = () => {
   return (
@@ -36,7 +37,9 @@ const Router: React.FC = () => {
           <Route path='monitor/:meetingId' element={<MonitorPage />} />
         </Route>
         <Route path='/session' element={<SessionPage />} />
-        <Route path='/switch' element={<SessionSwitchPage/>}/>
+        <Route path='/switch' element={<SessionSwitchPage />} />
+        <Route path='/test' element={<RecordPage />} />
+
       </Routes>
     </BrowserRouter>
   );

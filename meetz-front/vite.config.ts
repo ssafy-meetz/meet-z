@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => {
           changeOrigin: true,
         },
       },
-    }as any,
+    } as any,
   };
 
   // Remove HMR configuration for production
