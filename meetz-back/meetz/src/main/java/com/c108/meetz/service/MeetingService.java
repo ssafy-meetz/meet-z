@@ -177,7 +177,7 @@ public class MeetingService {
         meetingSaveRequestDto.updateMeeting(meeting);
         List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
         List<FanSaveDto> fanSaveDtoList = fans.stream()
-                .map(fan -> new FanSaveDto(fan.getName(), fan.getEmail(), fan.getPhone()))
+                .map(fan -> new FanSaveDto(fan.getName(), fan.getOriginEmail(), fan.getPhone()))
                 .collect(Collectors.toList());
         meetingSaveRequestDto.setFanList(fanSaveDtoList);
         meeting.setMeetingEnd(calculateMeetingEnd(meetingSaveRequestDto));
@@ -295,7 +295,7 @@ public class MeetingService {
                 })
                 .toList();
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
-        return MeetingInfoResponseDto.of(meeting, starList, userPosition, chatRoom.getChatRoomId());
+        return MeetingInfoResponseDto.of(meeting, starList, userPosition, chatRoom.getChatRoomId(), currentUser.getNickname());
     }
 
     private Manager getManager(){
@@ -308,6 +308,11 @@ public class MeetingService {
         String email = SecurityUtil.getCurrentUserEmail();
         return userRepository.findByEmail(email).orElseThrow(() ->
                 new NotFoundException("user not found"));
+    }
+
+    public void updateNickname(String nickname){
+        User user = getUser();
+        userRepository.updateNickname(user.getUserId(), nickname);
     }
 
 }

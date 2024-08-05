@@ -1,5 +1,5 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
-import useEnvSettingStore from '../../../zustand/useEnvSettingStore';
+import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
 
 const SetNickname: React.FC = () => {
   const { nextStep } = useEnvSettingStore();

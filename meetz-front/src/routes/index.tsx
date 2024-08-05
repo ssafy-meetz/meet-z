@@ -9,13 +9,11 @@ import DetailPage from '../page/meeting/page/DetailPage';
 import MonitorPage from '../page/meeting/page/MonitorPage';
 import CreatePage from '../page/meeting/page/CreatePage';
 import ModifyPage from '../page/meeting/page/ModifyPage';
-import SessionPage from '../page/session/SessionPage';
 import ChatPage from '../page/meeting/page/ChatPage';
 import LoadChatPage from '../page/meeting/page/LoadChatPage';
-import FanSettingPage from '../page/setting/page/FanSettingPage';
-import SessionSwitchPage from '../page/session/SessionSwitchPage';
+import FanSettingPage from '../page/sessionContainer/setting/pages/FanSettingPage';
 import RecordPage from '../page/RecordPage';
-import StarLoadingPage from '../page/setting/page/StarLoadingPage';
+import SessionContainerPage from '../page/sessionContainer/SessionContainerPage';
 
 const Router: React.FC = () => {
   return (
@@ -23,6 +21,7 @@ const Router: React.FC = () => {
       <Routes>
         <Route path='/' element={<LoginPage />} />
         <Route path='/signup' element={<SignupPage />} />
+        <Route path='/setting' element={<FanSettingPage />} />
         <Route path='/manage/:meetingId' element={<ChatPage />} />
         <Route path='/meeting' element={<MeetingLayout />}>
           {/* 미팅 미완료 */}
@@ -36,12 +35,7 @@ const Router: React.FC = () => {
           <Route path='end' element={<EndMeetingPage />} />
           <Route path='monitor/:meetingId' element={<MonitorPage />} />
         </Route>
-        <Route path='/session' element={<SessionPage />}>
-          <Route path='setting/fan' element={<FanSettingPage />} />
-          <Route path='setting/star' element={<StarLoadingPage />} />
-        </Route>
-
-        <Route path='/switch' element={<SessionSwitchPage />} />
+        <Route path='/session' element={<SessionContainerPage />} />
         <Route path='/test' element={<RecordPage />} />
 
       </Routes>

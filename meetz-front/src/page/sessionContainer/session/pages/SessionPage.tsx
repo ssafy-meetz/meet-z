@@ -1,10 +1,10 @@
-import Session from './components/Session';
+import Session from '../components/Session';
 import { Session as OVSession, Subscriber, Publisher } from 'openvidu-browser';
-import { useOpenvidu } from '../../hooks/session/useOpenvidu';
+import { useOpenvidu } from '../../../../hooks/session/useOpenvidu';
 import { useEffect, useState } from 'react';
 import logo_white from '/src/assets/images/logo-white.png'
 
-import { useSessionStore } from '../../zustand/useSessionStore';
+import { useSessionStore } from '../../../../zustand/useSessionStore';
 
 function FanMeeting() {
   const { session, publisher, subscriber, joinSession} = useOpenvidu();
@@ -17,7 +17,7 @@ function FanMeeting() {
 	setSessionId("meetz")
 	//백엔드 통신 후 설정 Local storage에도 저장
 	setTime(90);
-	setStartName("라이언");
+	setStartName("이승원");
 	//
 	const secondId = setInterval(() => {
 		setTime(prevTime => {
