@@ -39,7 +39,6 @@ const DetailPage = () => {
       if (code === 200) {
         setMeetingData(data);
       }
-
     } catch (error: any) {
       if (error.response.data) {
         alert(error.response.data.message);
