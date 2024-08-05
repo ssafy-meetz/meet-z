@@ -17,7 +17,7 @@ function FanMeeting() {
 	setSessionId("meetz")
 	//백엔드 통신 후 설정 Local storage에도 저장
 	setTime(90);
-	setStartName("라이언");
+	setStartName("이승원");
 	//
 	const secondId = setInterval(() => {
 		setTime(prevTime => {

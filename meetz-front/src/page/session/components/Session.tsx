@@ -12,7 +12,10 @@ interface SessionProps {
 	publisher: Publisher;
 	starName:String;
 }
-
+interface Memo {
+	star: string;
+	text: string;
+  }
 
 function Session({ subscriber, publisher,starName }: SessionProps) {
 	const [count,setCount] = useState(0);
@@ -28,10 +31,25 @@ function Session({ subscriber, publisher,starName }: SessionProps) {
 
 		const storedRole:String|null = window.sessionStorage.getItem('rl');
 		const storedFanName:String|null = localStorage.getItem('nickname');
-		const storedMemos:String|null = localStorage.getItem('memos');
+		const storedMemos = localStorage.getItem('memos');
 		setRole(storedRole);
 		setFanName(storedFanName);
-		setMemo(storedMemos);
+		console.log("!!");
+		console.log(storedMemos);
+		if(storedMemos){
+			try{
+				const memos:Memo[] = JSON.parse(storedMemos);
+				const findMemo = memos.find(m=>m.star==starName)
+				if(findMemo){
+					setMemo(findMemo.text);
+					console.log("!!")
+					console.log(findMemo.text)
+				}
+				
+			}
+			catch{
+			}
+		}
 
 	},[]);
 	useEffect(()=>{
