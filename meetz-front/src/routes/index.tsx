@@ -14,7 +14,9 @@ import ChatPage from '../page/meeting/page/ChatPage';
 import LoadChatPage from '../page/meeting/page/LoadChatPage';
 import FanSettingPage from '../page/setting/page/FanSettingPage';
 import SessionSwitchPage from '../page/session/SessionSwitchPage';
+import BlacklistCheckPage from '../page/meeting/page/BlacklistCheckPage';
 import RecordPage from '../page/RecordPage';
+
 
 const Router: React.FC = () => {
   return (
@@ -31,7 +33,8 @@ const Router: React.FC = () => {
           <Route path='create' element={<CreatePage />} />
           <Route path='modify/:meetingId' element={<ModifyPage />} />
           <Route path='detail/:meetingId' element={<DetailPage />} />
-
+          {/* 블랙리스트 */}
+          <Route path='blacklist' element={<BlacklistCheckPage />} />
           {/* 미팅 완료 */}
           <Route path='end' element={<EndMeetingPage />} />
           <Route path='monitor/:meetingId' element={<MonitorPage />} />

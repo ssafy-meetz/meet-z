@@ -21,14 +21,15 @@ const Header = () => {
         <Link to='yet'>
           <img src={logo} alt='Meet:Z 로고' className='h-8' />
         </Link>
-        <div className='flex justify-between w-full max-w-sm'>
+        <div className='flex justify-between w-full max-w-lg'>
           <div className='relative group'>
             <Link to='end' className='text-2xl font-bold'>
               완료된 미팅
             </Link>
             <div
-              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${isActive('end') ? 'scale-x-100' : 'scale-x-0'
-                }`}
+              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${
+                isActive('end') ? 'scale-x-100' : 'scale-x-0'
+              }`}
             ></div>
           </div>
           <div className='relative group'>
@@ -36,8 +37,19 @@ const Header = () => {
               미완료 미팅
             </Link>
             <div
-              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${isActive('yet') ? 'scale-x-100' : 'scale-x-0'
-                }`}
+              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${
+                isActive('yet') ? 'scale-x-100' : 'scale-x-0'
+              }`}
+            ></div>
+          </div>
+          <div className='relative group'>
+            <Link to='blacklist' className='text-2xl font-bold'>
+              블랙리스트
+            </Link>
+            <div
+              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${
+                isActive('blacklist') ? 'scale-x-100' : 'scale-x-0'
+              }`}
             ></div>
           </div>
           <div className='relative group'>
