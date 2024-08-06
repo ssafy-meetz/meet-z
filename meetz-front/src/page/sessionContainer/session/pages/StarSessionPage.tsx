@@ -10,9 +10,11 @@ function StarSessionPage() {
 	const { session, publisher, subscriber, joinSession} = useOpenvidu();
 	const [time,setTime] = useState(0);
 	const [formatTime,setFormatTime] = useState("");
-	const {timer, token, remain} = useSessionStore();
+	const {timer, token, remain, setToken} = useSessionStore();
 	useEffect(() => {
+		console.log("~!~!~!!~!")
 	  setTime(timer);
+	  setToken("wss://i11c108.p.ssafy.io:8443?sessionId=2dc8586c69&token=tok_PZMTAOTGtGKa1MpJ");
 	  const secondId = setInterval(() => {
 		  setTime(prevTime => {
 			if (prevTime <= 1) {
@@ -34,8 +36,8 @@ function StarSessionPage() {
 	  setFormatTime(formatTime(time));
 	},[time])
 	useEffect(()=>{
-	  if(token==='')return;
-	  joinSession(token);
+	  console.log("!!");
+	  joinSession();
 	},[token])
 	
 
