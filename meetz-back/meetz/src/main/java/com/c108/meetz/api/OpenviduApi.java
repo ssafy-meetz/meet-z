@@ -47,11 +47,11 @@ public class OpenviduApi {
     }
 
     @GetMapping("/test/{meetingId}")
-    public ApiResponse<Void> test(@PathVariable("meetingId") int meetingId) {
+    public ApiResponse<Integer> test(@PathVariable("meetingId") int meetingId) {
 
-        openviduService.automateMeetingRoom(meetingId);
+        int a = openviduService.getRoomSize(meetingId);
 
-        return ApiResponse.success(HttpStatus.OK);
+        return ApiResponse.success(HttpStatus.OK, a);
     }
 
 

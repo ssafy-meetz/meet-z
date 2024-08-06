@@ -561,6 +561,10 @@ public class OpenviduService {
 
     }
 
+    public int getRoomSize(int meetingId) {
+        return meetingRoomsV2.get(meetingId).size();
+    }
+
     //특정 팬에게 정보 전달
     public void sendEventToFanV2(int meetingId, String email, int starIdx)
             throws IOException, OpenViduJavaClientException, OpenViduHttpException {
