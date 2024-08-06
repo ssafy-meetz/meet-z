@@ -9,19 +9,16 @@ import ReportFanModal from "../components/ReportFanModal";
 import CompleteReportFanModal from "../components/CompleteReportFanModal";
 
 function StarSessionPage() {
-  const { session, publisher, subscriber, joinSession } = useOpenvidu();
+  const { session, publisher, subscriber } = useOpenvidu();
   const [time, setTime] = useState(0);
   const [formatTime, setFormatTime] = useState("");
-  const { timer, token, remain, setToken } = useSessionStore();
+  const { timer, remain } = useSessionStore();
   const { openModal, confirmModal, setOpenModal } = useReportModal();
   const openReportModal = () => {
     setOpenModal(true);
   };
   useEffect(() => {
     setTime(timer);
-    setToken(
-      "wss://i11c108.p.ssafy.io:8443?sessionId=2dc8586c69&token=tok_JQ9SrJ9NxOMQDGjK"
-    );
     const secondId = setInterval(() => {
       setTime((prevTime) => {
         if (prevTime <= 1) {
@@ -42,10 +39,6 @@ function StarSessionPage() {
     };
     setFormatTime(formatTime(time));
   }, [time]);
-  useEffect(() => {
-    joinSession();
-  }, [token]);
-
   return (
     <div>
       <div className="flex flex-col justify-center items-center h-screen bg-black">

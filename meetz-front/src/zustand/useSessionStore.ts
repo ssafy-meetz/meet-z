@@ -23,7 +23,7 @@ export const useSessionStore = create<sessionStore>((set)=>({
     fanName:"",
     wait:200,
     remain:200,
-    settingDone:false,
+    settingDone:true,
     fanId:"",
     token:"",
     timer:0,
