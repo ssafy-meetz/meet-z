@@ -1,28 +1,28 @@
 import { useState, useCallback, useEffect } from 'react';
 import { OpenVidu, Session as OVSession, Subscriber, Publisher } from 'openvidu-browser';
 import { createSession, createToken } from '../../apis/session/openviduAPI';
+import { useSessionStore } from '../../zustand/useSessionStore';
+
 
 export const useOpenvidu = () => {
     const [session, setSession] = useState<OVSession | ''>('');
-	const [sessionId, setSessionId] = useState<string>('');
 	const [subscriber, setSubscriber] = useState<Subscriber | null>(null);
 	const [publisher, setPublisher] = useState<Publisher | null>(null);
 	const [OV, setOV] = useState<OpenVidu | null>(null);
+	const {token} = useSessionStore();
+
 
   const leaveSession = useCallback(() => {
         if (session) session.disconnect();
-
         setOV(null);
         setSession('');
-        setSessionId('');
         setSubscriber(null);
         setPublisher(null);
     }, [session]);
 
-    const joinSession = (id:string) => {
-        if(sessionId!='')return;
+    const joinSession = () => {
+		console.log(token);
         const OVs = new OpenVidu();
-        setSessionId(id);
         setOV(OVs);
         setSession(OVs.initSession());
     };
@@ -53,50 +53,32 @@ export const useOpenvidu = () => {
 			setSubscriber(subscribers);
 		});
 
-		const getToken = async (): Promise<string> => {
-            // 지금은 openvidu한테 바로 만들어달라고 하지만 여기서 백엔드랑 통신할거임
-			try {
-				const sessionIds = await createSession(sessionId);
-				const token = await createToken(sessionIds);
-				return token;
-			} catch (error) {
-				throw new Error('Failed to get token.');
-			}
-		};
+		session.connect(token)
+		.then(() => {
+			if (OV) {
+				const publishers = OV.initPublisher(undefined, {
+					audioSource: undefined,
+					videoSource: undefined,
+					publishAudio: true,
+					publishVideo: true,
+					mirror: true,
 
-		getToken()
-			.then(token => {
+				});
+
+				setPublisher(publishers);
 				session
-					.connect(token)
-					.then(() => {
-						if (OV) {
-							const publishers = OV.initPublisher(undefined, {
-								audioSource: undefined,
-								videoSource: undefined,
-								publishAudio: true,
-								publishVideo: true,
-								mirror: true,
-
-							});
-
-							setPublisher(publishers);
-							session
-								.publish(publishers)
-								.then(() => {})
-								.catch(() => {});
-						}
-					})
+					.publish(publishers)
+					.then(() => {})
 					.catch(() => {});
-			})
-			.catch(() => {});
-	}, [session, OV, sessionId]);
+			}
+		})
+		.catch(() => {});
+	}, [session, OV, token]);
     return {
         session,
-        sessionId,
         publisher,
         subscriber,
         joinSession,
-        setSessionId,
         leaveSession
       };
 

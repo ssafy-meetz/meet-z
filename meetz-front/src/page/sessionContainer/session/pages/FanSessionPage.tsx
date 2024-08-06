@@ -9,9 +9,10 @@ function FanSessionPage() {
   const { session, publisher, subscriber, joinSession} = useOpenvidu();
   const [time,setTime] = useState(0);
   const [formatTime,setFormatTime] = useState("");
-  const {timer, token} = useSessionStore();
+  const {timer, token,setToken} = useSessionStore();
   useEffect(() => {
 	setTime(timer);
+	setToken("wss://i11c108.p.ssafy.io:8443?sessionId=2dc8586c69&token=tok_TgNRNTeR64AlNrdH")
 	const secondId = setInterval(() => {
 		setTime(prevTime => {
 		  if (prevTime <= 1) {
@@ -34,7 +35,7 @@ function FanSessionPage() {
   },[time])
   useEffect(()=>{
 	if(token==='')return;
-	joinSession(token);
+	joinSession();
   },[token])
   
 
