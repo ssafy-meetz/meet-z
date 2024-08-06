@@ -1,13 +1,16 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import ChatFanListItem from "./ChatFanListItem";
 
 const ChatFanList = () => {
   const navigate = useNavigate();
+  const { meetingId } = useParams();
 
   const handleButtonClick = () => {
-    const id = 1;
-    navigate(`/meeting/detail/${id}`);
+    if (!meetingId) {
+      return;
+    }
+    navigate(`/meeting/detail/${+meetingId}`);
   };
 
   return (
