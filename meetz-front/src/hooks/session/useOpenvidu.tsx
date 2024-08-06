@@ -21,7 +21,6 @@ export const useOpenvidu = () => {
     }, [session]);
 
     const joinSession = () => {
-		console.log(token);
         const OVs = new OpenVidu();
         setOV(OVs);
         setSession(OVs.initSession());
