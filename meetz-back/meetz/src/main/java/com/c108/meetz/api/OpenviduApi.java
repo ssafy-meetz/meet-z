@@ -45,7 +45,7 @@ public class OpenviduApi {
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
-
+    //
     @GetMapping("/test/{meetingId}")
     public ApiResponse<Integer> test(@PathVariable("meetingId") int meetingId) {
 

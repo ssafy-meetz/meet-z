@@ -547,7 +547,7 @@ public class OpenviduService {
             return;
         }
 
-        //dto 생성
+        //dto 생성//
         FanSseResponseDto dto = new FanSseResponseDto(token);
 
         Meeting meeting = meetingRoomInfos.get(meetingId);
