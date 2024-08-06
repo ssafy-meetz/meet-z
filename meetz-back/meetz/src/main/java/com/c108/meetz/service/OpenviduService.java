@@ -274,7 +274,7 @@ public class OpenviduService {
             //생성한 세션을 리스트에넣기
             meetingRoomsV2.get(meetingId).add(starInfo);
         }
-        log.info("세션 생성 성공");
+        log.info("세션 생성 성공 meetingRoomsV2 SIZE: {}", meetingRoomsV2.get(meetingId).size());
         return true;
     }
 
