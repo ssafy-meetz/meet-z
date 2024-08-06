@@ -28,4 +28,10 @@ public class BlackListApi {
         BlackListInfoListResponseDto response = blackListService.getBlackListInfoList();
         return ApiResponse.success(OK, response);
     }
+
+    @DeleteMapping("/{blacklistId}")
+    public ApiResponse<Void> deleteBlackList(@PathVariable int blacklistId){
+        blackListService.deleteBlackList(blacklistId);
+        return ApiResponse.success(OK);
+    }
 }
