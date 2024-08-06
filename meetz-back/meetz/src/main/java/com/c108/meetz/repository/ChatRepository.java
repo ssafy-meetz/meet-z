@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ChatRepository extends JpaRepository<Chat, Integer> {
 
-    @Query("select c from Chat c where c.chatRoom =:chatRoom and ((c.senderId=:userId and c.senderRole ='FAN') or (c.receiverId=:userId and c.senderRole='MANAGER')) order by c.createdAt")
+    @Query("select c from Chat c where c.chatRoom =:chatRoom and ((c.senderId=:userId and c.senderRole ='FAN') or (c.receiverId=:userId and c.senderRole='MANAGER')) order by c.createdAt Desc")
     List<Chat> findRecentChatByChatRoomAndUserId(ChatRoom chatRoom, int userId, Pageable pageable);
 
     @Query("select c from Chat c where c.chatRoom =:chatRoom and ((c.senderId=:userId and c.senderRole ='FAN') or (c.receiverId=:userId and c.senderRole='MANAGER')) order by c.createdAt")
