@@ -1,12 +1,14 @@
 package com.c108.meetz.dto.response;
 
 public record FanSseResponseDto(
-        String meetingName,
-        String starName,
         String viduToken,
+        int waitingNum,
+        int remainStarNum,
+        String currentStarName,
+        String nextStarName,
         int timer
 ){
     public FanSseResponseDto(String viduToken) {
-        this("helloMeeting", "leeseungwon", viduToken, 0);
+        this(viduToken, 0, 0, "Seungwon", "ChangWoo", 0);
     }
 }

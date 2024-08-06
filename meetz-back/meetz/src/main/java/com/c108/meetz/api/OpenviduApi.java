@@ -1,11 +1,7 @@
 package com.c108.meetz.api;
 
-import com.c108.meetz.domain.Role;
-import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.ApiResponse;
-import com.c108.meetz.repository.UserRepository;
 import com.c108.meetz.service.OpenviduService;
-import com.c108.meetz.service.SseService;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,20 +39,20 @@ public class OpenviduApi {
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
-
+    //
     @GetMapping("/test/{meetingId}")
-    public ApiResponse<Void> test(@PathVariable("meetingId") int meetingId) {
+    public ApiResponse<Integer> test(@PathVariable("meetingId") int meetingId) {
 
-        openviduService.automateMeetingRoom(meetingId);
+        int a = openviduService.getRoomSize(meetingId);
 
-        return ApiResponse.success(HttpStatus.OK);
+        return ApiResponse.success(HttpStatus.OK, a);
     }
 
 
     @GetMapping("/test1/{meetingId}")
     public ApiResponse<Void> test1(@PathVariable("meetingId") int meetingId) {
 
-        openviduService.registMeetingInfo(meetingId);
+//        openviduService.registMeetingInfo(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
@@ -67,7 +61,7 @@ public class OpenviduApi {
     @PostMapping("/vidu/{meetingId}")
     public ApiResponse<Void> initRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
 
-        openviduService.initSession(meetingId);
+        openviduService.initSessionV2(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
@@ -75,7 +69,7 @@ public class OpenviduApi {
     //2: 방 세션에 연결하고 토큰을 넘겨주는 api
     @GetMapping("/vidu/{meetingId}/{starIdx}")
     public ApiResponse<String> participateSession(@PathVariable("meetingId") int meetingId, @PathVariable("starIdx") int starIdx) throws OpenViduJavaClientException, OpenViduHttpException {
-        String token = openviduService.getToken(meetingId, starIdx);
+        String token = openviduService.getTokenV2(meetingId, starIdx);
 
         if (token == null) {
             ApiResponse.error(HttpStatus.NOT_FOUND);
@@ -87,7 +81,7 @@ public class OpenviduApi {
     //3: 방에 있는 세션 삭제하는 api
     @DeleteMapping("/vidu/{meetingId}")
     public ApiResponse<Void> delRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
-        openviduService.deleteMeetingRoom(meetingId);
+        openviduService.deleteMeetingRoomV2(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
@@ -177,7 +171,7 @@ public class OpenviduApi {
     //test : 모든 클라이언트들에게 메세지 전달
     @GetMapping(path = "/sse/broadcast")
     public ApiResponse<String> boardcastTest(@RequestParam("meetingId") int meetingId) throws IOException {
-        openviduService.broadcastFan(meetingId);
+        openviduService.broadcastFanV2(meetingId);
         log.info("Broadcasted completed");
         return ApiResponse.success(HttpStatus.OK, "Broadcast completed");
     }
@@ -187,7 +181,7 @@ public class OpenviduApi {
     public ApiResponse<String> sendEvent(@RequestParam("meetingId") int meetingId, @RequestParam("email") String email)
             throws IOException, OpenViduJavaClientException, OpenViduHttpException {
 
-        openviduService.sendEventToFan(meetingId, email, 0);
+        openviduService.sendEventToFanV2(meetingId, email, 0);
 
         return ApiResponse.success(HttpStatus.OK, "Send completed");
     }

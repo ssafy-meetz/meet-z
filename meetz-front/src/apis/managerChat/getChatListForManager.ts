@@ -1,6 +1,6 @@
 import instance from "../axios"
 
-const getChatList = async (meetingId: number, accessToekn: string) => {
+const getChatListForManager = async (meetingId: number, accessToekn: string) => {
   try {
     const { data } = await instance.get(`/api/chatroom/${meetingId}`, {
       headers: {
@@ -16,4 +16,4 @@ const getChatList = async (meetingId: number, accessToekn: string) => {
   }
 }
 
-export default getChatList;
+export default getChatListForManager;
