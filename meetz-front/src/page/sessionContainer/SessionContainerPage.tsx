@@ -31,9 +31,9 @@ const SessionContainerPage = () => {
     fetchSSE();
   }, []);
   useEffect(() => {
-    console.log("!!");
-    console.log(token);
-    joinSession();
+    if (token) {
+      joinSession();
+    }
   }, [token]);
   const fetchSSE = () => {
     console.log("SSE 연결 시도");
@@ -42,7 +42,7 @@ const SessionContainerPage = () => {
       `${import.meta.env.VITE_API_DEPLOYED_URL}/api/sessions/sse`,
       {
         headers: {
-          "Content-Type": "application/json",
+          // "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
           Accept: "text/event-stream",
         },
