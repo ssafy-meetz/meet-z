@@ -12,9 +12,8 @@ function StarSessionPage() {
 	const [formatTime,setFormatTime] = useState("");
 	const {timer, token, remain, setToken} = useSessionStore();
 	useEffect(() => {
-		console.log("~!~!~!!~!")
 	  setTime(timer);
-	  setToken("wss://i11c108.p.ssafy.io:8443?sessionId=2dc8586c69&token=tok_PZMTAOTGtGKa1MpJ");
+	  setToken("wss://i11c108.p.ssafy.io:8443?sessionId=2dc8586c69&token=tok_JQ9SrJ9NxOMQDGjK");
 	  const secondId = setInterval(() => {
 		  setTime(prevTime => {
 			if (prevTime <= 1) {
@@ -36,7 +35,6 @@ function StarSessionPage() {
 	  setFormatTime(formatTime(time));
 	},[time])
 	useEffect(()=>{
-	  console.log("!!");
 	  joinSession();
 	},[token])
 	
