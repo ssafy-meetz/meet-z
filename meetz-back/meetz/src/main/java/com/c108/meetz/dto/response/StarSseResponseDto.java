@@ -1,12 +1,12 @@
 package com.c108.meetz.dto.response;
 
 public record StarSseResponseDto(
-        String meetingName,
-        String userId,
-        String nickName,
+        int remainFanNum,
+        String currentFanName,
+        int currentFanId,
         int timer
 ){
     public StarSseResponseDto() {
-        this("helloMeeting", "t123456@naver.com", "windowCow", 0);
+        this(1, "mingyung", 15, 0);
     }
 }
