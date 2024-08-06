@@ -5,7 +5,6 @@ import { useManagerChatStore } from '../../../zustand/useManagerChatStore';
 import getChatList from '../../../apis/managerChat/getChatList';
 import { useParams } from 'react-router-dom';
 import fetchUserData from '../../../lib/fetchUserData';
-import fanList from '../components/Chat/fanList';
 
 const ChatPage = () => {
   const { meetingId } = useParams();
