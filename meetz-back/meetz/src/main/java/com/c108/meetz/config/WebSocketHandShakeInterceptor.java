@@ -18,14 +18,16 @@ public class WebSocketHandShakeInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         String authorization = request.getHeaders().getFirst("Authorization");
+        System.out.println(authorization);
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
         }
         String token = authorization.split(" ")[1];
+        System.out.println(token);
         if (jwtUtil.isExpired(token)) {
             throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
         }
-
+        System.out.println("실행됨");
         return true;
     }
 
