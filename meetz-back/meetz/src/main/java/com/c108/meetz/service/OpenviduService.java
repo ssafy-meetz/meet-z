@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -225,7 +226,7 @@ public class OpenviduService {
         }
 
         //리스트 생성
-        meetingRooms.put(meetingId, new ArrayList<>());
+        meetingRooms.put(meetingId, Collections.synchronizedList(new ArrayList<>()));
 
         for (User user : users) {
             //도메인의 앞 부분 가져와 sessionId로 지정
@@ -258,7 +259,7 @@ public class OpenviduService {
         log.info("userSize = {}", users.size());
 
         //리스트 생성
-        meetingRoomsV2.put(meetingId, new ArrayList<>());
+        meetingRoomsV2.put(meetingId, Collections.synchronizedList(new ArrayList<>()));
 
         for (User user : users) {
             //도메인의 앞 부분 가져와 sessionId로 지정
@@ -376,7 +377,7 @@ public class OpenviduService {
 
     public List<Session> getMeetingRoomsV2(int meetingId) {
         List<StarInfo> starInfos = meetingRoomsV2.get(meetingId);
-        List<Session> sessions = new ArrayList<>();
+        List<Session> sessions = Collections.synchronizedList(new ArrayList<>());
 
         log.info("starInfos.size = {}", starInfos.size());
 
@@ -398,7 +399,7 @@ public class OpenviduService {
         }
 
         //리스트 생성(thread safe한걸 넣어야 할지? 고민중인 부분)
-        FanEmitterMap.put(meetingId, new ArrayList<>());
+        FanEmitterMap.put(meetingId, Collections.synchronizedList(new ArrayList<>()));
 
         List<FanInfo> fanInfos = FanEmitterMap.get(meetingId);
 
