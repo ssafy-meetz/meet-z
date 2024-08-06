@@ -28,6 +28,10 @@ public class BlackListService {
     public void saveBlackList(int userId){
         User user = userRepository.findById(userId).orElseThrow(()->new BadRequestException("존재하지 않는 회원입니다."));
         Manager manager = getManager();
+        if(blackListRepository.existsByNameAndEmailAndPhoneAndManager_ManagerId(user.getName(), user.getOriginEmail(), user.getPhone(), manager.getManagerId())){
+            throw new BadRequestException("이미 등록된 회원입니다.");
+        }
+
         BlackList blackList = BlackList.builder()
                 .manager(manager)
                 .name(user.getName())
