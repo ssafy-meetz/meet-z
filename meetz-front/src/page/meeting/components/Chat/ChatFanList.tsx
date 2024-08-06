@@ -1,10 +1,16 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import ChatFanListItem from "./ChatFanListItem";
+import { useEffect } from "react";
+import getChatListForManager from "../../../../apis/managerChat/getChatListForManager";
+import fetchUserData from "../../../../lib/fetchUserData";
+import { useManagerChatStore } from "../../../../zustand/useManagerChatStore";
 
 const ChatFanList = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams();
+  const { setFanList } = useManagerChatStore();
+  const { accessToken } = fetchUserData();
 
   const handleButtonClick = () => {
     if (!meetingId) {
@@ -12,6 +18,19 @@ const ChatFanList = () => {
     }
     navigate(`/meeting/detail/${+meetingId}`);
   };
+
+  const fetchChatList = async () => {
+    if (!meetingId) {
+      return;
+    }
+
+    const { rooms } = await getChatListForManager(+meetingId, accessToken || "");
+    setFanList(rooms);
+  }
+
+  useEffect(() => {
+    fetchChatList();
+  }, [])
 
   return (
     <div className='w-80 h-full border-r-4 overflow-y-hidden'>
@@ -27,7 +46,7 @@ const ChatFanList = () => {
         </div>
       </div>
 
-      {/* 채팅 버튼 목록 */}
+      {/* 채팅 목록 아이템 */}
       <ChatFanListItem />
     </div>
   )

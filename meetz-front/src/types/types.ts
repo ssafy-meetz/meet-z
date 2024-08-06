@@ -75,3 +75,10 @@ export type ChatFanDto = {
   recentChat: string;
   recentDate: string;
 }
+
+export type ChatDto = {
+  chatId: number;
+  sender: boolean;
+  content: string;
+  createAt: string;
+}
