@@ -1,5 +1,5 @@
 // src/zustand/useBlackStore.ts
-import create from 'zustand';
+import { create } from 'zustand';
 
 interface BlackStoreState {
   isDeleteModalOpen: boolean; // 삭제 확인 모달 상태
