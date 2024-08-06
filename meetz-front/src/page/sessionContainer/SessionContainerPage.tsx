@@ -31,7 +31,7 @@ const SessionContainerPage = () => {
     fetchSSE();
   }, []);
   useEffect(() => {
-    if (token) {
+    if(token!==''){
       joinSession();
     }
   }, [token]);
@@ -42,7 +42,6 @@ const SessionContainerPage = () => {
       `${import.meta.env.VITE_API_DEPLOYED_URL}/api/sessions/sse`,
       {
         headers: {
-          // "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
           Accept: "text/event-stream",
         },
@@ -58,7 +57,6 @@ const SessionContainerPage = () => {
       console.log(parseData);
       setWait(parseData.waitingNum);
       setToken(parseData.viduToken);
-    };
     eventSource.onerror = (e: any) => {
       eventSource.close();
       if (e.error) {
@@ -67,6 +65,7 @@ const SessionContainerPage = () => {
       }
     };
   };
+}
 
   if (storedRole === "STAR") {
     if (settingDone) {
@@ -87,7 +86,8 @@ const SessionContainerPage = () => {
       return <SessionSwitchPage />;
     }
     return <FanSettingPage />;
-    //return <FanSessionPage />;
+    // return <FanSessionPage />;
   }
+  return null;
 };
 export default SessionContainerPage;
