@@ -92,12 +92,11 @@ public class OpenviduService {
     private static final long TIMEOUT = 24 * 60 * 60 * 1000; //1000ms = 1s
     private static final long RECONNECTION_TIMEOUT = 1000L;
 
-
+    //
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
-
 
     //test용 메서드
     public String getEmail() {
