@@ -70,14 +70,14 @@ public class OpenviduService {
     private OpenVidu openvidu;
 
     //미팅룸에 있는 스타 정보들을 담는 Map
-    private final Map<Integer, List<Session>> meetingRooms = new ConcurrentHashMap<>(); //미팅방 스타의 세션 정보를 담는 맵
-    private final Map<Integer, List<StarInfo>> meetingRoomsV2 = new ConcurrentHashMap<>(); //미팅방 스타의 세션 정보를 담는 맵
+    private Map<Integer, List<Session>> meetingRooms; //미팅방 스타의 세션 정보를 담는 맵
+    private Map<Integer, List<StarInfo>> meetingRoomsV2 = new ConcurrentHashMap<>(); //미팅방 스타의 세션 정보를 담는 맵
     //미팅방 정보
-    private final Map<Integer, Meeting> meetingRoomInfos = new ConcurrentHashMap<>();//미팅방 정보
+    private Map<Integer, Meeting> meetingRoomInfos = new ConcurrentHashMap<>();//미팅방 정보
     //FanSse정보
-    private final Map<Integer, List<FanInfo>> FanEmitterMap = new ConcurrentHashMap<>(); //클라이언트 sse 정보 저장 맵
+    private Map<Integer, List<FanInfo>> FanEmitterMap = new ConcurrentHashMap<>(); //클라이언트 sse 정보 저장 맵
 
-    private final Map<Integer, Integer> meetingPhases = new ConcurrentHashMap<>(); //미팅 진행 단계를 나타내는 맵
+    private Map<Integer, Integer> meetingPhases = new ConcurrentHashMap<>(); //미팅 진행 단계를 나타내는 맵
 
 
 
@@ -97,6 +97,11 @@ public class OpenviduService {
     @PostConstruct
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
+        this.meetingRooms = new ConcurrentHashMap<>();
+        this.meetingRoomsV2 = new ConcurrentHashMap<>();
+        this.meetingRoomInfos = new ConcurrentHashMap<>();
+        this.FanEmitterMap = new ConcurrentHashMap<>();
+        this.meetingPhases = new ConcurrentHashMap<>();
     }
 
     //test용 메서드
