@@ -58,7 +58,7 @@ public class OpenviduApi {
     @GetMapping("/test1/{meetingId}")
     public ApiResponse<Void> test1(@PathVariable("meetingId") int meetingId) {
 
-        openviduService.registMeetingInfo(meetingId);
+//        openviduService.registMeetingInfo(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
