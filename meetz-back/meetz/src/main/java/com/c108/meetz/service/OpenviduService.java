@@ -456,7 +456,7 @@ public class OpenviduService {
         if (meeting == null) {
             sseEmitter.send(dto, MediaType.APPLICATION_JSON);
         } else {
-            FanSseResponseDto realDto = new FanSseResponseDto(meeting.getMeetingName(), "원빈", token, meeting.getMeetingDuration());
+            FanSseResponseDto realDto = new FanSseResponseDto(token, 0, 0, "seungwon", "windowCow", 0);
             sseEmitter.send(realDto, MediaType.APPLICATION_JSON);
         }
 
