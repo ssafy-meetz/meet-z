@@ -45,9 +45,20 @@ public class BlackListService {
         return BlackListInfoListResponseDto.from(list);
     }
 
+    public void deleteBlackList(int blacklistId){
+        Manager manager = getManager();
+        BlackList blackList = blackListRepository.findById(blacklistId).orElseThrow(()-> new NotFoundException("존재하지 않는 블랙리스트입니다."));
+        if(blackList.getManager().getManagerId() != manager.getManagerId()){
+            throw new BadRequestException("접근 권한이 없습니다.");
+        }
+        blackListRepository.delete(blackList);
+    }
+
     private Manager getManager(){
         String email = SecurityUtil.getCurrentUserEmail();
         return managerRepository.findByEmail(email).orElseThrow(()->
                 new NotFoundException("manager not found"));
     }
+
+
 }
