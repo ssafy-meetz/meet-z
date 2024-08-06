@@ -67,7 +67,7 @@ public class OpenviduApi {
     @PostMapping("/vidu/{meetingId}")
     public ApiResponse<Void> initRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
 
-        openviduService.initSession(meetingId);
+        openviduService.initSessionV2(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
@@ -75,7 +75,7 @@ public class OpenviduApi {
     //2: 방 세션에 연결하고 토큰을 넘겨주는 api
     @GetMapping("/vidu/{meetingId}/{starIdx}")
     public ApiResponse<String> participateSession(@PathVariable("meetingId") int meetingId, @PathVariable("starIdx") int starIdx) throws OpenViduJavaClientException, OpenViduHttpException {
-        String token = openviduService.getToken(meetingId, starIdx);
+        String token = openviduService.getTokenV2(meetingId, starIdx);
 
         if (token == null) {
             ApiResponse.error(HttpStatus.NOT_FOUND);
@@ -87,7 +87,7 @@ public class OpenviduApi {
     //3: 방에 있는 세션 삭제하는 api
     @DeleteMapping("/vidu/{meetingId}")
     public ApiResponse<Void> delRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
-        openviduService.deleteMeetingRoom(meetingId);
+        openviduService.deleteMeetingRoomV2(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
@@ -111,7 +111,7 @@ public class OpenviduApi {
     @GetMapping("/vidu/all/{meetingId}")
     public ApiResponse<String> getRoomSessions(@PathVariable("meetingId") int meetingId) {
 
-        List<Session> sessions = openviduService.getMeetingRooms(meetingId);
+        List<Session> sessions = openviduService.getMeetingRoomsV2(meetingId);
         StringBuilder sb = new StringBuilder();
         if (sessions != null) {
             log.info("size = {}", sessions.size());
@@ -177,7 +177,7 @@ public class OpenviduApi {
     //test : 모든 클라이언트들에게 메세지 전달
     @GetMapping(path = "/sse/broadcast")
     public ApiResponse<String> boardcastTest(@RequestParam("meetingId") int meetingId) throws IOException {
-        openviduService.broadcastFan(meetingId);
+        openviduService.broadcastFanV2(meetingId);
         log.info("Broadcasted completed");
         return ApiResponse.success(HttpStatus.OK, "Broadcast completed");
     }
@@ -187,7 +187,7 @@ public class OpenviduApi {
     public ApiResponse<String> sendEvent(@RequestParam("meetingId") int meetingId, @RequestParam("email") String email)
             throws IOException, OpenViduJavaClientException, OpenViduHttpException {
 
-        openviduService.sendEventToFan(meetingId, email, 0);
+        openviduService.sendEventToFanV2(meetingId, email, 0);
 
         return ApiResponse.success(HttpStatus.OK, "Send completed");
     }

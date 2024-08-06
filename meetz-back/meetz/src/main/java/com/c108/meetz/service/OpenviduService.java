@@ -305,6 +305,32 @@ public class OpenviduService {
         return connection.getToken();
     }
 
+    public String getTokenV2(int meetingId, int starIdx) throws OpenViduJavaClientException, OpenViduHttpException {
+        List<StarInfo> sessions = meetingRoomsV2.get(meetingId);
+        if (sessions == null) {
+            return null;
+        }
+
+        Session session = sessions.get(starIdx).session;
+
+        // 세션 얻어오기 실패
+        if (session == null) {
+            return null;
+        }
+
+        //프로퍼티 생성
+        ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
+                .type(ConnectionType.WEBRTC)
+                .role(OpenViduRole.PUBLISHER) //Publisher는 화면 및 음성 공유 가능
+                .data("handsomeChangWoo")//사용자 관련 데이터 전송
+                .build();
+
+        //커넥션 생성
+        Connection connection = session.createConnection(connectionProperties);
+
+        return connection.getToken();
+    }
+
     //미팅방 삭제
     public void deleteMeetingRoom(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
         List<Session> sessions = meetingRooms.get(meetingId);
@@ -333,7 +359,7 @@ public class OpenviduService {
                 starInfo.session.close();
             }
         }
-        meetingRooms.remove(meetingId);
+        meetingRoomsV2.remove(meetingId);
     }
 
 
@@ -348,8 +374,16 @@ public class OpenviduService {
         return meetingRooms.get(meetingId);
     }
 
-    public List<StarInfo> getMeetingRoomsV2(int meetingId) {
-        return meetingRoomsV2.get(meetingId);
+    public List<Session> getMeetingRoomsV2(int meetingId) {
+        List<StarInfo> starInfos = meetingRoomsV2.get(meetingId);
+        List<Session> sessions = new ArrayList<>();
+
+
+
+        for (StarInfo starInfo : starInfos) {
+            sessions.add(starInfo.session);
+        }
+        return sessions;
     }
 
     //======================================SSE Service======================================//
@@ -471,6 +505,21 @@ public class OpenviduService {
         }
     }
 
+    //방의 모든 팬들에게 정보 전달
+    public void broadcastFanV2(int meetingId) throws IOException {
+
+        List<FanInfo> fanInfos = FanEmitterMap.get(meetingId);
+
+        List<StarInfo> sessions = meetingRoomsV2.get(meetingId);
+
+        //일단 임시로 만든 dto
+        FanSseResponseDto dto = new FanSseResponseDto(sessions.get(0).session.getSessionId());
+
+        for (FanInfo fanInfo : fanInfos) {
+            fanInfo.emitter.send(dto, MediaType.APPLICATION_JSON);
+        }
+    }
+
     //특정 팬에게 정보 전달
     public void sendEventToFan(int meetingId, String email, int starIdx)
             throws IOException, OpenViduJavaClientException, OpenViduHttpException {
@@ -504,4 +553,39 @@ public class OpenviduService {
         }
 
     }
+
+    //특정 팬에게 정보 전달
+    public void sendEventToFanV2(int meetingId, String email, int starIdx)
+            throws IOException, OpenViduJavaClientException, OpenViduHttpException {
+        SseEmitter sseEmitter = null;
+
+        List<FanInfo> fanInfos = FanEmitterMap.get(meetingId);
+        //스타 방 접근 토큰 얻기
+        String token = getTokenV2(meetingId, starIdx);
+        //팬의 emitter 얻기
+        for (FanInfo fanInfo : fanInfos) {
+            if (fanInfo.email.equals(email)) {
+                sseEmitter = fanInfo.emitter;
+                break;
+            }
+        }
+
+        if (sseEmitter == null) {
+            return;
+        }
+
+        //dto 생성
+        FanSseResponseDto dto = new FanSseResponseDto(token);
+
+        Meeting meeting = meetingRoomInfos.get(meetingId);
+
+        if (meeting == null) {
+            sseEmitter.send(dto, MediaType.APPLICATION_JSON);
+        } else {
+            FanSseResponseDto realDto = new FanSseResponseDto(meeting.getMeetingName(), "원빈", token, meeting.getMeetingDuration());
+            sseEmitter.send(realDto, MediaType.APPLICATION_JSON);
+        }
+
+    }
+
 }
