@@ -5,16 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { useBlackStore } from '../../../zustand/useBlackStore';
 import DeleteCheckModal from '../components/Blacklist/DeleteCheckModal';
 import DeletedModal from '../components/Blacklist/DeletedModal';
-
-// 더미 데이터 생성
-const dummyFanList: FanDto[] = [
-  { name: '강창우', email: 'changw@example.com', phone: '01012345678' },
-  { name: '손다인', email: 'dison@example.com', phone: '01023456789' },
-  { name: '이승원', email: 'swonbin@example.com', phone: '01034567890' },
-  { name: '서민수', email: 'minsu@example.com', phone: '01045678901' },
-  { name: '김태연', email: 'taeyeon@example.com', phone: '01056789012' },
-  { name: '신민경', email: 'minkyung@example.com', phone: '01011223344' },
-];
+import getBlacklist from '../../../apis/meeting/getBlacklist';
+import fetchUserData from '../../../lib/fetchUserData';
+import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 
 const BlacklistCheckPage = () => {
   const [displayedFans, setDisplayedFans] = useState<FanDto[]>([]);
@@ -23,7 +16,9 @@ const BlacklistCheckPage = () => {
   const navigate = useNavigate();
 
   const { openDeleteModal } = useBlackStore();
+  const { accessToken } = fetchUserData();
 
+  useCheckAuth('MANAGER');
   // 전화번호 포맷팅 함수
   const formatPhoneNumber = (phoneNumber: string) => {
     if (phoneNumber.length !== 11) {
@@ -32,21 +27,35 @@ const BlacklistCheckPage = () => {
     return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 7)}-${phoneNumber.slice(7)}`;
   };
 
+  // 블랙리스트 데이터 로드 함수
+  const loadBlacklist = useCallback(async () => {
+    try {
+      const data = await getBlacklist(accessToken as string); // 타입 단언 사용
+      setDisplayedFans(data.slice(0, itemsPerPage));
+      if (data.length <= itemsPerPage) {
+        setHasMore(false);
+      }
+    } catch (error: any) {
+      console.error('블랙리스트를 가져오는 중 오류 발생:', error.message);
+    }
+  }, [accessToken]);
+
+  // 추가 팬 로드 함수
   const loadMoreFans = useCallback(() => {
     const currentLength = displayedFans.length;
-    const moreFans = dummyFanList.slice(
+    const moreFans = displayedFans.slice(
       currentLength,
       currentLength + itemsPerPage
     );
     setDisplayedFans((prevFans) => [...prevFans, ...moreFans]);
-    if (displayedFans.length >= dummyFanList.length) {
+    if (displayedFans.length >= moreFans.length) {
       setHasMore(false);
     }
-  }, [displayedFans.length]);
+  }, [displayedFans]);
 
   useEffect(() => {
-    loadMoreFans(); // Initial load
-  }, [loadMoreFans]);
+    loadBlacklist(); // 처음 블랙리스트 데이터를 로드합니다.
+  }, [loadBlacklist]);
 
   const handleScroll = useCallback(() => {
     if (
@@ -91,7 +100,7 @@ const BlacklistCheckPage = () => {
             scrollbarColor: 'rgba(0, 0, 0, 0.05) transparent',
           }}
         >
-          {dummyFanList.length > 0 ? (
+          {displayedFans.length > 0 ? (
             <table className='w-full text-left '>
               <thead>
                 <tr className='bg-[#ff4f5d] text-white '>
