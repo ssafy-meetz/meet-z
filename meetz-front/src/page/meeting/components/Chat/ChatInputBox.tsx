@@ -1,9 +1,12 @@
 import { FaCircleArrowUp } from "react-icons/fa6";
 import { useManagerChatStore } from "../../../../zustand/useManagerChatStore";
-import { ChatDto } from "../../../../types/types";
 
-const ChatInputBox = () => {
-  const { inputMessage, setInputMessage, chatHistory, setChatHistory } = useManagerChatStore();
+interface ChatInputBoxProps {
+  sendMessage: () => void;
+}
+
+const ChatInputBox = ({ sendMessage }: ChatInputBoxProps) => {
+  const { inputMessage, setInputMessage } = useManagerChatStore();
 
   // Enter 키로 메시지 전송 처리
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -15,14 +18,7 @@ const ChatInputBox = () => {
   // 메시지 전송 핸들러
   const handleSendMessage = () => {
     if (inputMessage.trim() === '') return; // 메시지가 공백일 경우 전송하지 않음
-
-    // 새로운 메시지를 매니저의 답변 배열에 추가
-    // const messageObj: ChatDto = {
-    //   chatId 
-    // }
-    // setChatHistory([...chatHistory,]);
-
-    setInputMessage(''); // 입력 필드를 초기화
+    sendMessage(); // input창에 입력한 메시지를 보내기
   };
 
   return (

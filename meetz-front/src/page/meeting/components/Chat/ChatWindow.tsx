@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ChatWindowHeader from './ChatWindowHeader';
 import { useManagerChatStore } from '../../../../zustand/useManagerChatStore';
 import ChatInputBox from './ChatInputBox';
@@ -7,12 +7,22 @@ import { useParams } from 'react-router-dom';
 import fetchUserData from '../../../../lib/fetchUserData';
 import getChatDetailForManager from '../../../../apis/managerChat/getChatDetailForManager';
 import ManagerMessageBubble from './ManagerMessageBubble';
+import * as StompJS from "@stomp/stompjs";
 
 const ChatWindow: React.FC = () => {
   const { meetingId } = useParams();
-  const { selectedFan, chatHistory, setChatHistory } = useManagerChatStore();
+  const { selectedFan, chatHistory, inputMessage, setChatHistory, setInputMessage } = useManagerChatStore();
   const { accessToken } = fetchUserData();
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollIntoView({
+      block: "end",
+    });
+  };
+  useEffect(scrollToBottom);
+
+  // 채팅 내역을 불러오기
   const fetchChatHistory = async () => {
     if (!meetingId || !selectedFan) {
       return;
@@ -27,7 +37,54 @@ const ChatWindow: React.FC = () => {
 
   useEffect(() => {
     fetchChatHistory();
-  }, [selectedFan])
+  }, [selectedFan]);
+
+
+  const client = useRef(
+    new StompJS.Client({
+      brokerURL: 'wss://i11c108.p.ssafy.io/ws',
+      connectHeaders: {
+        'Authorization': `Bearer ${accessToken}`
+      },
+      debug: (str) => {
+        console.log(str)
+      },
+      reconnectDelay: 3000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    })
+  )
+
+  useEffect(() => {
+    if (!client.current.active) {
+      client.current.activate();
+    }
+
+    client.current.onConnect = () => {
+      client.current.subscribe(`/sub/chatRoom/${selectedFan?.chatRoomId}`, (msg) => {
+        const newMsg = JSON.parse(msg.body);
+
+        setChatHistory([...chatHistory, newMsg]);
+      })
+    }
+  }, [])
+
+  const sendMessage = () => {
+    const message = {
+      chatRoomId: selectedFan?.chatRoomId,
+      receiverId: selectedFan?.userId, // 팬이 보내는 경우 receiverId를 0으로 설정
+      content: inputMessage
+    };
+
+    client.current.publish({
+      destination: '/pub/api/chat',
+      body: JSON.stringify(message),
+    });
+
+    setInputMessage('');
+    scrollToBottom();
+  };
+
 
   if (!selectedFan) {
     return (
@@ -44,10 +101,7 @@ const ChatWindow: React.FC = () => {
   return (
     <div className='flex-grow'>
       <div className='h-full flex flex-col w-full'>
-        {/* 선택된 팬의 이름 */}
         <ChatWindowHeader />
-
-        {/* 채팅창 영역 */}
         <div
           className='flex flex-col space-y-2 p-6 flex-grow overflow-y-auto'
           style={{
@@ -58,14 +112,13 @@ const ChatWindow: React.FC = () => {
           {
             chatHistory && chatHistory.map((chat) => {
               return (
-                chat.sender ? <ManagerMessageBubble chat={chat} key={chat.chatId} /> : <FanMessageBubble chat={chat} key={chat.chatId} />
+                chat.senderRole === 'MANAGER' ? <ManagerMessageBubble chat={chat} key={chat.createAt} /> : <FanMessageBubble chat={chat} key={chat.createAt} />
               )
             })
           }
+          <div ref={scrollRef} />
         </div>
-
-        {/* 메시지 입력란 */}
-        <ChatInputBox />
+        <ChatInputBox sendMessage={sendMessage} />
       </div>
     </div>
   );

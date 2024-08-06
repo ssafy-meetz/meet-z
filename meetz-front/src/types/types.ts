@@ -77,8 +77,7 @@ export type ChatFanDto = {
 }
 
 export type ChatDto = {
-  chatId: number;
-  sender: boolean;
+  senderRole: string;
   content: string;
   createAt: string;
 }
