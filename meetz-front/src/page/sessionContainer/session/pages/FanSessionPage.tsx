@@ -6,7 +6,7 @@ import { useSessionStore } from "../../../../zustand/useSessionStore";
 import FanSession from "../components/FanSession";
 
 function FanSessionPage() {
-  const { session, publisher, subscriber, joinSession } = useOpenvidu();
+  const { session, publisher, subscriber } = useOpenvidu();
   const [time, setTime] = useState(0);
   const [formatTime, setFormatTime] = useState("");
   const { timer } = useSessionStore();
