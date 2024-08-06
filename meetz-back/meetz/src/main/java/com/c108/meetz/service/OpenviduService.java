@@ -69,7 +69,7 @@ public class OpenviduService {
 
     private OpenVidu openvidu;
 
-    //미팅룸에 있는 스타 정보들을 담는 Map
+    //미팅룸에 있는 스타 정보들을 담는 Map//
     private static final Map<Integer, List<Session>> meetingRooms = new ConcurrentHashMap<>(); //미팅방 스타의 세션 정보를 담는 맵
     private static final Map<Integer, List<StarInfo>> meetingRoomsV2 = new ConcurrentHashMap<>(); //미팅방 스타의 세션 정보를 담는 맵
     //미팅방 정보
