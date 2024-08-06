@@ -1,13 +1,11 @@
 package com.c108.meetz.api;
 
 import com.c108.meetz.dto.ApiResponse;
+import com.c108.meetz.dto.response.BlackListInfoListResponseDto;
 import com.c108.meetz.service.BlackListService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -23,5 +21,11 @@ public class BlackListApi {
     public ApiResponse<Void> saveBlackList(@PathVariable int userId){
         blackListService.saveBlackList(userId);
         return ApiResponse.success(OK);
+    }
+
+    @GetMapping("")
+    public ApiResponse<BlackListInfoListResponseDto> getBlackListInfoList(){
+        BlackListInfoListResponseDto response = blackListService.getBlackListInfoList();
+        return ApiResponse.success(OK, response);
     }
 }
