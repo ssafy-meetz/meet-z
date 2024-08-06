@@ -3,6 +3,7 @@ package com.c108.meetz.service;
 import com.c108.meetz.domain.BlackList;
 import com.c108.meetz.domain.Manager;
 import com.c108.meetz.domain.User;
+import com.c108.meetz.dto.response.BlackListInfoListResponseDto;
 import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.exception.NotFoundException;
 import com.c108.meetz.repository.BlackListRepository;
@@ -11,6 +12,10 @@ import com.c108.meetz.repository.UserRepository;
 import com.c108.meetz.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.c108.meetz.dto.response.BlackListInfoListResponseDto.*;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +35,14 @@ public class BlackListService {
                 .phone(user.getPhone())
                 .build();
         blackListRepository.save(blackList);
+    }
+
+    public BlackListInfoListResponseDto getBlackListInfoList(){
+         Manager manager = getManager();
+        List<BlackListInfo> list = blackListRepository.findByManager_ManagerId(manager.getManagerId()).stream()
+                .map(BlackListInfo::from)
+                .toList();
+        return BlackListInfoListResponseDto.from(list);
     }
 
     private Manager getManager(){
