@@ -40,11 +40,11 @@ public class ChatRoomService {
         List<ChatRoomList> rooms = users.stream()
                 .map(user -> {
                     Chat chat = chatRepository.findRecentChatByChatRoomAndUserId(chatRoom, user.getUserId(), PageRequest.of(0, 1)).stream().findFirst().orElse(null);
-                    return ChatRoomList.of(chatRoom, chat, user);
+                    return ChatRoomList.of(chat, user);
                 })
                 .sorted(ChatRoomList.BY_RECENT_DATE_DESC)
                 .collect(Collectors.toList());
-        return ChatRoomListResponseDto.from(rooms);
+        return ChatRoomListResponseDto.from(chatRoom.getChatRoomId(),rooms);
     }
     public ChatListResponseDto getChatListForManager(int meetingId, int userId){
         Manager manager = getManager();
@@ -53,7 +53,7 @@ public class ChatRoomService {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
         List<ChatList> chats = chatRepository.findAllByChatRoomAndUserId(chatRoom, userId).stream()
-                .map(chat -> ChatList.of(chat, chat.getSenderRole().equals("MANAGER")))
+                .map(ChatList::of)
                 .toList();
         return ChatListResponseDto.from(chats);
     }
@@ -62,7 +62,7 @@ public class ChatRoomService {
         User user = getUser();
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(user.getMeeting().getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
         List<ChatList> chats = chatRepository.findAllByChatRoomAndUserId(chatRoom, user.getUserId()).stream()
-                .map(chat -> ChatList.of(chat, chat.getSenderRole().equals("FAN")))
+                .map(ChatList::of)
                 .toList();
         return ChatListResponseDto.from(chats);
     }

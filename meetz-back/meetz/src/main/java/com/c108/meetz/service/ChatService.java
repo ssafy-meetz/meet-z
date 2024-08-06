@@ -21,7 +21,7 @@ public class ChatService {
     private final ChatRepository chatRepository;
 
     public void saveChat(ChatInfo chatInfo){
-        String role = SecurityUtil.getCurrentUserRole();
+        String role = chatInfo.getSenderRole();
         String email = SecurityUtil.getCurrentUserEmail();
         int id = getId(role, email);
         ChatRoom chatRoom = chatRoomRepository.findById(chatInfo.getChatRoomId()).orElseThrow(()->
