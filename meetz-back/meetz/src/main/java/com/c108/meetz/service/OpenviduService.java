@@ -378,9 +378,10 @@ public class OpenviduService {
         List<StarInfo> starInfos = meetingRoomsV2.get(meetingId);
         List<Session> sessions = new ArrayList<>();
 
-
+        log.info("starInfos.size = {}", starInfos.size());
 
         for (StarInfo starInfo : starInfos) {
+            log.info("session: {}", starInfo.session);
             sessions.add(starInfo.session);
         }
         return sessions;
