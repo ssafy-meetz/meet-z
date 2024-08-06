@@ -27,7 +27,7 @@ public class WebSocketHandShakeInterceptor implements HandshakeInterceptor {
         if (jwtUtil.isExpired(token)) {
             throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
         }
-        System.out.println("실행됨");
+        System.out.println("실행됐음");
         return true;
     }
 
