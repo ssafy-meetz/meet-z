@@ -15,12 +15,15 @@ const ChatWindow: React.FC = () => {
   const { accessToken } = fetchUserData();
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const client = useRef<StompJS.Client | null>(null);
+
   const scrollToBottom = () => {
     scrollRef.current?.scrollIntoView({
-      block: "end",
+      behavior: 'smooth',
+      block: 'end',
     });
   };
-  useEffect(scrollToBottom);
+  useEffect(scrollToBottom, [chatHistory]);
 
   // 채팅 내역을 불러오기
   const fetchChatHistory = async () => {
@@ -29,54 +32,88 @@ const ChatWindow: React.FC = () => {
     }
     try {
       const { chats } = await getChatDetailForManager(+meetingId, selectedFan.userId, accessToken || "");
-      setChatHistory(chats)
+      setChatHistory(chats);
     } catch (error) {
       setChatHistory([]);
     }
-  }
+  };
+
+  useEffect(() => {
+    console.log(accessToken)
+  }, [])
 
   useEffect(() => {
     fetchChatHistory();
   }, [selectedFan]);
 
+  useEffect(() => {
+    if (!accessToken) return;
 
-  const client = useRef(
-    new StompJS.Client({
-      brokerURL: 'wss://i11c108.p.ssafy.io/ws',
-      connectHeaders: {
-        'Authorization': `Bearer ${accessToken}`
-      },
+    client.current = new StompJS.Client({
+      brokerURL: `wss://i11c108.p.ssafy.io/ws?token=${accessToken}`,
       debug: (str) => {
-        console.log(str)
+        console.log(str);
       },
       reconnectDelay: 3000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
-    })
-  )
-
-  useEffect(() => {
-    if (!client.current.active) {
-      client.current.activate();
-    }
+    });
 
     client.current.onConnect = () => {
-      client.current.subscribe(`/sub/chatRoom/${selectedFan?.chatRoomId}`, (msg) => {
-        const newMsg = JSON.parse(msg.body);
-
-        setChatHistory([...chatHistory, newMsg]);
-      })
-    }
-  }, [])
-
-  const sendMessage = () => {
-    const message = {
-      chatRoomId: selectedFan?.chatRoomId,
-      receiverId: selectedFan?.userId, // 팬이 보내는 경우 receiverId를 0으로 설정
-      content: inputMessage
+      console.log('Connected to WebSocket');
+      if (selectedFan) {
+        console.log(`Subscribing to /sub/chatRoom/${selectedFan.chatRoomId}`);
+        client.current?.subscribe(`/sub/chatRoom/${selectedFan.chatRoomId}`, (msg) => {
+          const newMsg = JSON.parse(msg.body);
+          console.log('Received message: ', newMsg);
+          setChatHistory([...chatHistory, newMsg]);
+        });
+      }
     };
 
-    client.current.publish({
+    client.current.onStompError = (frame) => {
+      console.error('Broker reported error: ' + frame.headers['message']);
+      console.error('Additional details: ' + frame.body);
+    };
+
+    client.current.onWebSocketClose = (event) => {
+      console.log('WebSocket closed: ', event);
+    };
+
+    client.current.onWebSocketError = (error) => {
+      console.error('WebSocket error: ', error);
+    };
+
+    client.current.activate();
+
+    return () => {
+      client.current?.deactivate();
+      client.current = null;
+    };
+  }, [accessToken]);
+
+  useEffect(() => {
+    if (client.current && client.current.connected && selectedFan) {
+      console.log(`Subscribing to /sub/chatRoom/${selectedFan.chatRoomId}`);
+      client.current.subscribe(`/sub/chatRoom/${selectedFan.chatRoomId}`, (msg) => {
+        const newMsg = JSON.parse(msg.body);
+        console.log('Received message: ', newMsg);
+        setChatHistory([...chatHistory, newMsg]);
+      });
+    }
+  }, [selectedFan]);
+
+  const sendMessage = () => {
+    if (!selectedFan) return;
+
+    const message = {
+      chatRoomId: selectedFan.chatRoomId,
+      receiverId: selectedFan.userId,
+      content: inputMessage,
+      senderRole: 'MANAGER'
+    };
+
+    client.current?.publish({
       destination: '/pub/api/chat',
       body: JSON.stringify(message),
     });
@@ -84,7 +121,6 @@ const ChatWindow: React.FC = () => {
     setInputMessage('');
     scrollToBottom();
   };
-
 
   if (!selectedFan) {
     return (
@@ -113,7 +149,7 @@ const ChatWindow: React.FC = () => {
             chatHistory && chatHistory.map((chat) => {
               return (
                 chat.senderRole === 'MANAGER' ? <ManagerMessageBubble chat={chat} key={chat.createAt} /> : <FanMessageBubble chat={chat} key={chat.createAt} />
-              )
+              );
             })
           }
           <div ref={scrollRef} />
