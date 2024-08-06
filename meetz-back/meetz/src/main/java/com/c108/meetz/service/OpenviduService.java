@@ -45,7 +45,7 @@ public class OpenviduService {
         public FanInfo(String email) {
             this.emitter = null;
             this.email = email;
-            this.curStarIdx = 0;
+            this.curStarIdx = -1;
         }
     }
 
@@ -172,8 +172,103 @@ public class OpenviduService {
         //모든 팬들에게 방 이동 정보를 줬음.
 
         //이제 페이즈++를 해주고 한 페이즈가 끝난 후에 다시 위의 함수를 실행하도록 한다.
+    }
+
+    public void automationMeetingRoomV2(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
+        List<StarInfo> starSessions = meetingRooms.get(meetingId);
+        List<FanInfo> fans = FanEmitterMap.get(meetingId);
+
+
+        if (starSessions == null || fans == null) {
+            log.error("스타 세션 또는 팬 목록이 비어있습니다. 방 생성을 좀 잘못하신 것 같아요.");
+        }
+
+        int starSize = starSessions.size();
+        int fanSize = fans.size();
+        int totalPhases = fans.size() + starSessions.size();
+        int currentPhase = getCurrentPhase(meetingId); //현재 진행중인 phase를 반환
+
+        if (currentPhase >= totalPhases) {
+            log.info("{}번 미팅이 종료되었습니다.", meetingId);
+            endMeeting(meetingId);
+            return;
+        }
+        log.info("==================== phase: {} ====================", currentPhase);
+        //팬들 범위 지정 (스타 이동하는 부분)
+        int startIdx = Math.max(0, currentPhase - starSize); //현재 페이즈 - 스타 사이즈
+        int endIdx = fans.size() - 1;
+        //token을 보내줄 사람들의 범위 currnentPhase - starSize <= i <= currentPhase
+        int endTokenSendSize = Math.min(currentPhase, fans.size() - 1); //token을 보낼 사람들의 범위
+
+        for (int i = startIdx; i <= endIdx; i++) {
+            //현재 팬의 idx
+            FanInfo fan = fans.get(i);
+            //FanSessionDto에 들어갈 내용 초기화.
+            String viduToken = null;
+            int waitingNum = Integer.MAX_VALUE;
+            int remainStarNum = Integer.MAX_VALUE;
+            String currentStarName = null;
+            String nextStarName = null;
+            int timer = 0;
+
+
+            //남은 대기 인원 : 팬 index + 현제 페이즈 + 1
+            waitingNum = Math.min(0, i - currentPhase + 1);
+
+            //남은 스타 수 :
+            remainStarNum = Math.min(0, waitingNum + 1);
+            remainStarNum = Math.max(remainStarNum, starSize);
+
+            //현재 스타 이름
+            if (fan.curStarIdx >= 0 && fan.curStarIdx < fanSize) {
+                currentStarName = starSessions.get(fan.curStarIdx).name;
+            }
+
+            //다음 스타 이름
+            if (fan.curStarIdx + 1 >= 0 && fan.curStarIdx + 1 < fanSize) {
+                nextStarName = starSessions.get(fan.curStarIdx + 1).name;
+            }
+
+            //타이머
+
+            FanSseResponseDto responseDto = null;
+
+            //토큰을 줘야할 대상이면 토큰 주기
+            if (i <= endTokenSendSize) {
+                //스타 Idx++
+                fan.curStarIdx++;
+                //토큰 저장
+                viduToken = getTokenV2(meetingId, fan.curStarIdx);
+
+                responseDto = new FanSseResponseDto(
+                        viduToken,
+                        waitingNum,
+                        remainStarNum,
+                        currentStarName == null ? "" : currentStarName,
+                        nextStarName == null ? "" : nextStarName,
+                        0
+                );
+            } else {
+                responseDto = new FanSseResponseDto(
+                        viduToken,
+                        waitingNum,
+                        remainStarNum,
+                        currentStarName == null ? "" : currentStarName,
+                        nextStarName == null ? "" : nextStarName,
+                        0
+                );
+
+            }
+
+            sendEventToFanV3(meetingId, fan.email, fan.curStarIdx, responseDto);
+
+        }
+
+        updateCurrentPhase(meetingId, currentPhase + 1);
+        scheduleNextAutomationV2(meetingId);
 
     }
+
 
     private int getCurrentPhase(int meetingId) {
         return meetingPhases.getOrDefault(meetingId, 0);
@@ -185,6 +280,20 @@ public class OpenviduService {
 
     private void scheduleNextAutomation(int meetingId) {
         scheduler.schedule(() -> automateMeetingRoom(meetingId), 5, TimeUnit.SECONDS);
+    }
+
+    private void scheduleNextAutomationV2(int meetingId) {
+        scheduler.schedule(() -> {
+            try {
+                automationMeetingRoomV2(meetingId);
+            } catch (OpenViduJavaClientException e) {
+                throw new RuntimeException(e);
+            } catch (OpenViduHttpException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }, 5, TimeUnit.SECONDS);
     }
 
     private void endMeeting(int meetingId) {
@@ -369,6 +478,11 @@ public class OpenviduService {
 
             for (FanInfo fanInfo : fanInfos) {
                 if (fanInfo.email.equals(userEmail)) {
+
+                    if (fanInfo.emitter != null) {
+                        fanInfo.emitter.complete();
+                    }
+
                     fanInfo.emitter = emitter;
                     log.info("fanInfo에 emitter 등록 완료");
                     break;
@@ -460,6 +574,29 @@ public class OpenviduService {
             sseEmitter.send(realDto, MediaType.APPLICATION_JSON);
         }
 
+    }
+
+    //특정 팬에게 정보 전달
+    public void sendEventToFanV3(int meetingId, String email, int starIdx, FanSseResponseDto fanSseResponseDto)
+            throws IOException, OpenViduJavaClientException, OpenViduHttpException {
+        SseEmitter sseEmitter = null;
+
+        List<FanInfo> fanInfos = FanEmitterMap.get(meetingId);
+        //스타 방 접근 토큰 얻기
+        String token = getTokenV2(meetingId, starIdx);
+        //팬의 emitter 얻기
+        for (FanInfo fanInfo : fanInfos) {
+            if (fanInfo.email.equals(email)) {
+                sseEmitter = fanInfo.emitter;
+                break;
+            }
+        }
+
+        if (sseEmitter == null) {
+            return;
+        }
+
+        sseEmitter.send(fanSseResponseDto, MediaType.APPLICATION_JSON);
     }
 
 }
