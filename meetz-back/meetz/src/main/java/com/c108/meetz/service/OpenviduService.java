@@ -16,12 +16,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,8 +71,7 @@ public class OpenviduService {
     private OpenVidu openvidu;
 
     //미팅룸에 있는 스타 정보들을 담는 Map//
-//    private static final Map<Integer, List<Session>> meetingRooms = new ConcurrentHashMap<>(); //미팅방 스타의 세션 정보를 담는 맵
-    private static final Map<Integer, List<StarInfo>> meetingRoomsV2 = new ConcurrentHashMap<>(); //미팅방 스타의 세션 정보를 담는 맵
+    private static final Map<Integer, List<StarInfo>> meetingRooms = new ConcurrentHashMap<>(); //미팅방 스타의 세션 정보를 담는 맵
     //미팅방 정보
     private static final Map<Integer, Meeting> meetingRoomInfos = new ConcurrentHashMap<>();//미팅방 정보
     //FanSse정보
@@ -130,7 +127,7 @@ public class OpenviduService {
     public void automateMeetingRoom(int meetingId) {
         //미팅 자동화 알고리즘
         //1. 방에 있는 스타 세션과 팬의 emitter 불러오기
-        List<StarInfo> starSessions = meetingRoomsV2.get(meetingId);
+        List<StarInfo> starSessions = meetingRooms.get(meetingId);
         List<FanInfo> fans = FanEmitterMap.get(meetingId);
 
         if (starSessions == null || fans == null) {
@@ -192,7 +189,7 @@ public class OpenviduService {
 
     private void endMeeting(int meetingId) {
         meetingPhases.remove(meetingId);
-        meetingRoomsV2.remove(meetingId);
+        meetingRooms.remove(meetingId);
         FanEmitterMap.remove(meetingId);
     }
 
@@ -225,7 +222,7 @@ public class OpenviduService {
         log.info("userSize = {}", users.size());
 
         //리스트 생성
-        meetingRoomsV2.put(meetingId, Collections.synchronizedList(new ArrayList<>()));
+        meetingRooms.put(meetingId, Collections.synchronizedList(new ArrayList<>()));
 
         for (User user : users) {
             //도메인의 앞 부분 가져와 sessionId로 지정
@@ -239,14 +236,14 @@ public class OpenviduService {
             StarInfo starInfo = new StarInfo(user.getName(), user.getEmail(), session);
 
             //생성한 세션을 리스트에넣기
-            meetingRoomsV2.get(meetingId).add(starInfo);
+            meetingRooms.get(meetingId).add(starInfo);
         }
-        log.info("세션 생성 성공 meetingRoomsV2 SIZE: {}", meetingRoomsV2.get(meetingId).size());
+        log.info("세션 생성 성공 meetingRoomsV2 SIZE: {}", meetingRooms.get(meetingId).size());
         return true;
     }
 
     public String getTokenV2(int meetingId, int starIdx) throws OpenViduJavaClientException, OpenViduHttpException {
-        List<StarInfo> sessions = meetingRoomsV2.get(meetingId);
+        List<StarInfo> sessions = meetingRooms.get(meetingId);
         if (sessions == null) {
             return null;
         }
@@ -273,7 +270,7 @@ public class OpenviduService {
 
     //미팅방 삭제 V2
     public void deleteMeetingRoomV2(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
-        List<StarInfo> starInfos = meetingRoomsV2.get(meetingId);
+        List<StarInfo> starInfos = meetingRooms.get(meetingId);
 
         if (starInfos == null) {
             return;
@@ -284,7 +281,7 @@ public class OpenviduService {
                 starInfo.session.close();
             }
         }
-        meetingRoomsV2.remove(meetingId);
+        meetingRooms.remove(meetingId);
     }
 
 
@@ -294,8 +291,8 @@ public class OpenviduService {
         return new SessionProperties.Builder().customSessionId(sessionId).build();
     }
 
-    public List<Session> getMeetingRoomsV2(int meetingId) {
-        List<StarInfo> starInfos = meetingRoomsV2.get(meetingId);
+    public List<Session> getMeetingRooms(int meetingId) {
+        List<StarInfo> starInfos = meetingRooms.get(meetingId);
         List<Session> sessions = Collections.synchronizedList(new ArrayList<>());
 
         log.info("starInfos.size = {}", starInfos.size());
@@ -378,7 +375,7 @@ public class OpenviduService {
                 }
             }
         } else {
-            List<StarInfo> starInfos = meetingRoomsV2.get(meetingId);
+            List<StarInfo> starInfos = meetingRooms.get(meetingId);
 
             if (starInfos == null) {
                 return null;
@@ -416,7 +413,7 @@ public class OpenviduService {
 
         List<FanInfo> fanInfos = FanEmitterMap.get(meetingId);
 
-        List<StarInfo> sessions = meetingRoomsV2.get(meetingId);
+        List<StarInfo> sessions = meetingRooms.get(meetingId);
 
         //일단 임시로 만든 dto
         FanSseResponseDto dto = new FanSseResponseDto(sessions.get(0).session.getSessionId());
@@ -428,7 +425,7 @@ public class OpenviduService {
 
     //사이즈 얻는 함수
     public int getRoomSize(int meetingId) {
-        return meetingRoomsV2.get(meetingId).size();
+        return meetingRooms.get(meetingId).size();
     }
 
     //특정 팬에게 정보 전달

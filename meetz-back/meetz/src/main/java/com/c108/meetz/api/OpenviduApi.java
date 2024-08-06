@@ -1,11 +1,7 @@
 package com.c108.meetz.api;
 
-import com.c108.meetz.domain.Role;
-import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.ApiResponse;
-import com.c108.meetz.repository.UserRepository;
 import com.c108.meetz.service.OpenviduService;
-import com.c108.meetz.service.SseService;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -111,7 +105,7 @@ public class OpenviduApi {
     @GetMapping("/vidu/all/{meetingId}")
     public ApiResponse<String> getRoomSessions(@PathVariable("meetingId") int meetingId) {
 
-        List<Session> sessions = openviduService.getMeetingRoomsV2(meetingId);
+        List<Session> sessions = openviduService.getMeetingRooms(meetingId);
         StringBuilder sb = new StringBuilder();
         if (sessions != null) {
             log.info("size = {}", sessions.size());
