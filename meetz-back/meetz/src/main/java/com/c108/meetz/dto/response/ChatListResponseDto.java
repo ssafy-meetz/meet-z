@@ -21,19 +21,16 @@ public class ChatListResponseDto {
     @Getter
     @Setter
     public static class ChatList {
-        int chatId;
-        boolean sender;
         String content;
+        String senderRole;
         LocalDateTime createdAt;
 
-        public static ChatList of (Chat chat, boolean sender){
+        public static ChatList of (Chat chat){
             ChatList chatList = new ChatList();
-            chatList.setChatId(chat.getChatId());
-            chatList.setSender(sender);
             chatList.setContent(chat.getContent());
+            chatList.setSenderRole(chat.getSenderRole());
             chatList.setCreatedAt(chat.getCreatedAt());
             return chatList;
-
         }
 
     }
