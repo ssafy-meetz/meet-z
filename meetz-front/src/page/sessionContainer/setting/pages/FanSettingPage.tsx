@@ -23,13 +23,7 @@ const FanSettingPage: React.FC = () => {
 
   const mi: string | null = window.sessionStorage.getItem('mi');
 
-  const [chatHistory, setChatHistory] = useState<messageDto[]>([
-    // {
-    //   message: '안녕하세요, 미쯔팀입니다 어떤 문의 사항 이신가요?',
-    //   sender: 'agent',
-    //   chatRoomId: 
-    // },
-  ]);
+  const [chatHistory, setChatHistory] = useState<messageDto[]>([]);
 
   const steps = [
     { step: 1, label: "닉네임 설정" },
@@ -44,7 +38,6 @@ const FanSettingPage: React.FC = () => {
       setChatHistory(chats);
       setFanId(fanId);
       setManagerId(managerId);
-      console.log(chats)
     } catch (error) {
       return;
     }
@@ -70,7 +63,7 @@ const FanSettingPage: React.FC = () => {
         </div>
         <div className="flex border-2 rounded-3xl border-[#d9d9d9] bg-white shadow-2xl">
           {isChattingBoxVisible ? (
-            <ChattingBox chatHistory={chatHistory} setChatHistory={setChatHistory} />
+            <ChattingBox isChattingBoxVisible={isChattingBoxVisible} chatHistory={chatHistory} setChatHistory={setChatHistory} fanId={fanId} managerId={managerId} />
           ) : (
             <StepBox
               steps={steps}

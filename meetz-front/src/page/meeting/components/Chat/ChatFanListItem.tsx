@@ -23,7 +23,7 @@ const ChatFanListItem = () => {
     return message.slice(0, maxLength) + '...';
   };
 
-  const recentSortedFanList = useMemo(async () => {
+  useMemo(async () => {
     if (!meetingId) {
       return;
     }
