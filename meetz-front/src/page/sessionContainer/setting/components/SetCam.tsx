@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
+import { useSessionStore } from '../../../../zustand/useSessionStore';
 
 const SetCam = () => {
   const { nextStep, beforeStep, currentStep } = useEnvSettingStore();
@@ -7,6 +8,7 @@ const SetCam = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
   const [volume, setVolume] = useState(0);
+  const {setSettingDone} = useSessionStore();
 
   const getUserCamera = () => {
     navigator.mediaDevices.getUserMedia({
@@ -31,6 +33,7 @@ const SetCam = () => {
         audioSource.connect(analyserNode);
         setAudioContext(audioCtx);
         setAnalyser(analyserNode);
+        setSettingDone(true);
       })
       .catch((error) => {
         console.error('Error accessing media devices.', error);
