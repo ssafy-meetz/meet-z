@@ -493,25 +493,25 @@ public class OpenviduService {
         if (user == null) {
             return null;
         }
-
         int meetingId = user.getMeeting().getMeetingId();
 
         userEmail = user.getEmail();
 
         List<StarInfo> starInfos = meetingRooms.get(meetingId);
-
         for (StarInfo starInfo : starInfos) {
             if (starInfo.email.equals(userEmail)) {
-                //프로퍼티 생성
-                ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
-                        .type(ConnectionType.WEBRTC)
-                        .role(OpenViduRole.PUBLISHER) //Publisher는 화면 및 음성 공유 가능
-                        .data("handsomeChangWoo")//사용자 관련 데이터 전송
-                        .build();
 
-                //커넥션 생성
-                Connection connection = starInfo.session.createConnection(connectionProperties);
-                return connection.getToken();
+                return starInfo.session.getSessionId();
+                //프로퍼티 생성
+//                ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
+//                        .type(ConnectionType.WEBRTC)
+//                        .role(OpenViduRole.PUBLISHER) //Publisher는 화면 및 음성 공유 가능
+//                        .data("handsomeChangWoo")//사용자 관련 데이터 전송
+//                        .build();
+//
+//                //커넥션 생성
+//                Connection connection = starInfo.session.createConnection(connectionProperties);
+//                return connection.getToken();
             }
         }
         return null;
