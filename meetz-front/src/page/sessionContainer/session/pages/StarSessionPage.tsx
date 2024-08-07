@@ -9,14 +9,21 @@ import ReportFanModal from "../components/ReportFanModal";
 import CompleteReportFanModal from "../components/CompleteReportFanModal";
 
 function StarSessionPage() {
-  const { session, publisher, subscriber } = useOpenvidu();
+  const { session, publisher, subscriber, joinSession } = useOpenvidu();
   const [time, setTime] = useState(0);
   const [formatTime, setFormatTime] = useState("");
-  const { timer, remain } = useSessionStore();
+  const { timer, remain, token } = useSessionStore();
   const { openModal, confirmModal, setOpenModal } = useReportModal();
   const openReportModal = () => {
     setOpenModal(true);
   };
+
+  useEffect(() => {
+    if (token !== "") {
+      joinSession();
+    }
+  }, [token]);
+
   useEffect(() => {
     setTime(timer);
     const secondId = setInterval(() => {
@@ -39,6 +46,7 @@ function StarSessionPage() {
     };
     setFormatTime(formatTime(time));
   }, [time]);
+
   return (
     <div>
       <div className="flex flex-col justify-center items-center h-screen bg-black">
@@ -51,11 +59,8 @@ function StarSessionPage() {
         </div>
 
         <div className="flex w-[846px]" style={{ transform: "none" }}>
-          {session && (
-            <StarSession
-              publisher={publisher as Publisher}
-              subscriber={subscriber as Subscriber}
-            />
+          {session && publisher && (
+            <StarSession publisher={publisher} subscriber={subscriber} />
           )}
         </div>
         <div className="flex w-[864px] justify-end">

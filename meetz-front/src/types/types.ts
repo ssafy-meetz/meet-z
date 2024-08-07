@@ -83,3 +83,10 @@ export type messageDto = {
   senderId: number;
   createdAt: string | null;
 }
+
+export type BlacklistDto = {
+  blacklistId:number;
+  name: string;
+  email: string;
+  phone: string;
+}

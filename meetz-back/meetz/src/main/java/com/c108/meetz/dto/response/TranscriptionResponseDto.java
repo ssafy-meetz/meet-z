@@ -16,20 +16,12 @@ public class TranscriptionResponseDto {
 
     @Data
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class TranscriptionSegment {
         private String startTime;
         private String endTime;
         private String text;
-        private boolean hasProfanity;
         private List<String> badWordsList;
 
-        // 새로운 생성자 추가
-        public TranscriptionSegment(String startTime, String endTime, String text, boolean hasProfanity, List<String> badWordsList) {
-            this.startTime = startTime;
-            this.endTime = endTime;
-            this.text = text;
-            this.hasProfanity = hasProfanity;
-            this.badWordsList = badWordsList;
-        }
     }
 }

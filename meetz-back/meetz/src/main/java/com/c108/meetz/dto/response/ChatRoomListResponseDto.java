@@ -13,15 +13,17 @@ import java.util.List;
 @Getter
 public class ChatRoomListResponseDto {
     int chatRoomId;
+    int managerId;
     List<ChatRoomList> rooms;
-    private ChatRoomListResponseDto(int chatRoomId, List<ChatRoomList> rooms){
+    private ChatRoomListResponseDto(int chatRoomId, int managerId, List<ChatRoomList> rooms){
         this.chatRoomId = chatRoomId;
+        this.managerId = managerId;
         this.rooms = rooms;
 
     }
 
-    public static ChatRoomListResponseDto from(int chatRoomId, List<ChatRoomList> rooms){
-        return new ChatRoomListResponseDto(chatRoomId, rooms);
+    public static ChatRoomListResponseDto from(int chatRoomId, int managerId, List<ChatRoomList> rooms){
+        return new ChatRoomListResponseDto(chatRoomId, managerId, rooms);
     }
 
     @Getter
