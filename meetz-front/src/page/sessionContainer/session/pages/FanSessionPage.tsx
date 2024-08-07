@@ -16,7 +16,7 @@ function FanSessionPage() {
     }
   }, [getSessionId]);
   useEffect(()=>{
-    setTime(timer);             
+    setTime(timer);
   },[session])
   useEffect(() => {
     setTime(timer);
