@@ -8,14 +8,16 @@ import java.util.List;
 
 @Getter
 public class BlackListInfoListResponseDto {
+    String company;
     List<BlackListInfo> blackList;
 
-    private BlackListInfoListResponseDto(List<BlackListInfo> blackList){
+    private BlackListInfoListResponseDto(String company, List<BlackListInfo> blackList){
+        this.company = company;
         this.blackList = blackList;
     }
 
-    public static BlackListInfoListResponseDto from(List<BlackListInfo> blackList){
-        return new BlackListInfoListResponseDto(blackList);
+    public static BlackListInfoListResponseDto from(String company, List<BlackListInfo> blackList){
+        return new BlackListInfoListResponseDto(company, blackList);
     }
 
     @Getter

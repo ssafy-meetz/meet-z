@@ -46,7 +46,7 @@ public class BlackListService {
         List<BlackListInfo> list = blackListRepository.findByManager_ManagerId(manager.getManagerId()).stream()
                 .map(BlackListInfo::from)
                 .toList();
-        return BlackListInfoListResponseDto.from(list);
+        return BlackListInfoListResponseDto.from(manager.getCompany(),list);
     }
 
     public void deleteBlackList(int blacklistId){
