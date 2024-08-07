@@ -6,36 +6,46 @@ import {
   Publisher,
 } from "openvidu-browser";
 import { useSessionStore } from "../../zustand/useSessionStore";
+import { createSession, createToken } from "../../apis/session/openviduAPI";
 
 export const useOpenvidu = () => {
-  const [session, setSession] = useState<OVSession | "">("");
+  const [session, setSession] = useState<OVSession | null>(null);
   const [subscriber, setSubscriber] = useState<Subscriber | null>(null);
   const [publisher, setPublisher] = useState<Publisher | null>(null);
   const [OV, setOV] = useState<OpenVidu | null>(null);
-  const { token } = useSessionStore();
+  const [sessionId, setSessionId] = useState<string>("");
+  const { getSessionId } = useSessionStore();
 
-  const leaveSession = useCallback(() => {
-    if (session) session.disconnect();
-    setOV(null);
-    setSession("");
-    setSubscriber(null);
-    setPublisher(null);
+  // Leaving session
+  const leaveSession = useCallback(async () => {
+    if (session) {
+      try {
+        await new Promise<void>((resolve) => {
+          session.disconnect();
+          resolve();
+        });
+      } catch (error) {
+        console.error("Error leaving session:", error);
+      }
+      setOV(null);
+      setSession(null);
+      setSubscriber(null);
+      setPublisher(null);
+    }
   }, [session]);
 
+  // Joining session
   const joinSession = () => {
+    if (getSessionId === "") return;
     const OVs = new OpenVidu();
+    const newSession = OVs.initSession();
     setOV(OVs);
-    setSession(OVs.initSession());
+    setSession(newSession);
+    setSessionId(getSessionId);
   };
 
   useEffect(() => {
-    if (publisher || subscriber) {
-      console.log("Publisher:", publisher);
-      console.log("Subscriber:", subscriber);
-    }
-  }, [publisher, subscriber]);
-
-  useEffect(() => {
+    // Cleanup on component unmount or leaveSession change
     window.addEventListener("beforeunload", leaveSession);
 
     return () => {
@@ -44,55 +54,56 @@ export const useOpenvidu = () => {
   }, [leaveSession]);
 
   useEffect(() => {
-    if (session === "") return;
-
-    session.on("streamDestroyed", (event) => {
-      if (subscriber && event.stream.streamId === subscriber.stream.streamId) {
-        setSubscriber(null);
-      }
-    });
-  }, [subscriber, session]);
-
-  useEffect(() => {
-    if (session === "") return;
+    if (!session) return;
 
     session.on("streamCreated", (event) => {
       const subscribers = session.subscribe(event.stream, "");
       setSubscriber(subscribers);
     });
 
-    session
-      .connect(token)
-      .then(() => {
-        if (OV) {
-          const publishers = OV.initPublisher(undefined, {
-            audioSource: undefined,
-            videoSource: undefined,
-            publishAudio: true,
-            publishVideo: true,
-            mirror: true,
-          });
+    const getToken = async (): Promise<string> => {
+      // 지금은 openvidu한테 바로 만들어달라고 하지만 여기서 백엔드랑 통신할거임
+      try {
+        const sessionIds = await createSession(sessionId);
+        const token = await createToken(sessionIds);
+        return token;
+      } catch (error) {
+        throw new Error("Failed to get token.");
+      }
+    };
 
-          session
-            .publish(publishers)
-            .then(() => {
+    getToken()
+      .then((token) => {
+        session
+          .connect(token)
+          .then(() => {
+            if (OV) {
+              const publishers = OV.initPublisher(undefined, {
+                audioSource: undefined,
+                videoSource: undefined,
+                publishAudio: true,
+                publishVideo: true,
+                mirror: true,
+              });
+
               setPublisher(publishers);
-            })
-            .catch((error) => {
-              console.error("Error publishing:", error);
-            });
-        }
-        setSession(session);
+              session
+                .publish(publishers)
+                .then(() => {})
+                .catch(() => {});
+            }
+          })
+          .catch(() => {});
       })
-      .catch((error) => {
-        console.error("Error connecting:", error);
-      });
-  }, [session, OV, token]);
+      .catch(() => {});
+  }, [session, OV, sessionId]);
   return {
     session,
+    sessionId,
     publisher,
     subscriber,
     joinSession,
+    setSessionId,
     leaveSession,
   };
 };
