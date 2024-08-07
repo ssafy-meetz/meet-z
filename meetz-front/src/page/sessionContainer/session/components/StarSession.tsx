@@ -16,7 +16,7 @@ interface Memo {
 function StarSession({ subscriber, publisher }: SessionProps) {
   const { starName, fanName, fanId } = useSessionStore();
   return (
-    <div className="flex">
+    <div className="flex w-full">
       <div className="relative w-1/2" id="meetingVideo-star">
         <Video streamManager={publisher} />
         <p className="absolute top-0 left-0 p-1 text-white bg-black bg-opacity-75 rounded">
