@@ -1,34 +1,106 @@
-import { Dispatch, useState } from 'react';
+import { Dispatch, useEffect, useRef, useState } from 'react';
 import { HiOutlineArrowLeft } from 'react-icons/hi';
-import { FaCircleArrowUp } from 'react-icons/fa6';
 import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
 import { messageDto } from '../../../../types/types';
 import ChatMessage from './ChatMessage';
+import ChatInputBox from './ChatInputBox';
+import * as StompJS from "@stomp/stompjs";
+import fetchUserData from '../../../../lib/fetchUserData';
 
 interface ChattingBoxProps {
+  isChattingBoxVisible: boolean;
   chatHistory: messageDto[];
-  setChatHistory: Dispatch<messageDto[]>
+  setChatHistory: Dispatch<React.SetStateAction<messageDto[]>>;
+  fanId: number;
+  managerId: number;
 }
 
-const SetChatting = ({ chatHistory, setChatHistory }: ChattingBoxProps) => {
-  const [] = useState()
+const SetChatting = ({ isChattingBoxVisible, chatHistory, setChatHistory, fanId, managerId }: ChattingBoxProps) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const client = useRef<StompJS.Client | null>(null);
   const { toggleChattingBox } = useEnvSettingStore();
-  const mi: string | null = window.sessionStorage.getItem('mi');
-  if (mi) {
-    const data = JSON.parse(mi);
-    console.log(data)
-  }
-
-
-
-
   const [input, setInput] = useState<string>('');
 
-  const handleSend = () => {
-    if (input.trim()) {
-      // setMessages([...messages, { message: input, sender: 'user' }]);
-      setInput('');
+  const { accessToken } = fetchUserData();
+
+  const mi: string | null = window.sessionStorage.getItem('mi');
+  const initialChatRoomId = mi ? JSON.parse(mi).chatRoomId : 0;
+  const [chatRoomId, setChatRoomId] = useState<number>(initialChatRoomId);
+
+  useEffect(() => {
+    if (mi) {
+      const data = JSON.parse(mi);
+      setChatRoomId(data.chatRoomId);
     }
+  }, [isChattingBoxVisible, chatHistory])
+
+  const scrollToBottom = () => {
+    scrollRef.current?.scrollIntoView({
+      block: 'end',
+    });
+  };
+  useEffect(scrollToBottom, [chatHistory]);
+
+  useEffect(() => {
+    if (!accessToken) {
+      return;
+    }
+    // 중복구독방지를 위해 클라이언트 비활성화함
+    if (client.current) {
+      client.current.deactivate();
+    }
+
+    client.current = new StompJS.Client({
+      brokerURL: `wss://i11c108.p.ssafy.io/ws?token=${accessToken}`,
+      reconnectDelay: 1000,
+      connectHeaders: {
+        'Authorization': `Bearer ${accessToken}`,
+      },
+    });
+
+    client.current.onConnect = () => {
+      client.current?.subscribe(`/sub/chatRoom/${chatRoomId}`, (msg) => {
+        const newMsg: messageDto = JSON.parse(msg.body);
+        if (!newMsg.content) {
+          return;
+        }
+        setChatHistory((prev) => [...prev, newMsg]); // 이전 상태를 기반으로 상태 업데이트
+      });
+    };
+
+    client.current.activate();
+
+    return () => {
+      client.current?.deactivate();
+      client.current = null;
+    };
+  }, [isChattingBoxVisible]); //여기도 수정됐어요~!!! [accessToken] -> [accessToken, chatRoomId, selectedFan]
+
+  const sendMessage = () => {
+    if (!client.current?.connected) {
+      return;
+    }
+
+    const message: messageDto = {
+      chatRoomId: chatRoomId,
+      receiverId: managerId,
+      content: input,
+      senderRole: 'FAN',
+      senderId: fanId,
+      createdAt: null,
+    };
+
+    if (!message.content) {
+      return;
+    }
+
+    client.current?.publish({
+      destination: '/pub/api/chat',
+      body: JSON.stringify(message),
+    });
+
+    setInput('');
+    scrollToBottom();
   };
 
   return (
@@ -51,22 +123,9 @@ const SetChatting = ({ chatHistory, setChatHistory }: ChattingBoxProps) => {
         {chatHistory.map((chat, index) => (
           <ChatMessage key={index} content={chat.content} senderRole={chat.senderRole} />
         ))}
+        <div ref={scrollRef} />
       </div>
-      <div className='flex items-center p-4 border-t'>
-        <input
-          type='text'
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder='질문을 입력하세요.'
-          className='flex-grow p-3 rounded-lg border focus:outline-none focus:border-red-500'
-        />
-        <button
-          onClick={handleSend}
-          className='ml-3 text-[#ff4f5d] hover:text-[#fe6571]'
-        >
-          <FaCircleArrowUp className='w-[35px] h-[35px]' />
-        </button>
-      </div>
+      <ChatInputBox input={input} setInput={setInput} sendMessage={sendMessage} />
     </div>
   );
 };
