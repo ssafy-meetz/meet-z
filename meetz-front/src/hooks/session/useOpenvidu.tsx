@@ -62,10 +62,8 @@ export const useOpenvidu = () => {
     });
 
     const getToken = async (): Promise<string> => {
-      // 지금은 openvidu한테 바로 만들어달라고 하지만 여기서 백엔드랑 통신할거임
       try {
-        const sessionIds = await createSession(sessionId);
-        const token = await createToken(sessionIds);
+        const token = await createToken(sessionId);
         return token;
       } catch (error) {
         throw new Error("Failed to get token.");
@@ -94,6 +92,8 @@ export const useOpenvidu = () => {
             }
           })
           .catch(() => {});
+          console.log("!!");
+          console.log(session);
       })
       .catch(() => {});
   }, [session, OV, sessionId]);

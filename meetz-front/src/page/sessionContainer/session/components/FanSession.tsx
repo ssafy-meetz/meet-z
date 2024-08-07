@@ -20,7 +20,7 @@ function FanSession({ subscriber, publisher }: SessionProps) {
   const [fanName, setFanName] = useState<String | null>("");
   const [memo, setMemo] = useState<String | null>("");
   const [takePhoto, setTakePhoto] = useState<boolean>(false);
-  const { starName } = useSessionStore();
+  const { starName,nextStarName } = useSessionStore();
   const toggleTakePhoto = () => {
     setTakePhoto(true);
   };
@@ -170,11 +170,17 @@ function FanSession({ subscriber, publisher }: SessionProps) {
           <div className="w-[846px] h-[80px] bg-[#FE9374] mb-4 p-4">
             <p>{memo}</p>
           </div>
-          <img
-            className="w[48px] h-[48px]"
-            src={camera_icon}
-            onClick={toggleTakePhoto}
-          />
+          <div className="flex w-[846px] justify-between text-xl">
+            <div></div>
+            <img
+              className="w[48px] h-[48px]"
+              src={camera_icon}
+              onClick={toggleTakePhoto}
+            />
+            {nextStarName&&<p className="text-white">{nextStarName} &gt;</p>}
+            {!nextStarName&&<p className="text-white">{nextStarName} </p>}
+          </div>
+          
         </div>
       </div>
     );
