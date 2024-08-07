@@ -7,7 +7,7 @@ interface sessionStore{
     remain:number;
     settingDone:Boolean;
     fanId:string;
-    token:string;
+    getSessionId:string;
     timer:number;
     nextStarName:string;
     setStartName:(nickname:string)=>void;
@@ -16,7 +16,7 @@ interface sessionStore{
     setRemain:(num:number)=>void;
     setSettingDone:(setting:boolean)=>void;
     setFanId:(id:string)=>void;
-    setToken:(t:string)=>void;
+    setGetSessionId:(t:string)=>void;
     setTimer:(time:number)=>void;
     setNextStarName:(nickname:string)=>void;
 }
@@ -27,7 +27,7 @@ export const useSessionStore = create<sessionStore>((set)=>({
     remain:200,
     settingDone:true,
     fanId:"",
-    token:"",
+    getSessionId:"",
     timer:0,
     nextStarName:"",
     setStartName:(nickname)=>set({starName:nickname}),
@@ -36,7 +36,7 @@ export const useSessionStore = create<sessionStore>((set)=>({
     setRemain:(num)=>set({remain:num}),
     setSettingDone:(setting)=>set({settingDone:setting}),
     setFanId:(id)=>set({fanId:id}),
-    setToken:(t)=>set({token:t}),
+    setGetSessionId:(t)=>set({getSessionId:t}),
     setTimer:(time)=>set({timer:time}),
     setNextStarName:(nickname)=>set({nextStarName:nickname})
 

@@ -5,6 +5,7 @@ import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 import fetchUserData from "../../lib/fetchUserData";
 import FanSessionPage from "./session/pages/FanSessionPage";
 import FanSettingPage from "./setting/pages/FanSettingPage";
+import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 type SessionInfo = {
   timer: number;
   starName: string;
@@ -14,12 +15,18 @@ type SessionInfo = {
 const FanSessionContainerPage = () => {
   const [wait, setWait] = useState(200);
   const [remain, setRemain] = useState(200);
-  const { settingDone, setToken, setTimer, setStartName, setNextStarName } =
-    useSessionStore();
-
+  const {
+    settingDone,
+    setGetSessionId,
+    setTimer,
+    setStartName,
+    setNextStarName,
+  } = useSessionStore();
+  const { leaveSession } = useOpenvidu();
   //SSE 연결
   useEffect(() => {
-    fetchSSE();
+    setGetSessionId("meetz");
+    // fetchSSE();
   }, []);
 
   const setInfo = (info: SessionInfo) => {
@@ -27,7 +34,7 @@ const FanSessionContainerPage = () => {
       setTimer(info.timer);
       setStartName(info.starName);
       setNextStarName(info.nextStarName);
-      setToken(info.token);
+      setGetSessionId(info.token);
       resolve();
     });
   };
@@ -54,10 +61,11 @@ const FanSessionContainerPage = () => {
       console.log(parseData);
       const info: SessionInfo = {
         timer: parseData.timer,
-        starName: parseData.starName,
+        starName: parseData.currentStarName,
         nextStarName: parseData.nextStarName,
         token: parseData.viduToken,
       };
+      await leaveSession();
       await setInfo(info);
       setWait(0);
       setRemain(parseData.remainStarNum);
@@ -80,8 +88,8 @@ const FanSessionContainerPage = () => {
   if (remain === 0) {
     return <SessionSwitchPage />;
   }
-  return <FanSettingPage />;
-  // return <FanSessionPage />;
+  // return <FanSettingPage />;
+  return <FanSessionPage />;
 };
 
 export default FanSessionContainerPage;

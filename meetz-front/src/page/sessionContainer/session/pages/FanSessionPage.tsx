@@ -6,15 +6,23 @@ import { useSessionStore } from "../../../../zustand/useSessionStore";
 import FanSession from "../components/FanSession";
 
 function FanSessionPage() {
-  const { session, publisher, subscriber, joinSession } = useOpenvidu();
+  const { session, publisher, subscriber, joinSession, leaveSession } =
+    useOpenvidu();
   const [time, setTime] = useState(0);
   const [formatTime, setFormatTime] = useState("");
-  const { token, timer } = useSessionStore();
+  const { getSessionId, timer } = useSessionStore();
   useEffect(() => {
-    if (token !== "") {
+    if (getSessionId !== "") {
+      // const manageSession = async () => {
+      //   if (session) {
+      //     await leaveSession();
+      //   }
+      //   joinSession();
+      // };
+      // manageSession();
       joinSession();
     }
-  }, [token]);
+  }, [getSessionId]);
   useEffect(() => {
     setTime(timer);
     const secondId = setInterval(() => {
