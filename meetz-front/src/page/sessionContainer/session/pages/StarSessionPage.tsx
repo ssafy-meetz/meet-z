@@ -12,17 +12,17 @@ function StarSessionPage() {
   const { session, publisher, subscriber, joinSession } = useOpenvidu();
   const [time, setTime] = useState(0);
   const [formatTime, setFormatTime] = useState("");
-  const { timer, remain, token } = useSessionStore();
+  const { timer, remain, getSessionId } = useSessionStore();
   const { openModal, confirmModal, setOpenModal } = useReportModal();
   const openReportModal = () => {
     setOpenModal(true);
   };
 
   useEffect(() => {
-    if (token !== "") {
+    if (getSessionId !== "") {
       joinSession();
     }
-  }, [token]);
+  }, [getSessionId]);
 
   useEffect(() => {
     setTime(timer);
