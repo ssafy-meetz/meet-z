@@ -7,17 +7,30 @@ import StarSession from "../components/StarSession";
 import { useReportModal } from "../../../../zustand/useReportModal";
 import ReportFanModal from "../components/ReportFanModal";
 import CompleteReportFanModal from "../components/CompleteReportFanModal";
+import getStarSessionId from "../../../../apis/session/getStarSessionId";
+import fetchUserData from "../../../../lib/fetchUserData";
 
 function StarSessionPage() {
   const { session, publisher, subscriber, joinSession } = useOpenvidu();
   const [time, setTime] = useState(0);
   const [formatTime, setFormatTime] = useState("");
-  const { timer, remain, getSessionId } = useSessionStore();
+  const { timer, remain, getSessionId,setGetSessionId } = useSessionStore();
   const { openModal, confirmModal, setOpenModal } = useReportModal();
+  const {accessToken} = fetchUserData();
+
   const openReportModal = () => {
     setOpenModal(true);
   };
+  useEffect(()=>{
+    getSession();
+  })
 
+  const getSession=async()=>{
+    if(accessToken){
+      const id = await getStarSessionId(accessToken);
+      setGetSessionId(id);
+    }
+  }
   useEffect(() => {
     if (getSessionId !== "") {
       joinSession();

@@ -1,4 +1,3 @@
-import { Session as OVSession, Subscriber, Publisher } from "openvidu-browser";
 import { useOpenvidu } from "../../../../hooks/session/useOpenvidu";
 import { useEffect, useState } from "react";
 import logo_white from "/src/assets/images/logo-white.png";

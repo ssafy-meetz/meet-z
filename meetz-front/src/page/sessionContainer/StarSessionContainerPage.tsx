@@ -6,6 +6,9 @@ import StarLoadingPage from "./setting/pages/StarLoadingPage";
 import fetchUserData from "../../lib/fetchUserData";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { useOpenvidu } from "../../hooks/session/useOpenvidu";
+import getSessionId from "../../apis/session/getStarSessionId";
+import getAccessTKByRefreshTK from "../../apis/auth/getAccessTKByRefreshTK";
+import getStarSessionId from "../../apis/session/getStarSessionId";
 
 type SessionInfo = {
   fanId: string;
@@ -14,9 +17,10 @@ type SessionInfo = {
 };
 const StarSessionContainerPage = () => {
   const [remain, setRemain] = useState(200);
+  
   const {
-    getSessionId,
     settingDone,
+    getSessionId,
     setTimer,
     setStartName,
     setGetSessionId,
@@ -27,7 +31,7 @@ const StarSessionContainerPage = () => {
   useEffect(() => {
     fetchSSE();
   }, []);
-
+  
   const setInfo = (info: SessionInfo) => {
     return new Promise<void>((resolve) => {
       setTimer(info.timer);
@@ -36,7 +40,9 @@ const StarSessionContainerPage = () => {
       resolve();
     });
   };
-  const getToken = () => {};
+
+ 
+  
   const fetchSSE = () => {
     console.log("SSE 연결 시도");
     const { accessToken } = fetchUserData();
@@ -76,7 +82,7 @@ const StarSessionContainerPage = () => {
     };
   };
 
-  if (settingDone && session) {
+  if (settingDone) {
     return <StarSessionPage />;
   }
   if (remain === 0) {
