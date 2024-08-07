@@ -10,7 +10,7 @@ type SessionInfo = {
   timer: number;
   starName: string;
   nextStarName: string;
-  token: string;
+  sessionId: string;
 };
 const FanSessionContainerPage = () => {
   const [wait, setWait] = useState(200);
@@ -33,7 +33,7 @@ const FanSessionContainerPage = () => {
       setTimer(info.timer);
       setStartName(info.starName);
       setNextStarName(info.nextStarName);
-      setGetSessionId(info.token);
+      setGetSessionId(info.sessionId);
       resolve();
     });
   };
@@ -62,7 +62,7 @@ const FanSessionContainerPage = () => {
         timer: parseData.timer,
         starName: parseData.currentStarName,
         nextStarName: parseData.nextStarName,
-        token: parseData.viduToken,
+        sessionId: parseData.viduToken,
       };
       await leaveSession();
       await setInfo(info);
