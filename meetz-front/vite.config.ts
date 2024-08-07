@@ -14,8 +14,14 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       proxy: {
         '/api': {
-          target: env.VITE_API_LOCAL_URL || 'http://localhost:8080',
+          target: env.VITE_API_LOCAL_URL || 'http://i11c108.p.ssafy.io',
           changeOrigin: true,
+        },
+        '/ws': {
+          target: env.VITE_WS_URL || 'wss://i11c108.p.ssafy.io',
+          ws: true,
+          changeOrigin: true,
+          secure: true,  // HTTPS를 사용하도록 설정
         },
       },
     } as any,

@@ -69,17 +69,19 @@ export type UserDto = {
 } | undefined
 
 export type ChatFanDto = {
-  chatRoomId: number;
   userId: number;
   name: string;
   recentChat: string;
   recentDate: string;
 }
 
-export type ChatDto = {
-  senderRole: string;
+export type messageDto = {
+  chatRoomId: number;
+  receiverId: number;
   content: string;
-  createAt: string;
+  senderRole: string;
+  senderId: number;
+  createdAt: string | null;
 }
 
 export type BlacklistDto = {
