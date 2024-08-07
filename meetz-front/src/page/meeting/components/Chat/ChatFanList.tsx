@@ -9,7 +9,7 @@ import { useManagerChatStore } from "../../../../zustand/useManagerChatStore";
 const ChatFanList = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams();
-  const { setFanList } = useManagerChatStore();
+  const { setFanList, setChatRoomId, setManagerId } = useManagerChatStore();
   const { accessToken } = fetchUserData();
 
   const handleButtonClick = () => {
@@ -24,8 +24,10 @@ const ChatFanList = () => {
       return;
     }
 
-    const { rooms } = await getChatListForManager(+meetingId, accessToken || "");
+    const { rooms, chatRoomId, managerId } = await getChatListForManager(+meetingId, accessToken || "");
     setFanList(rooms);
+    setManagerId(managerId);
+    setChatRoomId(chatRoomId);
   }
 
   useEffect(() => {
