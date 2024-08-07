@@ -1,32 +1,32 @@
-import { useState } from 'react';
-import ChatMessage from '../components/ChatMessage';
+import { Dispatch, useState } from 'react';
 import { HiOutlineArrowLeft } from 'react-icons/hi';
 import { FaCircleArrowUp } from 'react-icons/fa6';
 import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
+import { messageDto } from '../../../../types/types';
+import ChatMessage from './ChatMessage';
 
-interface Message {
-  message: string;
-  sender: 'user' | 'agent';
+interface ChattingBoxProps {
+  chatHistory: messageDto[];
+  setChatHistory: Dispatch<messageDto[]>
 }
 
-const SetChatting: React.FC = () => {
+const SetChatting = ({ chatHistory, setChatHistory }: ChattingBoxProps) => {
+  const [] = useState()
   const { toggleChattingBox } = useEnvSettingStore();
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      message:
-        '1:1 채팅을 요청 하셨습니다. 채팅 내용 상담 품질 관리를 위해 미쯔에 저장 됩니다. 문의사항은 순차적으로 답변됩니다. 상담을 시작하려면 메시지를 입력해 주세요. :)',
-      sender: 'agent',
-    },
-    {
-      message: '안녕하세요, 미쯔팀입니다 어떤 문의 사항 이신가요?',
-      sender: 'agent',
-    },
-  ]);
+  const mi: string | null = window.sessionStorage.getItem('mi');
+  if (mi) {
+    const data = JSON.parse(mi);
+    console.log(data)
+  }
+
+
+
+
   const [input, setInput] = useState<string>('');
 
   const handleSend = () => {
     if (input.trim()) {
-      setMessages([...messages, { message: input, sender: 'user' }]);
+      // setMessages([...messages, { message: input, sender: 'user' }]);
       setInput('');
     }
   };
@@ -48,8 +48,8 @@ const SetChatting: React.FC = () => {
           scrollbarColor: 'rgba(0, 0, 0, 0.05) transparent',
         }}
       >
-        {messages.map((msg, index) => (
-          <ChatMessage key={index} message={msg.message} sender={msg.sender} />
+        {chatHistory.map((chat, index) => (
+          <ChatMessage key={index} content={chat.content} senderRole={chat.senderRole} />
         ))}
       </div>
       <div className='flex items-center p-4 border-t'>

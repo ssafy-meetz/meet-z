@@ -1,21 +1,20 @@
 interface ChatMessageProps {
-  message: string;
-  sender: 'user' | 'agent';
+  content: string;
+  senderRole: string;
 }
 
-const ChatMessage: React.FC<ChatMessageProps> = ({ message, sender }) => {
+const ChatMessage: React.FC<ChatMessageProps> = ({ content, senderRole }) => {
   return (
     <div
-      className={`flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`}
+      className={`flex ${senderRole === 'FAN' ? 'justify-end' : 'justify-start'}`}
     >
       <div
-        className={`max-w-xs p-3 my-1 rounded-lg  ${
-          sender === 'user'
-            ? 'bg-[#ff4f5d] text-white rounded-br-none'
-            : 'bg-gray-100 text-gray-900 rounded-bl-none '
-        }`}
+        className={`max-w-xs p-3 my-1 rounded-lg  ${senderRole === 'FAN'
+          ? 'bg-[#ff4f5d] text-white rounded-br-none'
+          : 'bg-gray-100 text-gray-900 rounded-bl-none '
+          }`}
       >
-        {message}
+        {content}
       </div>
     </div>
   );
