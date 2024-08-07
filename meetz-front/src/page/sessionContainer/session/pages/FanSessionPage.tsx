@@ -13,16 +13,12 @@ function FanSessionPage() {
   const { getSessionId, timer } = useSessionStore();
   useEffect(() => {
     if (getSessionId !== "") {
-      // const manageSession = async () => {
-      //   if (session) {
-      //     await leaveSession();
-      //   }
-      //   joinSession();
-      // };
-      // manageSession();
       joinSession();
     }
   }, [getSessionId]);
+  useEffect(()=>{
+    setTime(timer);
+  },[session])
   useEffect(() => {
     setTime(timer);
     const secondId = setInterval(() => {
