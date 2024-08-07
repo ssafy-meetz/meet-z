@@ -23,8 +23,6 @@ export const useOpenvidu = () => {
   }, [session]);
 
   const joinSession = () => {
-	console.log("!!");
-    console.log(token);
     const OVs = new OpenVidu();
     setOV(OVs);
     setSession(OVs.initSession());
@@ -75,19 +73,16 @@ export const useOpenvidu = () => {
             mirror: true,
           });
 
-          
           session
             .publish(publishers)
             .then(() => {
-				setPublisher(publishers);
-			})
+              setPublisher(publishers);
+            })
             .catch((error) => {
               console.error("Error publishing:", error);
             });
-			
         }
-		setSession(session);
-		
+        setSession(session);
       })
       .catch((error) => {
         console.error("Error connecting:", error);
