@@ -244,7 +244,7 @@ public class OpenviduService {
                 } else { //초과하면
                     fan.currentStarName = null;
                 }
-                //다음 스타가 이씅면
+                //다음 스타가 있으면
                 if (fan.curStarIdx + 1 < stars.size()) {
                     fan.nextStarName = stars.get(fan.curStarIdx + 1).name;
                 } else { //다음 스타가 없으면
@@ -264,7 +264,8 @@ public class OpenviduService {
                 viduToken = getTokenV2(meetingId, fan.curStarIdx);
                 fan.viduToken = viduToken;
                 responseDto = new FanSseResponseDto(
-                        fan.viduToken,
+                        stars.get(fan.curStarIdx).session.getSessionId(),
+//                        fan.viduToken,
                         fan.waitingNum,
                         fan.remainStarNum,
                         fan.currentStarName,
@@ -343,7 +344,7 @@ public class OpenviduService {
 
     //방의 모든 세션(스타의 방) 생성, 세션Id는 스타의 이메일
     public boolean initSessionV2(Integer meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
-
+        registMeetingInfo(meetingId);
         //roomId를 통해 스타의 정보를 불러온다.
         List<User> users = userRepository.findByMeeting_MeetingIdAndRole(meetingId, Role.STAR);
 
