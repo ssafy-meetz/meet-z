@@ -9,14 +9,19 @@ import ReportFanModal from "../components/ReportFanModal";
 import CompleteReportFanModal from "../components/CompleteReportFanModal";
 
 function StarSessionPage() {
-  const { session, publisher, subscriber } = useOpenvidu();
+  const { session, publisher, subscriber, joinSession } = useOpenvidu();
   const [time, setTime] = useState(0);
   const [formatTime, setFormatTime] = useState("");
-  const { timer, remain } = useSessionStore();
+  const { timer, remain, token } = useSessionStore();
   const { openModal, confirmModal, setOpenModal } = useReportModal();
   const openReportModal = () => {
     setOpenModal(true);
   };
+  useEffect(() => {
+    if (token !== "") {
+      joinSession();
+    }
+  }, [token]);
   useEffect(() => {
     setTime(timer);
     const secondId = setInterval(() => {
