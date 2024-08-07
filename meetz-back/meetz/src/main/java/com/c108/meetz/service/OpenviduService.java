@@ -178,13 +178,14 @@ public class OpenviduService {
         List<StarInfo> starSessions = meetingRooms.get(meetingId);
         List<FanInfo> fans = FanEmitterMap.get(meetingId);
 
-
-        if (starSessions == null || fans == null) {
-            log.error("스타 세션 또는 팬 목록이 비어있습니다. 방 생성을 좀 잘못하신 것 같아요.");
+        if (starSessions == null || fans == null || starSessions.isEmpty() || fans.isEmpty()) {
+            log.error("스타 세션 또는 팬 목록이 비어있습니다. 방 생성을 잘못하신 것 같아요.");
+            return;
         }
 
         int starSize = starSessions.size();
         int fanSize = fans.size();
+
         int totalPhases = fans.size() + starSessions.size();
         int currentPhase = getCurrentPhase(meetingId); //현재 진행중인 phase를 반환
 
@@ -195,9 +196,9 @@ public class OpenviduService {
         }
         log.info("==================== phase: {} ====================", currentPhase);
         //팬들 범위 지정 (스타 이동하는 부분)
-        int startIdx = Math.max(0, currentPhase - starSize); //현재 페이즈 - 스타 사이즈
+        int startIdx = Math.max(0, currentPhase - starSize + 1); //현재 페이즈 - 스타 사이즈
         int endIdx = fans.size() - 1;
-        //token을 보내줄 사람들의 범위 currnentPhase - starSize <= i <= currentPhase
+        //token을 보내줄 사람들의 범위 currnentPhase - starSize + 1 <= i <= currentPhase
         int endTokenSendSize = Math.min(currentPhase, fans.size() - 1); //token을 보낼 사람들의 범위
 
         for (int i = startIdx; i <= endIdx; i++) {
@@ -205,7 +206,7 @@ public class OpenviduService {
             FanInfo fan = fans.get(i);
             //FanSessionDto에 들어갈 내용 초기화.
             String viduToken = null;
-            int waitingNum = Integer.MAX_VALUE;
+            int waitingNum = 0;
             int remainStarNum = Integer.MAX_VALUE;
             String currentStarName = null;
             String nextStarName = null;
@@ -213,7 +214,7 @@ public class OpenviduService {
 
 
             //남은 대기 인원 : 팬 index + 현제 페이즈 + 1
-            waitingNum = Math.min(0, i - currentPhase + 1);
+            waitingNum = Math.max(0, starSize - (currentPhase - i));
 
             //남은 스타 수 :
             remainStarNum = Math.min(0, waitingNum + 1);
@@ -248,6 +249,7 @@ public class OpenviduService {
                         nextStarName == null ? "" : nextStarName,
                         0
                 );
+                log.info("이동할 {}번 인원: {}", i, responseDto.toString());
             } else {
                 responseDto = new FanSseResponseDto(
                         viduToken,
@@ -257,7 +259,7 @@ public class OpenviduService {
                         nextStarName == null ? "" : nextStarName,
                         0
                 );
-
+                log.info("대기할 {}번 인원: {}", i, responseDto.toString());
             }
 
             sendEventToFanV3(meetingId, fan.email, fan.curStarIdx, responseDto);
@@ -328,7 +330,7 @@ public class OpenviduService {
             return false;
         }
 
-        log.info("userSize = {}", users.size());
+        log.info("roomSize = {}", users.size());
 
         //리스트 생성
         meetingRooms.put(meetingId, Collections.synchronizedList(new ArrayList<>()));
@@ -567,12 +569,9 @@ public class OpenviduService {
 
         Meeting meeting = meetingRoomInfos.get(meetingId);
 
-        if (meeting == null) {
-            sseEmitter.send(dto, MediaType.APPLICATION_JSON);
-        } else {
-            FanSseResponseDto realDto = new FanSseResponseDto(token, 0, 0, "seungwon", "windowCow", 0);
-            sseEmitter.send(realDto, MediaType.APPLICATION_JSON);
-        }
+
+        FanSseResponseDto realDto = new FanSseResponseDto(token, 1, 1, "seungwon", "dain", 60);
+        sseEmitter.send(realDto, MediaType.APPLICATION_JSON);
 
     }
 
@@ -583,7 +582,7 @@ public class OpenviduService {
 
         List<FanInfo> fanInfos = FanEmitterMap.get(meetingId);
         //스타 방 접근 토큰 얻기
-        String token = getTokenV2(meetingId, starIdx);
+//        String token = getTokenV2(meetingId, starIdx);
         //팬의 emitter 얻기
         for (FanInfo fanInfo : fanInfos) {
             if (fanInfo.email.equals(email)) {
@@ -595,6 +594,7 @@ public class OpenviduService {
         if (sseEmitter == null) {
             return;
         }
+        //미팅 룸 얻기
 
         sseEmitter.send(fanSseResponseDto, MediaType.APPLICATION_JSON);
     }

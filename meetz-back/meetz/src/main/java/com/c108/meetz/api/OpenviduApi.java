@@ -50,9 +50,9 @@ public class OpenviduApi {
 
 
     @GetMapping("/test1/{meetingId}")
-    public ApiResponse<Void> test1(@PathVariable("meetingId") int meetingId) {
+    public ApiResponse<Void> test1(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
 
-//        openviduService.registMeetingInfo(meetingId);
+        openviduService.automationMeetingRoomV2(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
