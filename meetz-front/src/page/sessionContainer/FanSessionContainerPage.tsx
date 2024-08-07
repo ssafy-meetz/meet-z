@@ -5,7 +5,6 @@ import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 import fetchUserData from "../../lib/fetchUserData";
 import FanSessionPage from "./session/pages/FanSessionPage";
 import FanSettingPage from "./setting/pages/FanSettingPage";
-import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 type SessionInfo = {
   timer: number;
   starName: string;
