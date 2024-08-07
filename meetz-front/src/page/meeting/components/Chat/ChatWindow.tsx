@@ -8,10 +8,11 @@ import fetchUserData from '../../../../lib/fetchUserData';
 import getChatDetailForManager from '../../../../apis/managerChat/getChatDetailForManager';
 import ManagerMessageBubble from './ManagerMessageBubble';
 import * as StompJS from "@stomp/stompjs";
+import { messageDto } from '../../../../types/types';
 
 const ChatWindow: React.FC = () => {
   const { meetingId } = useParams();
-  const { selectedFan, chatHistory, inputMessage, setChatHistory, setInputMessage } = useManagerChatStore();
+  const { selectedFan, managerId, chatHistory, inputMessage, chatRoomId, setChatHistory, setInputMessage, addChatMessage } = useManagerChatStore();
   const { accessToken } = fetchUserData();
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -19,13 +20,11 @@ const ChatWindow: React.FC = () => {
 
   const scrollToBottom = () => {
     scrollRef.current?.scrollIntoView({
-      behavior: 'smooth',
       block: 'end',
     });
   };
   useEffect(scrollToBottom, [chatHistory]);
 
-  // 채팅 내역을 불러오기
   const fetchChatHistory = async () => {
     if (!meetingId || !selectedFan) {
       return;
@@ -34,55 +33,55 @@ const ChatWindow: React.FC = () => {
       const { chats } = await getChatDetailForManager(+meetingId, selectedFan.userId, accessToken || "");
       setChatHistory(chats);
     } catch (error) {
-      setChatHistory([]);
+      console.error('Failed to fetch chat history:', error);
     }
   };
-
-  useEffect(() => {
-    console.log(accessToken)
-  }, [])
 
   useEffect(() => {
     fetchChatHistory();
   }, [selectedFan]);
 
   useEffect(() => {
-    if (!accessToken) return;
+    if (!accessToken) {
+      return;
+    }
+    //여기가 추가됐어요 창우 !! ! ! 중복구독방지를 위해 클라이언트 비활성화함
+    if (client.current) {
+      client.current.deactivate();
+    }
 
     client.current = new StompJS.Client({
       brokerURL: `wss://i11c108.p.ssafy.io/ws?token=${accessToken}`,
-      debug: (str) => {
-        console.log(str);
+      reconnectDelay: 1000,
+      connectHeaders: {
+        'Authorization': `Bearer ${accessToken}`,
       },
-      reconnectDelay: 3000,
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
     });
 
     client.current.onConnect = () => {
-      console.log('Connected to WebSocket');
       if (selectedFan) {
-        console.log(`Subscribing to /sub/chatRoom/${selectedFan.chatRoomId}`);
-        client.current?.subscribe(`/sub/chatRoom/${selectedFan.chatRoomId}`, (msg) => {
+        client.current?.subscribe(`/sub/chatRoom/${chatRoomId}`, (msg) => {
           const newMsg = JSON.parse(msg.body);
-          console.log('Received message: ', newMsg);
-          setChatHistory([...chatHistory, newMsg]);
+          if (!newMsg.content) {
+            return;
+          }
+          addChatMessage(newMsg); //여기도 변경됐어요 setChatHistory[...chatHistory, newMsg]->addChatHistory
         });
       }
     };
 
-    client.current.onStompError = (frame) => {
-      console.error('Broker reported error: ' + frame.headers['message']);
-      console.error('Additional details: ' + frame.body);
-    };
+    // client.current.onStompError = (frame) => {
+    //   console.error('Broker reported error: ' + frame.headers['message']);
+    //   console.error('Additional details: ' + frame.body);
+    // };
 
-    client.current.onWebSocketClose = (event) => {
-      console.log('WebSocket closed: ', event);
-    };
+    // client.current.onWebSocketClose = (event) => {
+    //   console.log('WebSocket closed: ', event);
+    // };
 
-    client.current.onWebSocketError = (error) => {
-      console.error('WebSocket error: ', error);
-    };
+    // client.current.onWebSocketError = (error) => {
+    //   console.error('WebSocket error: ', error);
+    // };
 
     client.current.activate();
 
@@ -90,28 +89,25 @@ const ChatWindow: React.FC = () => {
       client.current?.deactivate();
       client.current = null;
     };
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (client.current && client.current.connected && selectedFan) {
-      console.log(`Subscribing to /sub/chatRoom/${selectedFan.chatRoomId}`);
-      client.current.subscribe(`/sub/chatRoom/${selectedFan.chatRoomId}`, (msg) => {
-        const newMsg = JSON.parse(msg.body);
-        console.log('Received message: ', newMsg);
-        setChatHistory([...chatHistory, newMsg]);
-      });
-    }
-  }, [selectedFan]);
+  }, [accessToken, chatRoomId, selectedFan]); //여기도 수정됐어요~!!! [accessToken] -> [accessToken, chatRoomId, selectedFan]
 
   const sendMessage = () => {
-    if (!selectedFan) return;
+    if (!selectedFan || !client.current?.connected) {
+      return;
+    }
 
-    const message = {
-      chatRoomId: selectedFan.chatRoomId,
+    const message: messageDto = {
+      chatRoomId: chatRoomId,
       receiverId: selectedFan.userId,
       content: inputMessage,
-      senderRole: 'MANAGER'
+      senderRole: 'MANAGER',
+      senderId: managerId,
+      createdAt: null,
     };
+
+    if (!message.content) {
+      return;
+    }
 
     client.current?.publish({
       destination: '/pub/api/chat',
@@ -146,9 +142,9 @@ const ChatWindow: React.FC = () => {
           }}
         >
           {
-            chatHistory && chatHistory.map((chat) => {
+            chatHistory && chatHistory.map((chat, idx) => {
               return (
-                chat.senderRole === 'MANAGER' ? <ManagerMessageBubble chat={chat} key={chat.createAt} /> : <FanMessageBubble chat={chat} key={chat.createAt} />
+                (chat.senderRole === 'MANAGER') ? <ManagerMessageBubble chat={chat} key={idx} /> : <FanMessageBubble chat={chat} key={idx} />
               );
             })
           }
