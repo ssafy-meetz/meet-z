@@ -11,8 +11,10 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
@@ -107,41 +109,52 @@ public class MailService {
         MimeMessage message = javaMailSender.createMimeMessage();
 
         try {
-            message.setFrom(senderEmail);
-            message.setRecipients(MimeMessage.RecipientType.TO, user.getOriginEmail());
-            message.setSubject("[MEET:Z]팬싸인회 참여 안내 메일");
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(senderEmail);
+            helper.setTo(user.getOriginEmail());
+            message.setSubject("[MEET:Z] 팬싸인회 참여 안내 메일");
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm");
-
             String meetingStartFormatted = meeting.getMeetingStart().format(formatter);
-            String meetingEndFormatted = meeting.getMeetingEnd().format(formatter);
 
             String body = "";
-            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>";
-            body += "<h2 style='color: #FE4D5C; text-align: center;'>MEET:Z 팬싸인회 참여 안내</h2>";
+            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9; text-align: center;'>";
+            body += "<div style='border: 1px solid #ccc; padding: 20px; border-radius: 10px; background-color: #fff;'>";
+            body += "<div style='background-color: #FE4D5C; padding: 10px; border-radius: 10px 10px 0 0;'>";
+            body += "<h1 style='margin: 0; color: #fff;'>" + meeting.getMeetingName() + "</h1>";
+            body += "</div>";
+            body += "<div style='background-color: #f9f9f9; padding: 10px; border-radius: 0 0 10px 10px;'>";
+            body += "<h2 style='margin: 5px 0; color: #FE4D5C;'>" + meetingStartFormatted + "</h2>";
+            body += "</div>";
+            body += "<div style='margin: 20px 0;'>";
+            body += "<img src='cid:meetzlogo' alt='Meetz Logo' style='width: 40%; height: auto; border-radius: 10px;'>";
+            body += "</div>";
             body += "<p style='font-size: 16px; color: #333;'>안녕하세요,</p>";
             body += "<p style='font-size: 16px; color: #333;'>MEET:Z 서비스를 이용해 주셔서 감사합니다.</p>";
             body += "<p style='font-size: 16px; color: #333;'>팬싸인회 참여 안내드립니다.</p>";
-            body += "<p style='font-size: 16px; color: #333;'>팬싸인회 정보:</p>";
-            body += "<ul style='font-size: 16px; color: #333;'>";
-            body += "<li>팬싸인회 이름: " + meeting.getMeetingName() + "</li>";
-            body += "<li>시작 시간: " + meetingStartFormatted + "</li>";
-            body += "<li>종료 시간: " + meetingEndFormatted + "</li>";
-            body += "<li>진행 시간: " + meeting.getMeetingDuration() + "초</li>";
-            body += "<li>대기 시간: " + meeting.getTerm() + "초</li>";
+            body += "<ul style='font-size: 16px; color: #333; list-style-type: none; padding: 0;'>";
+            body += "<p style='font-size: 16px; color: #333;'>팬싸인회 진행 정보:</p>";
+            body += "<ul style='font-size: 16px; color: #333; list-style-type: none; padding: 0;'>";
+            body += "<li style='margin-bottom: 5px;'>진행 시간: " + meeting.getMeetingDuration() + "초 / 대기 시간: " + meeting.getTerm() + "초</li>";
             body += "</ul>";
-            body += "<div style='text-align: center; margin: 20px 0;'>";
+            body += "<div style='margin: 20px 0;'>";
             body += "<div style='display: inline-block; font-size: 16px; color: #FE4D5C; padding: 10px 20px; border: 2px solid #FE4D5C; border-radius: 5px; background-color: #fee;'>";
-            body += "<p>이메일: " + user.getEmail() + "</p>";
-            body += "<p>비밀번호: " + user.getPassword() + "</p>";
+            body += "<p>임시 이메일: " + user.getEmail() + "</p>";
+            body += "<p>임시 비밀번호: " + user.getPassword() + "</p>";
             body += "</div>";
             body += "</div>";
-            body += "<p style='font-size: 16px; color: #333;'>팬싸인회 당일 <a href='https://i11c108.p.ssafy.io/'>https://i11c108.p.ssafy.io/</a> 사이트로 접속 후 위 계정으로 로그인해주세요.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>팬싸인회 당일 <a href='https://i11c108.p.ssafy.io/' style='color: #FE4D5C; text-decoration: none;'>https://i11c108.p.ssafy.io/</a> 사이트로 접속 후 위 계정으로 로그인해주세요.</p>";
             body += "<p style='font-size: 16px; color: #333;'>또한 안내드린 임시 계정은 보안을 위해 타인과 공유하지 마세요.</p>";
-            body += "<p style='font-size: 16px; color: #333;'>감사합니다.<br>MEET:Z 팀</p>";
-            body += "<div style='text-align: center; margin-top: 30px;'></div>";
+            body += "<p style='font-size: 16px; color: #333;'>해당 계정은 팬싸인회 종료 이후 24시간 뒤에 삭제됩니다.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>감사합니다.</p>";
+            body += "<div style='margin-top: 20px;'></div>";
+            body += "<p style='font-size: 20px; color: #333;'>MEET:Z</p>";
+
             body += "</div>";
-            message.setText(body, "UTF-8", "html");
+            body += "</div>";
+            helper.setText(body, true);
+            ClassPathResource image = new ClassPathResource("Meetzlogo.png");
+            helper.addInline("meetzlogo", image);
         } catch (MessagingException e) {
             throw new BadRequestException();
         }
