@@ -324,8 +324,8 @@ public class OpenviduService {
 
     private void endMeeting(int meetingId) {
         meetingPhases.remove(meetingId);
-//        meetingRooms.remove(meetingId);
-//        FanEmitterMap.remove(meetingId);
+        meetingRooms.remove(meetingId);
+        FanEmitterMap.remove(meetingId);
     }
 
     public void registMeetingInfo(int meetingId) {
