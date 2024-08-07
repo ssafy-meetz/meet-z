@@ -7,7 +7,7 @@ const LoadChatPage = () => {
 
   setTimeout(() => {
     navigate(`/manage/${meetingId}`);
-  }, 3000);
+  }, 1500);
 
   return (
     <div className="mt-36 flex flex-grow flex-col items-center justify-center gap-12">
