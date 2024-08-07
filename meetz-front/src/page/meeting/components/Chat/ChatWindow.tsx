@@ -70,19 +70,6 @@ const ChatWindow: React.FC = () => {
       }
     };
 
-    // client.current.onStompError = (frame) => {
-    //   console.error('Broker reported error: ' + frame.headers['message']);
-    //   console.error('Additional details: ' + frame.body);
-    // };
-
-    // client.current.onWebSocketClose = (event) => {
-    //   console.log('WebSocket closed: ', event);
-    // };
-
-    // client.current.onWebSocketError = (error) => {
-    //   console.error('WebSocket error: ', error);
-    // };
-
     client.current.activate();
 
     return () => {
