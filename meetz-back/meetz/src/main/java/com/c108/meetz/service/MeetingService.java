@@ -80,7 +80,7 @@ public class MeetingService {
             List<FanSaveDto> blackList = new ArrayList<>();
             List<FanSaveDto> notBlackList = new ArrayList<>();
             for(FanSaveDto dto : dtos){
-                if(blackListRepository.existsByNameAndEmailAndPhoneAndManager_ManagerId(dto.name(), dto.email(), dto.phone(), managerId)){
+                if(blackListRepository.existsByNameAndPhoneAndManager_ManagerId(dto.name(), dto.phone(), managerId)){
                     blackList.add(dto);
                 }else{
                     notBlackList.add(dto);
@@ -140,7 +140,7 @@ public class MeetingService {
 
     public void checkBlackList(FanSaveDto fanSaveDto) {
         Manager manager = getManager();
-        if(blackListRepository.existsByNameAndEmailAndPhoneAndManager_ManagerId(fanSaveDto.name(), fanSaveDto.email(), fanSaveDto.phone(), manager.getManagerId())){
+        if(blackListRepository.existsByNameAndPhoneAndManager_ManagerId(fanSaveDto.name(), fanSaveDto.phone(), manager.getManagerId())){
             throw new BadRequestException("블랙리스트입니다.");
         }
     }
