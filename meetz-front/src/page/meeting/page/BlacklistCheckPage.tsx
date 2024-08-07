@@ -9,6 +9,7 @@ import getBlacklist from '../../../apis/meeting/getBlacklist';
 import fetchUserData from '../../../lib/fetchUserData';
 import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 import Loading from '../../../common/Loading';
+import { AiOutlineClose } from 'react-icons/ai';
 
 const BlacklistCheckPage = () => {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ const BlacklistCheckPage = () => {
           </h1>
         </header>
         <div
-          className='overflow-y-auto max-h-[500px] min-h-96 mt-14'
+          className='overflow-y-auto px-10 max-h-[500px] min-h-96 mt-10'
           style={{
             scrollbarWidth: 'thin',
             scrollbarColor: 'rgba(0, 0, 0, 0.05) transparent',
@@ -102,31 +103,29 @@ const BlacklistCheckPage = () => {
           {blacklist && blacklist.length > 0 ? (
             <table className='w-full text-left '>
               <thead>
-                <tr className='bg-[#ff4f5d] text-white '>
-                  <th className='py-4 pl-5 text-lg font-light rounded-tl-lg rounded-bl-lg'>
+                <tr className='bg-[#ff4f5d] text-white text-2xl'>
+                  <th className='py-4 pl-3  font-light rounded-tl-lg rounded-bl-lg'>
                     | 번호
                   </th>
-                  <th className='py-4 pl-2 text-lg font-light'>| 이름</th>
-                  <th className='py-4 pl-1 text-lg font-light'>| 이메일</th>
-                  <th className='py-4 p-1 text-lg font-light'>| 연락처</th>
-                  <th className='py-4 p-1 text-lg font-light rounded-tr-lg rounded-br-lg'></th>
+                  <th className='py-4  pl-16 font-light'>| 이름</th>
+                  <th className='py-4 pl-16 font-light'>| 연락처</th>
+                  <th className='py-4  rounded-tr-lg rounded-br-lg'></th>
                 </tr>
               </thead>
               <tbody>
                 {blacklist.map((fan, index) => (
-                  <tr key={fan.blacklistId}>
+                  <tr key={fan.blacklistId} className='text-xl'>
                     <td className='py-2 pl-10'>{index + 1}</td>
-                    <td className='py-2 pl-4'>{fan.name}</td>
-                    <td className='py-2 pl-4'>{fan.email}</td>
-                    <td className='py-2 pl-4'>
+                    <td className='py-2 pl-24'>{fan.name}</td>
+                    <td className='py-2 pl-20'>
                       {formatPhoneNumber(fan.phone)}
                     </td>
-                    <td className='py-2 pl-4'>
+                    <td className='py-2'>
                       <button
                         onClick={deleteHandler}
-                        className='border-[#ff4f5d] text-[#ff4f5d] hover:text-white py-1 px-3 rounded-full hover:bg-[#ff4f5d] transition'
+                        className='border-[#ff4f5d] text-4xl text-[#ff4f5d] hover:text-[#ff979f] py-1 px-3 rounded-full transition'
                       >
-                        삭제
+                        <AiOutlineClose />
                       </button>
                     </td>
                   </tr>
