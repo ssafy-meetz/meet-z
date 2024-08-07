@@ -81,3 +81,10 @@ export type ChatDto = {
   content: string;
   createAt: string;
 }
+
+export type BlacklistDto = {
+  blacklistId:number;
+  name: string;
+  email: string;
+  phone: string;
+}
