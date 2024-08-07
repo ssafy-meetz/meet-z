@@ -25,14 +25,12 @@ public class BlackListInfoListResponseDto {
     public static class BlackListInfo{
         int blacklistId;
         String name;
-        String email;
         String phone;
 
         public static BlackListInfo from(BlackList blackList){
             BlackListInfo blackListInfo = new BlackListInfo();
             blackListInfo.setBlacklistId(blackList.getBlacklistId());
             blackListInfo.setName(blackList.getName());
-            blackListInfo.setEmail(blackList.getEmail());
             blackListInfo.setPhone(blackList.getPhone());
             return blackListInfo;
         }
