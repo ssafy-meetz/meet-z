@@ -11,12 +11,18 @@ type SessionInfo = {
   fanId: string;
   timer: number;
   starName: string;
-  token: string;
 };
 const StarSessionContainerPage = () => {
   const [remain, setRemain] = useState(200);
-  const { token, settingDone, setTimer, setStartName, setToken, setFanId } =
-    useSessionStore();
+  const {
+    getSessionId,
+    settingDone,
+    setTimer,
+    setStartName,
+    setGetSessionId,
+    setFanId,
+  } = useSessionStore();
+  const { session } = useOpenvidu();
 
   useEffect(() => {
     fetchSSE();
@@ -27,10 +33,10 @@ const StarSessionContainerPage = () => {
       setTimer(info.timer);
       setStartName(info.starName);
       setFanId(info.fanId);
-      setToken(info.token);
       resolve();
     });
   };
+  const getToken = () => {};
   const fetchSSE = () => {
     console.log("SSE 연결 시도");
     const { accessToken } = fetchUserData();
@@ -55,7 +61,6 @@ const StarSessionContainerPage = () => {
         fanId: parseData.fanId,
         timer: parseData.timer,
         starName: parseData.starName,
-        token: parseData.viduToken,
       };
       setInfo(info);
       setRemain(parseData.remain);
@@ -71,7 +76,7 @@ const StarSessionContainerPage = () => {
     };
   };
 
-  if (settingDone) {
+  if (settingDone && session) {
     return <StarSessionPage />;
   }
   if (remain === 0) {
