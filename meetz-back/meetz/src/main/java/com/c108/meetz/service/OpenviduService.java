@@ -516,7 +516,7 @@ public class OpenviduService {
                     }
 
                     fanInfo.emitter = emitter;
-                    log.info("fanInfo에 emitter 등록 완료");
+                    log.info("fanInfo에 fan emitter 등록 완료");
                     break;
                 }
             }
@@ -530,7 +530,7 @@ public class OpenviduService {
             for (StarInfo starInfo : starInfos) {
                 if (starInfo.email.equals(userEmail)) {
                     starInfo.emitter = emitter;
-                    log.info("meetingRoomV2에 emitter 등록 완료");
+                    log.info("meetingRoom에 star emitter 등록 완료");
                     break;
                 }
             }
