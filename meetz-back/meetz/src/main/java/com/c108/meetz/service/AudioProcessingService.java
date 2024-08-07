@@ -90,8 +90,7 @@ public class AudioProcessingService {
                 String endTime = formatTime(endTimeMillis / 1000.0);
                 String text = segmentNode.path("text").asText();
                 List<String> badWordsList = checkProfanity(text);
-                boolean hasProfanity = !badWordsList.isEmpty();
-                segments.add(new TranscriptionSegment(startTime, endTime, text, hasProfanity, badWordsList));
+                segments.add(new TranscriptionSegment(startTime, endTime, text, badWordsList));
             }
 
             log.debug("응답 파싱 완료, 세그먼트 수: {}", segments.size());
@@ -111,7 +110,7 @@ public class AudioProcessingService {
     private List<TranscriptionSegment> filterProfanitySegments(List<TranscriptionSegment> segments) {
         List<TranscriptionSegment> filteredSegments = new ArrayList<>();
         for (TranscriptionSegment segment : segments) {
-            if (segment.isHasProfanity()) {
+            if (!segment.getBadWordsList().isEmpty()) {
                 filteredSegments.add(segment);
             }
         }
