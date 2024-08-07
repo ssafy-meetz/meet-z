@@ -118,6 +118,12 @@ public class OpenviduApi {
         return ApiResponse.success(HttpStatus.OK, sb.toString());
     }
 
+    @GetMapping("/vidu/star")
+    public ApiResponse<String> getStarToken() throws OpenViduJavaClientException, OpenViduHttpException {
+        String token = openviduService.getStarToken();
+        return ApiResponse.success(HttpStatus.OK, token);
+    }
+
     //testCode: 세션을 생성하는 함수
     @PostMapping("/vidu")
     public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
@@ -141,6 +147,8 @@ public class OpenviduApi {
         Connection connection = session.createConnection(properties);
         return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
     }
+
+
 
     //======================================SSE 관련 api 시작======================================//
 

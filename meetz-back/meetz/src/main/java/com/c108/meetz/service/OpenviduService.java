@@ -109,7 +109,7 @@ public class OpenviduService {
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     //emiiter 설정 상수
-    private static final long TIMEOUT = 24 * 60 * 60 * 1000; //1000ms = 1s
+    private static final long TIMEOUT = 3 * 60 * 60 * 1000; //1000ms = 1s
     private static final long RECONNECTION_TIMEOUT = 1000L;
 
     ////
@@ -319,13 +319,13 @@ public class OpenviduService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }, 5, TimeUnit.SECONDS);
+        }, 10, TimeUnit.SECONDS);
     }
 
     private void endMeeting(int meetingId) {
         meetingPhases.remove(meetingId);
-        meetingRooms.remove(meetingId);
-        FanEmitterMap.remove(meetingId);
+//        meetingRooms.remove(meetingId);
+//        FanEmitterMap.remove(meetingId);
     }
 
     public void registMeetingInfo(int meetingId) {
@@ -484,6 +484,38 @@ public class OpenviduService {
                 new NotFoundException("user not found"));
     }
 
+    //star에세 token을 주는 함수
+    public String getStarToken() throws OpenViduJavaClientException, OpenViduHttpException {
+
+        User user = getUser();
+        String userEmail = null;
+        if (user == null) {
+            return null;
+        }
+
+        int meetingId = user.getMeeting().getMeetingId();
+
+        userEmail = user.getEmail();
+
+        List<StarInfo> starInfos = meetingRooms.get(meetingId);
+
+        for (StarInfo starInfo : starInfos) {
+            if (starInfo.email.equals(userEmail)) {
+                //프로퍼티 생성
+                ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
+                        .type(ConnectionType.WEBRTC)
+                        .role(OpenViduRole.PUBLISHER) //Publisher는 화면 및 음성 공유 가능
+                        .data("handsomeChangWoo")//사용자 관련 데이터 전송
+                        .build();
+
+                //커넥션 생성
+                Connection connection = starInfo.session.createConnection(connectionProperties);
+                return connection.getToken();
+            }
+        }
+        return null;
+    }
+
     //emitter를 만들어서 클라이언트에게 전달
     public SseEmitter subscribFan() {
 
@@ -549,7 +581,7 @@ public class OpenviduService {
 
         //에러 핸들러 등록
         emitter.onError(e -> {
-            log.info("server sent event error : email={}, message={}", email, e.getMessage());
+            log.info("server sent event error : email={},", email);
             emitter.complete();
         });
     }
