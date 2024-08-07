@@ -23,15 +23,12 @@ public class BlackList {
 
     private String name;
 
-    private String email;
-
     private String phone;
 
     @Builder
-    public BlackList(Manager manager, String name, String email, String phone){
+    public BlackList(Manager manager, String name, String phone){
         this.manager = manager;
         this.name = name;
-        this.email = email;
         this.phone = phone;
     }
 
