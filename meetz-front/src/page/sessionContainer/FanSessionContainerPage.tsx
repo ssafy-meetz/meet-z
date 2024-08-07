@@ -25,8 +25,7 @@ const FanSessionContainerPage = () => {
   const { leaveSession } = useOpenvidu();
   //SSE 연결
   useEffect(() => {
-    setGetSessionId("meetz");
-    // fetchSSE();
+    fetchSSE();
   }, []);
 
   const setInfo = (info: SessionInfo) => {
@@ -85,11 +84,11 @@ const FanSessionContainerPage = () => {
   if (wait === 0 && settingDone) {
     return <FanSessionPage />;
   }
-  if (remain === 0) {
+  if (remain === -1) {
     return <SessionSwitchPage />;
   }
-  // return <FanSettingPage />;
-  return <FanSessionPage />;
+  return <FanSettingPage />;
+  // return <FanSessionPage />;
 };
 
 export default FanSessionContainerPage;
