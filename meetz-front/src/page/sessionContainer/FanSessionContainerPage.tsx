@@ -16,6 +16,8 @@ type SessionInfo = {
 const FanSessionContainerPage = () => {
   const [wait, setWait] = useState(200);
   const [remain, setRemain] = useState(200);
+  const [meetingDone, setMeetingDone] = useState(false);
+  const [progressMeeting, setProgressMeeting] = useState(false);
   const {
     settingDone,
     setGetSessionId,
@@ -24,13 +26,34 @@ const FanSessionContainerPage = () => {
     setNextStarName,
   } = useSessionStore();
   const { sendImage } = useSaveImage();
-  const { leaveSession, session } = useOpenvidu();
+  const { leaveSession } = useOpenvidu();
 
   //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
     fetchSSE();
   }, []);
-
+  useEffect(() => {
+    if (wait === 0) {
+      setProgressMeeting(true);
+    }
+  }, [wait]);
+  useEffect(() => {
+    if (!settingDone && progressMeeting) {
+      alert("카메라 설정이 완료되어야 미팅 입장이 진행됩니다.");
+    }
+  }, [progressMeeting]);
+  useEffect(() => {
+    if (meetingDone) {
+      console.log("Sending image to server...");
+      sendImage();
+    }
+  }, [meetingDone]);
+  useEffect(() => {
+    // 상태가 업데이트된 후 이동할 페이지를 결정
+    if (remain === -1) {
+      console.log("Remain is -1, navigating to SessionSwitchPage");
+    }
+  }, [remain]);
   //fetchSSE 연결
   const fetchSSE = () => {
     console.log("SSE 연결 시도");
@@ -66,7 +89,10 @@ const FanSessionContainerPage = () => {
       await setInfo(info);
       setWait(parseData.waitingNum);
       setRemain(parseData.remainStarNum);
-
+      //현재 임시로 remain이 0인 경우 사진 발송 진행!
+      if (parseData.remainStarNum === -1) {
+        setMeetingDone(true);
+      }
       //SSE에러 발생 시 SSE와 연결 종료
       eventSource.onerror = (e: any) => {
         eventSource.close();
@@ -81,7 +107,7 @@ const FanSessionContainerPage = () => {
   };
 
   //
-  const setInfo = (info: SessionInfo) => {
+  const setInfo = async (info: SessionInfo) => {
     return new Promise<void>((resolve) => {
       setTimer(info.timer);
       setStartName(info.starName);
@@ -90,19 +116,13 @@ const FanSessionContainerPage = () => {
       resolve();
     });
   };
+  if (remain === -1) {
+    return <SessionSwitchPage />;
+  }
   if (wait === 0 && settingDone) {
     return <FanSessionPage />;
   }
-  if (remain === -1) {
-    if (
-      !localStorage.getItem("images") &&
-      localStorage.getItem("images") != "[]"
-    ) {
-      sendImage();
-    }
 
-    return <SessionSwitchPage />;
-  }
   return <FanSettingPage />;
   // return <FanSessionPage />;
 };

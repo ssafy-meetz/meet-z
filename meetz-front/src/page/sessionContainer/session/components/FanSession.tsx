@@ -68,15 +68,8 @@ function FanSession({ subscriber, publisher }: SessionProps) {
 
   const capturePhoto = async () => {
     console.log("찰칵!");
-
-    const element1 = document.getElementById("meetingVideo-star");
-    const element2 = document.getElementById("meetingVideo-fan");
-
-    if (!element1 || !element2) {
-      console.error("One or both elements not found!");
-      return;
-    }
-
+    const element1 = document.getElementById("meetingVideo-fan");
+    const element2 = document.getElementById("meetingVideo-star");
     const image: string = await compositionImage(element1, element2);
     addImageToLocalStorage(image);
     handleCompleteTakePhoto();
