@@ -9,10 +9,10 @@ const postCheckProfanity = async (accessToken: string, formData: FormData) => {
         'Authorization': `Bearer ${accessToken}`
       }
     });
-    console.log(data)
-    // return data.data;
+
+    return data.code === 200;
   } catch (error) {
-    alert(error);
+    return false;
   }
 }
 
