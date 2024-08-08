@@ -43,7 +43,7 @@ const FanListModal = () => {
           </div>
         </div>
         <ExcelBox scrollToBottom={scrollToBottom} />
-        <AddFanInputBox />
+        <AddFanInputBox scrollToBottom={scrollToBottom} />
         <CleanFanList fanList={tempNotBlackList.length !== notBlackList.length ? tempNotBlackList : notBlackList} />
         <div className="flex justify-center mt-8 gap-4">
           <button onClick={saveHandler} className="font-semibold text-white bg-[#ff4f5d] rounded-lg px-14 py-3">저장</button>
