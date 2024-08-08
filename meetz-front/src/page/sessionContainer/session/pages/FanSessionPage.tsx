@@ -3,43 +3,18 @@ import { useEffect, useState } from "react";
 import logo_white from "/src/assets/images/logo-white.png";
 import { useSessionStore } from "../../../../zustand/useSessionStore";
 import FanSession from "../components/FanSession";
+import useSessionTimer from "../../../../hooks/session/useSessionTimer";
 
 function FanSessionPage() {
-  const { session, publisher, subscriber, joinSession, leaveSession } =
-    useOpenvidu();
-  const [time, setTime] = useState(0);
-  const [formatTime, setFormatTime] = useState("");
-  const { getSessionId, timer } = useSessionStore();
+  const { session, publisher, subscriber, joinSession } = useOpenvidu();
+  const { formatTime } = useSessionTimer();
+  const { getSessionId } = useSessionStore();
   useEffect(() => {
     if (getSessionId !== "") {
       joinSession();
     }
   }, [getSessionId]);
-  useEffect(()=>{
-    setTime(timer);
-  },[session])
-  useEffect(() => {
-    setTime(timer);
-    const secondId = setInterval(() => {
-      setTime((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(secondId);
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
 
-    return () => clearInterval(secondId);
-  }, []);
-  useEffect(() => {
-    const formatTime = (totalTime: number) => {
-      const minutes = Math.floor(totalTime / 60);
-      const seconds = Math.floor(totalTime % 60);
-      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-    };
-    setFormatTime(formatTime(time));
-  }, [time]);
   return (
     <div>
       <div className="flex flex-col justify-center items-center h-screen bg-black">
