@@ -44,6 +44,7 @@ const DetailRoomList = ({ starList }: { starList: StarDto[] | undefined }) => {
               <span>이메일 : {star.email}</span>
               <span>비밀번호: {star.password}</span>
             </div>
+            </div>
           ))}
       </div>
     </div>
