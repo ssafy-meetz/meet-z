@@ -36,7 +36,7 @@ const CleanFanList = ({
         <tbody>
           {fanList &&
             fanList.map((fan, index) => (
-              <tr key={fan.userId}>
+              <tr key={index}>
                 <td className='p2 pl-10'>{index + 1}</td>
                 <td className='p2 pl-4'>{fan.name}</td>
                 <td className='p-2 pl-4'>{fan.email}</td>
