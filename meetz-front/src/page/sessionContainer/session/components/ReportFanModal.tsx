@@ -1,10 +1,13 @@
+import getFanReport from "../../../../apis/session/getFanReport";
 import { useReportModal } from "../../../../zustand/useReportModal";
 import Alert from "/src/assets/images/alert.png";
 
 const ReportFanModal = () => {
   const { setOpenModal, setConfirmModal } = useReportModal();
-  const confirmReport = () => {
+  const confirmReport = async () => {
     //api 팬 신고
+    // await getFanReport();
+
     setConfirmModal(true);
     setOpenModal(false);
   };
