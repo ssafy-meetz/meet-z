@@ -13,7 +13,7 @@ const SendEmailModal = ({ meetingId }: { meetingId: number | undefined }) => {
       if (!meetingId) {
         return;
       }
-      const result = await sendEmailToFans(meetingId, accessToken || "");
+      const result = await sendEmailToFans(meetingId, accessToken || '');
 
       if (result) {
         setModalStep(2);
@@ -21,10 +21,9 @@ const SendEmailModal = ({ meetingId }: { meetingId: number | undefined }) => {
     } catch (error) {
       setModalStep(0);
       closeMailModal();
-      alert("메일 전송에 실패했습니다.");
+      alert('메일 전송에 실패했습니다.');
     }
-  }
-
+  };
 
   const continueBtnHandler = () => {
     getSendEmailToFans();
@@ -50,13 +49,13 @@ const SendEmailModal = ({ meetingId }: { meetingId: number | undefined }) => {
           <div className='flex justify-center gap-5'>
             <button
               onClick={continueBtnHandler}
-              className='text-xl text-white border px-5 py-1  border-[#FF4F5D] bg-[#ff4f5d] rounded-lg'
+              className='text-xl duration-100 ease-in-out transform hover:scale-105 hover:bg-[#ff626f] transition text-white border px-5 py-1  border-[#FF4F5D] bg-[#ff4f5d] rounded-lg'
             >
               진행
             </button>
             <button
               onClick={closeMailModal}
-              className='text-xl text-[#FF4F5D] border px-5 py-1 border-[#FF4F5D] rounded-lg '
+              className='text-xl text-[#FF4F5D] border px-5 py-1 border-[#FF4F5D] rounded-lg  hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105'
             >
               취소
             </button>

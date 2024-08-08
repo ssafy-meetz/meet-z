@@ -65,6 +65,7 @@ const LoginBox = () => {
 
       // 스타라면 미팅 대기 페이지로 이동
       if (role === "STAR") {
+        navigate("/session");
       }
     } catch (error: any) {
       if (error.message === "존재하지 않는 회원입니다.") {
