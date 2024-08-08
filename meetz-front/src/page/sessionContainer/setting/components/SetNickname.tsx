@@ -1,25 +1,52 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
+import fetchUserData from '../../../../lib/fetchUserData';
+import putModifyFanNickname from '../../../../apis/session/modifyFanNickname';
+import { StarDto } from '../../../../types/types';
+
+interface MeetingInfoDto {
+  chatRoomId: number;
+  meetingDuration: number;
+  meetingId: number;
+  meetingName: string;
+  meetingstart: string;
+  nickname: string;
+  starList: StarDto[];
+  term: number;
+  userPosition: number;
+}
 
 const SetNickname: React.FC = () => {
   const { nextStep } = useEnvSettingStore();
   const [nickname, setNickname] = useState<string>('');
+  const { accessToken } = fetchUserData();
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfoDto>(JSON.parse(sessionStorage.getItem('mi') || ""));
 
   // 로컬 스토리지에서 닉네임을 불러오는 함수
   useEffect(() => {
-    const storedNickname = localStorage.getItem('nickname');
+    const storedNickname = meetingInfo.nickname;
+
     if (storedNickname) {
       setNickname(storedNickname);
     }
   }, []);
 
-  // 닉네임을 로컬 스토리지에 저장하고 다음 단계로 이동하는 함수
-  const handleNext = () => {
+  // 닉네임을 세션 스토리지에 저장하고 다음 단계로 이동하는 함수
+  const handleNext = async () => {
     if (!validateNickname(nickname)) {
       alert('닉네임을 제대로 입력해 주세요.');
       return;
     }
-    localStorage.setItem('nickname', nickname);
+
+    const newMeetingInfo = { ...meetingInfo, nickname };
+    setMeetingInfo(newMeetingInfo);
+    sessionStorage.setItem('mi', JSON.stringify(newMeetingInfo));
+    const result = await putModifyFanNickname(nickname, accessToken || "");
+
+    if (!result) {
+      alert('닉네임 변경에 실패했습니다.');
+    }
+
     nextStep();
   };
 
