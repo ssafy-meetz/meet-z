@@ -41,6 +41,7 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
 
   const clearFileHandler = () => {
     setExcelFile(null);
+    setBlackList([]);
     setTempNotBlackList([]);
     if (inputRef.current) {
       inputRef.current.value = '';
