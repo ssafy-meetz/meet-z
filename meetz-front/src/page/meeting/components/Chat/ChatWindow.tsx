@@ -61,10 +61,11 @@ const ChatWindow: React.FC = () => {
     client.current.onConnect = () => {
       if (selectedFan) {
         client.current?.subscribe(`/sub/chatRoom/${chatRoomId}`, (msg) => {
-          const newMsg = JSON.parse(msg.body);
+          const newMsg: messageDto = JSON.parse(msg.body);
           if (!newMsg.content) {
             return;
           }
+
           addChatMessage(newMsg); //여기도 변경됐어요 setChatHistory[...chatHistory, newMsg]->addChatHistory
         });
       }
@@ -131,7 +132,7 @@ const ChatWindow: React.FC = () => {
           {
             chatHistory && chatHistory.map((chat, idx) => {
               return (
-                (chat.senderRole === 'MANAGER') ? <ManagerMessageBubble chat={chat} key={idx} /> : <FanMessageBubble chat={chat} key={idx} />
+                chat.senderId === selectedFan.userId ? ((chat.senderRole === 'MANAGER') ? <ManagerMessageBubble chat={chat} key={idx} /> : <FanMessageBubble chat={chat} key={idx} />) : ''
               );
             })
           }
