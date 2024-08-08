@@ -103,6 +103,10 @@ const SetChatting = ({ isChattingBoxVisible, chatHistory, setChatHistory, fanId,
     scrollToBottom();
   };
 
+  useEffect(() => {
+    console.log(fanId)
+  }, [])
+
   return (
     <div className='flex flex-col w-[338px] h-[662px] border-r-4 border-[#d9d9d9]'>
       <div className='flex flex-col gap-7 p-8'>
@@ -120,9 +124,9 @@ const SetChatting = ({ isChattingBoxVisible, chatHistory, setChatHistory, fanId,
           scrollbarColor: 'rgba(0, 0, 0, 0.05) transparent',
         }}
       >
-        {chatHistory.map((chat, index) => (
+        {chatHistory.map((chat, index) => (chat.receiverId === fanId && chat.senderId === managerId) || (chat.senderId === fanId && chat.receiverId === managerId) ? (
           <ChatMessage key={index} content={chat.content} senderRole={chat.senderRole} />
-        ))}
+        ) : '')}
         <div ref={scrollRef} />
       </div>
       <ChatInputBox input={input} setInput={setInput} sendMessage={sendMessage} />
