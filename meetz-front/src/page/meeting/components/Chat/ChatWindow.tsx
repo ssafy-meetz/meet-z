@@ -132,7 +132,7 @@ const ChatWindow: React.FC = () => {
           {
             chatHistory && chatHistory.map((chat, idx) => {
               return (
-                chat.senderId === selectedFan.userId ? ((chat.senderRole === 'MANAGER') ? <ManagerMessageBubble chat={chat} key={idx} /> : <FanMessageBubble chat={chat} key={idx} />) : ''
+                (chat.senderId === selectedFan.userId && chat.receiverId === managerId) || (chat.senderId === managerId && chat.receiverId === selectedFan.userId) ? ((chat.senderRole === 'MANAGER') ? <ManagerMessageBubble chat={chat} key={idx} /> : <FanMessageBubble chat={chat} key={idx} />) : ''
               );
             })
           }
