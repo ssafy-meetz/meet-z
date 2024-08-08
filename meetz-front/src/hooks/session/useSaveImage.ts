@@ -42,15 +42,15 @@ const useSaveImage = () => {
       const file = new File([blob], `image${index}.jpg`, {
         type: "image/jpeg",
       });
-      formData.append("images", file);
+      formData.append("image", file);
     });
 
     return formData;
   };
 
   const compositionImage = async (
-    element1: HTMLElement,
-    element2: HTMLElement
+    element1: HTMLElement | null,
+    element2: HTMLElement | null
   ): Promise<string> => {
     if (element1 && element2) {
       const canvas1 = await html2canvas(element1);
@@ -121,6 +121,12 @@ const useSaveImage = () => {
     return "";
   };
   const sendImage = async () => {
+    if (
+      !localStorage.getItem("images") ||
+      localStorage.getItem("images") === "[]"
+    ) {
+      return;
+    }
     const formData: FormData = addImagesToFormData();
     await sendImageToServer(formData);
   };
