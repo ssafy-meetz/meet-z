@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { Publisher, Subscriber } from "openvidu-browser";
 import Video from "./Video";
 import { useSessionStore } from "../../../../zustand/useSessionStore";
-
 import camera_icon from "/src/assets/images/camera.png";
 import useSaveImage from "../../../../hooks/session/useSaveImage";
+import "./flash.css"
 
 interface SessionProps {
   subscriber: Subscriber | null;
@@ -23,6 +23,7 @@ function FanSession({ subscriber, publisher }: SessionProps) {
   const [takePhoto, setTakePhoto] = useState<boolean>(false);
   const { starName, nextStarName } = useSessionStore();
   const { compositionImage, addImageToLocalStorage } = useSaveImage();
+  const [flash, setFlash] = useState<boolean>(false); 
   const toggleTakePhoto = () => {
     setTakePhoto(true);
   };
@@ -68,11 +69,13 @@ function FanSession({ subscriber, publisher }: SessionProps) {
 
   const capturePhoto = async () => {
     console.log("찰칵!");
+    setFlash(true);
     const element1 = document.getElementById("meetingVideo-fan");
     const element2 = document.getElementById("meetingVideo-star");
     const image: string = await compositionImage(element1, element2);
     addImageToLocalStorage(image);
     handleCompleteTakePhoto();
+    setTimeout(() => setFlash(false), 500);
   };
 
   const renderSubscribers = () => {
@@ -124,9 +127,8 @@ function FanSession({ subscriber, publisher }: SessionProps) {
           <div className="text-6xl text-white font-bold">{count}</div>
         </div>
       )}
+      {flash && <div className="fixed inset-0 bg-white opacity-75 flash-animation"></div>}
     </>
   );
-
-  return <>{renderSubscribers()}</>;
 }
 export default FanSession;
