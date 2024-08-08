@@ -114,7 +114,7 @@ const DetailPage = () => {
         <SendEmailModal meetingId={meetingData?.meetingId} />
       )}
       {sendModalOpend && modalStep === 1 && <LoadEmailModal />}
-      {sendModalOpend && modalStep === 2 && <CompleteEmailModal />}
+      {sendModalOpend && modalStep === 2 && <CompleteEmailModal meetingData={meetingData} />}
 
       {isDeleteModalOpen && (
         <DeleteMeetingCheckModal meetingId={meetingData?.meetingId} />
