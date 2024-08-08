@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import { Publisher, Subscriber } from "openvidu-browser";
 import Video from "./Video";
 import { useSessionStore } from "../../../../zustand/useSessionStore";
-import html2canvas from "html2canvas";
+
 import camera_icon from "/src/assets/images/camera.png";
+import useSaveImage from "../../../../hooks/session/useSaveImage";
 
 interface SessionProps {
   subscriber: Subscriber | null;
@@ -20,7 +21,8 @@ function FanSession({ subscriber, publisher }: SessionProps) {
   const [fanName, setFanName] = useState<String | null>("");
   const [memo, setMemo] = useState<String | null>("");
   const [takePhoto, setTakePhoto] = useState<boolean>(false);
-  const { starName,nextStarName } = useSessionStore();
+  const { starName, nextStarName } = useSessionStore();
+  const { compositionImage, addImageToLocalStorage } = useSaveImage();
   const toggleTakePhoto = () => {
     setTakePhoto(true);
   };
@@ -38,8 +40,6 @@ function FanSession({ subscriber, publisher }: SessionProps) {
         const findMemo = memos.find((m) => m.star == starName);
         if (findMemo) {
           setMemo(findMemo.text);
-          console.log("!!");
-          console.log(findMemo.text);
         }
       } catch {}
     }
@@ -52,7 +52,6 @@ function FanSession({ subscriber, publisher }: SessionProps) {
   useEffect(() => {
     if (!takePhoto) return;
     setCount(3);
-    console.log("시작!");
     const timerId = setInterval(() => {
       setCount((prevCount) => {
         if (prevCount <= 1) {
@@ -69,81 +68,20 @@ function FanSession({ subscriber, publisher }: SessionProps) {
 
   const capturePhoto = async () => {
     console.log("찰칵!");
+
     const element1 = document.getElementById("meetingVideo-star");
     const element2 = document.getElementById("meetingVideo-fan");
-    if (element1 && element2) {
-      const canvas1 = await html2canvas(element1);
-      const blob1 = await new Promise<Blob | null>((resolve) =>
-        canvas1.toBlob(resolve, "image/jpeg")
-      );
 
-      const canvas2 = await html2canvas(element2);
-      const blob2 = await new Promise<Blob | null>((resolve) =>
-        canvas2.toBlob(resolve, "image/jpeg")
-      );
-      if (blob1 && blob2) {
-        const img1 = new Image();
-        img1.src = URL.createObjectURL(blob1);
-
-        const img2 = new Image();
-        img2.src = URL.createObjectURL(blob2);
-
-        img1.onload = () => {
-          img2.onload = () => {
-            const mirroredCanvas1 = document.createElement("canvas");
-            const mirroredCanvas2 = document.createElement("canvas");
-
-            mirroredCanvas1.width = img1.width;
-            mirroredCanvas1.height = img1.height;
-            mirroredCanvas2.width = img2.width;
-            mirroredCanvas2.height = img2.height;
-
-            const ctx1 = mirroredCanvas1.getContext("2d");
-            const ctx2 = mirroredCanvas2.getContext("2d");
-
-            if (ctx1) {
-              ctx1.translate(mirroredCanvas1.width, 0);
-              ctx1.scale(-1, 1);
-              ctx1.drawImage(img1, 0, 0);
-            }
-
-            if (ctx2) {
-              ctx2.translate(mirroredCanvas2.width, 0);
-              ctx2.scale(-1, 1);
-              ctx2.drawImage(img2, 0, 0);
-            }
-
-            //이미지 돌리고 합치기
-            const finalCanvas = document.createElement("canvas");
-            finalCanvas.width = mirroredCanvas1.width + mirroredCanvas2.width;
-            finalCanvas.height = Math.max(
-              mirroredCanvas1.height,
-              mirroredCanvas2.height
-            );
-
-            const finalCtx = finalCanvas.getContext("2d");
-            if (finalCtx) {
-              finalCtx.drawImage(mirroredCanvas1, 0, 0);
-              finalCtx.drawImage(mirroredCanvas2, mirroredCanvas1.width, 0);
-            }
-
-            // Download the final image
-            finalCanvas.toBlob((blob) => {
-              if (blob) {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "screenshot.jpg";
-                link.click();
-                URL.revokeObjectURL(url);
-              }
-            }, "image/jpeg");
-          };
-        };
-      }
-      handleCompleteTakePhoto();
+    if (!element1 || !element2) {
+      console.error("One or both elements not found!");
+      return;
     }
+
+    const image: string = await compositionImage(element1, element2);
+    addImageToLocalStorage(image);
+    handleCompleteTakePhoto();
   };
+
   const renderSubscribers = () => {
     return (
       <div>
@@ -177,10 +115,9 @@ function FanSession({ subscriber, publisher }: SessionProps) {
               src={camera_icon}
               onClick={toggleTakePhoto}
             />
-            {nextStarName&&<p className="text-white">{nextStarName} &gt;</p>}
-            {!nextStarName&&<p className="text-white">{nextStarName} </p>}
+            {nextStarName && <p className="text-white">{nextStarName} &gt;</p>}
+            {!nextStarName && <p className="text-white">{nextStarName} </p>}
           </div>
-          
         </div>
       </div>
     );
