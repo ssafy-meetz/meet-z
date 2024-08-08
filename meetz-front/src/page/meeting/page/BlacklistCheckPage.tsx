@@ -1,6 +1,5 @@
 // src/pages/meeting/page/BlacklistCheckPage.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { BlacklistDto } from '../../../types/types';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBlackStore } from '../../../zustand/useBlackStore';
 import DeleteCheckModal from '../components/Blacklist/DeleteCheckModal';
@@ -13,10 +12,18 @@ import { AiOutlineClose } from 'react-icons/ai';
 
 const BlacklistCheckPage = () => {
   const navigate = useNavigate();
-  const { openDeleteModal } = useBlackStore();
+  const {
+    openDeleteModal,
+    isDeleteModalOpen,
+    isDeletedModalOpen,
+    setSelectedBlacklistId,
+    isDelete,
+    selectedBlacklistId,
+    blacklist,
+    setBlacklist,
+  } = useBlackStore();
   const { accessToken } = fetchUserData();
-  const [blacklistCompany, setBlacklistCompany] = useState('');
-  const [blacklist, setBlacklist] = useState<BlacklistDto[]>([]);
+  const [blacklistCompany, setBlacklistCompany] = useState(''); // 회사 이름
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
 
   useCheckAuth('MANAGER');
@@ -41,32 +48,31 @@ const BlacklistCheckPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true);
-
+        setIsLoading(true); // 로딩 시작
         const { company, blackList } = await fetchBlacklistData();
         setBlacklistCompany(company);
         setBlacklist(blackList);
-
         setTimeout(() => {
           setIsLoading(false);
-        }, 500);
+        }, 300);
       } catch (error) {
-        console.error('블랙리스트를 가져오는 중 오류 발생:');
+        console.error('블랙리스트를 가져오는 중 오류 발생:', error);
         setBlacklist([]);
         setIsLoading(false);
       }
     };
 
     fetchData();
-  }, [fetchBlacklistData]);
+  }, [fetchBlacklistData, setBlacklist]);
 
   const cancelHandler = () => {
     navigate(-1);
   };
 
   // 모달을 여는 핸들러
-  const deleteHandler = () => {
-    openDeleteModal();
+  const deleteHandler = (blacklistId: number) => {
+    setSelectedBlacklistId(blacklistId); // 선택된 블랙리스트 ID 설정
+    openDeleteModal(); // 삭제 확인 모달 열기
   };
 
   const memoizedBlacklistCompany = useMemo(
@@ -122,7 +128,7 @@ const BlacklistCheckPage = () => {
                     </td>
                     <td className='py-2'>
                       <button
-                        onClick={deleteHandler}
+                        onClick={() => deleteHandler(fan.blacklistId)}
                         className='border-[#ff4f5d] text-4xl text-[#ff4f5d] hover:text-[#ff979f] py-1 px-3 rounded-full transition'
                       >
                         <AiOutlineClose />
@@ -149,9 +155,11 @@ const BlacklistCheckPage = () => {
           </button>
         </div>
       </div>
-      {/* 모달 추가 */}
-      <DeleteCheckModal />
-      <DeletedModal />
+      {isDeleteModalOpen && !isDelete && (
+        <DeleteCheckModal blacklistId={selectedBlacklistId} />
+      )}
+
+      {isDeletedModalOpen && isDelete && <DeletedModal />}
     </div>
   );
 };

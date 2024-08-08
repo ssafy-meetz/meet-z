@@ -1,12 +1,9 @@
-// src/components/Blacklist/DeletedModal.tsx
 import React from 'react';
 import { GoCheckCircle } from 'react-icons/go';
 import { useBlackStore } from '../../../../zustand/useBlackStore';
 
 const DeletedModal: React.FC = () => {
-  const { isDeletedModalOpen, closeDeletedModal } = useBlackStore();
-
-  if (!isDeletedModalOpen) return null;
+  const { closeDeletedModal } = useBlackStore();
 
   return (
     <div
