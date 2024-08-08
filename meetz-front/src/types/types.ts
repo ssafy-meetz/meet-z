@@ -50,6 +50,7 @@ export type StarMeetingDto = {
 }
 
 export type FanDto = {
+  userId:number;
   name: string;
   email: string;
   phone: string;
