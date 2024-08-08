@@ -1,6 +1,7 @@
+import { MeetingDetailDto } from '../../../../types/types';
 import { useDetailstore } from '../../../../zustand/useDetailStore';
 
-const CompleteEmailModal = () => {
+const CompleteEmailModal = ({ meetingData }: { meetingData: MeetingDetailDto }) => {
   const { closeMailModal, setModalStep } = useDetailstore();
 
   const closeHandler = () => {
@@ -18,7 +19,7 @@ const CompleteEmailModal = () => {
           <div className='gap-1 flex flex-col items-center justify-center'>
             <div>
               <span className='text-2xl font-bold cursor-default'>
-                이승원 우주 최강 앨범 출시 팬싸인회
+                {meetingData.meetingName}
               </span>
             </div>
             <span className='text-xl'>
