@@ -122,4 +122,10 @@ public class MeetingApi {
         MeetingInfoStarResponseDto response = meetingService.getMeetingInfoStar();
         return ApiResponse.success(OK, response);
     }
+
+    @PostMapping(value = "/image", consumes = "multipart/form-data")
+    public ApiResponse<Void> uploadImage(@RequestPart("image") List<MultipartFile> files) {
+        mailService.sendImageToFan(files);
+        return ApiResponse.success(OK);
+    }
 }
