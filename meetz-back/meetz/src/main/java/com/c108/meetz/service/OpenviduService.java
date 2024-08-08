@@ -208,7 +208,7 @@ public class OpenviduService {
         int totalPhases = fans.size() + stars.size();
         int currentPhase = getCurrentPhase(meetingId); //현재 진행중인 phase를 반환
         Meeting meeting = meetingRoomInfos.get(meetingId);
-
+        //
         if (currentPhase >= totalPhases) {
             log.info("{}번 님이 방에 나갔습니다.", fanSize - 1);
             log.info("{}번 미팅이 종료되었습니다.", meetingId);
