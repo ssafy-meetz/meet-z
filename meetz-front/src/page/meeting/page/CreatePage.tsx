@@ -38,6 +38,11 @@ const CreatePage: React.FC = () => {
   }
 
   const saveHandler = async () => {
+    if (!meetingName || !selectedDate || stars.length === 0 || notBlackList.length === 0) {
+      alert('모든 항목을 입력해주세요!');
+      return;
+    }
+
     const meetingStart = `${selectedDate && selectedDate.toISOString().split('T')[0]} ${(selectedTime && convertTo24H(selectedTime.value))}`
     const starList = stars.map(star => {
       return { name: star };
