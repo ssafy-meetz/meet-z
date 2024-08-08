@@ -7,58 +7,35 @@ import StarSession from "../components/StarSession";
 import { useReportModal } from "../../../../zustand/useReportModal";
 import ReportFanModal from "../components/ReportFanModal";
 import CompleteReportFanModal from "../components/CompleteReportFanModal";
-import getStarSessionId from "../../../../apis/session/getStarSessionId";
 import fetchUserData from "../../../../lib/fetchUserData";
+import getStarSessionId from "../../../../apis/session/getStarSessionId";
+import useSessionTimer from "../../../../hooks/session/useSessionTimer";
 
 function StarSessionPage() {
   const { session, publisher, subscriber, joinSession } = useOpenvidu();
-  const [time, setTime] = useState(0);
-  const [formatTime, setFormatTime] = useState("");
-  const { timer, remain, getSessionId,setGetSessionId } = useSessionStore();
+  const { remain, getSessionId, setGetSessionId } = useSessionStore();
   const { openModal, confirmModal, setOpenModal } = useReportModal();
-  const {accessToken} = fetchUserData();
+  const { accessToken } = fetchUserData();
+  const { formatTime } = useSessionTimer();
 
   const openReportModal = () => {
     setOpenModal(true);
   };
-  useEffect(()=>{
+  useEffect(() => {
     getSession();
-  })
+  });
 
-  const getSession=async()=>{
-    if(accessToken){
+  const getSession = async () => {
+    if (accessToken) {
       const id = await getStarSessionId(accessToken);
       setGetSessionId(id);
     }
-  }
+  };
   useEffect(() => {
     if (getSessionId !== "") {
       joinSession();
     }
   }, [getSessionId]);
-
-  useEffect(() => {
-    setTime(timer);
-    const secondId = setInterval(() => {
-      setTime((prevTime) => {
-        if (prevTime <= 1) {
-          clearInterval(secondId);
-          return 0;
-        }
-        return prevTime - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(secondId);
-  }, []);
-  useEffect(() => {
-    const formatTime = (totalTime: number) => {
-      const minutes = Math.floor(totalTime / 60);
-      const seconds = Math.floor(totalTime % 60);
-      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-    };
-    setFormatTime(formatTime(time));
-  }, [time]);
 
   return (
     <div>
