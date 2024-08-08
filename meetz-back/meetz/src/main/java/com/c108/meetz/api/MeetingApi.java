@@ -3,11 +3,13 @@ package com.c108.meetz.api;
 import com.c108.meetz.dto.ApiResponse;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
+import com.c108.meetz.dto.request.ReportRequestDto;
 import com.c108.meetz.dto.response.*;
 import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.service.AudioProcessingService;
 import com.c108.meetz.service.MailService;
 import com.c108.meetz.service.MeetingService;
+import com.c108.meetz.service.ReportService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,7 @@ public class MeetingApi {
     private final MeetingService meetingService;
     private final MailService mailService;
     private final AudioProcessingService audioProcessingService;
+    private final ReportService reportService;
 
     @PostMapping("")
     public ApiResponse<MeetingSaveResponseDto> createMeeting(@Valid @RequestBody MeetingSaveRequestDto meetingSaveRequestDto, BindingResult bindingResult) {
@@ -56,7 +59,7 @@ public class MeetingApi {
         MeetingDetailResponseDto response = meetingService.getMeetingDetails(meetingId);
         return ApiResponse.success(OK, response);
     }
-    
+
     @GetMapping("/{meetingId}/sendmail")
     public ApiResponse<Void> sendMailToFan(@PathVariable int meetingId){
         mailService.sendMailToFan(meetingId);
@@ -122,4 +125,12 @@ public class MeetingApi {
         MeetingInfoStarResponseDto response = meetingService.getMeetingInfoStar();
         return ApiResponse.success(OK, response);
     }
+
+    @PostMapping("/report/{meetingId}/{userId}")
+    public ApiResponse<ReportResponseDto> reportUser(@PathVariable int meetingId, @PathVariable int userId) {
+        ReportResponseDto response = reportService.saveReport(meetingId, userId);
+        return ApiResponse.success(OK, response);
+    }
+
+
 }
