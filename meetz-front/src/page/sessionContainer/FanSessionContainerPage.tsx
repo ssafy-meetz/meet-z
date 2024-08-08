@@ -23,21 +23,13 @@ const FanSessionContainerPage = () => {
     setNextStarName,
   } = useSessionStore();
   const { leaveSession } = useOpenvidu();
-  //SSE 연결
+
+  //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
     fetchSSE();
   }, []);
 
-  const setInfo = (info: SessionInfo) => {
-    return new Promise<void>((resolve) => {
-      setTimer(info.timer);
-      setStartName(info.starName);
-      setNextStarName(info.nextStarName);
-      setGetSessionId(info.sessionId);
-      resolve();
-    });
-  };
-
+  //fetchSSE 연결
   const fetchSSE = () => {
     console.log("SSE 연결 시도");
     const { accessToken } = fetchUserData();
@@ -51,9 +43,13 @@ const FanSessionContainerPage = () => {
         heartbeatTimeout: 7200 * 1000,
       }
     );
+
+    //SSE와 연결 되었을 때
     eventSource.onopen = () => {
       console.log("!SSE 연결 성공!");
     };
+
+    //SSE에게 메시지를 전달 받았을 때
     eventSource.onmessage = async (e: any) => {
       const res = await e.data;
       const parseData = JSON.parse(res);
@@ -66,9 +62,13 @@ const FanSessionContainerPage = () => {
       };
       await leaveSession();
       await setInfo(info);
-      setWait(0);
+      if (parseData.waitingNum === 0 && !settingDone) {
+        alert("카메라 설정이 완료되어야 미팅 입장이 가능합니다!");
+      }
+      setWait(parseData.waitingNum);
       setRemain(parseData.remainStarNum);
 
+      //SSE에러 발생 시 SSE와 연결 종료
       eventSource.onerror = (e: any) => {
         eventSource.close();
         if (e.error) {
@@ -81,6 +81,16 @@ const FanSessionContainerPage = () => {
     };
   };
 
+  //
+  const setInfo = (info: SessionInfo) => {
+    return new Promise<void>((resolve) => {
+      setTimer(info.timer);
+      setStartName(info.starName);
+      setNextStarName(info.nextStarName);
+      setGetSessionId(info.sessionId);
+      resolve();
+    });
+  };
   if (wait === 0 && settingDone) {
     return <FanSessionPage />;
   }
