@@ -8,6 +8,7 @@ import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.service.AudioProcessingService;
 import com.c108.meetz.service.MailService;
 import com.c108.meetz.service.MeetingService;
+import com.c108.meetz.service.ReportService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -28,6 +30,7 @@ public class MeetingApi {
     private final MeetingService meetingService;
     private final MailService mailService;
     private final AudioProcessingService audioProcessingService;
+    private final ReportService reportService;
 
     @PostMapping("")
     public ApiResponse<MeetingSaveResponseDto> createMeeting(@Valid @RequestBody MeetingSaveRequestDto meetingSaveRequestDto, BindingResult bindingResult) {
@@ -130,10 +133,15 @@ public class MeetingApi {
     }
 
     @PostMapping("/report/{meetingId}/{userId}")
-    public ApiResponse<ReportResponseDto> reportUser(@PathVariable int meetingId, @PathVariable int userId) {
-        ReportResponseDto response = reportService.saveReport(meetingId, userId);
-        return ApiResponse.success(OK, response);
+    public ApiResponse reportUser(@PathVariable int meetingId, @PathVariable int userId) {
+        reportService.saveReport(meetingId, userId);
+        return ApiResponse.success(OK);
     }
 
+    @DeleteMapping("/report/{meetingId}/{userId}")
+    public ApiResponse cancelReport(@PathVariable int meetingId, @PathVariable int userId) {
+        reportService.cancelReport(meetingId, userId);
+        return ApiResponse.success(OK);
+    }
 
 }
