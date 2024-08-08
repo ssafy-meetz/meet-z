@@ -7,19 +7,21 @@ import com.c108.meetz.exception.NotFoundException;
 import com.c108.meetz.repository.ManagerRepository;
 import com.c108.meetz.repository.MeetingRepository;
 import com.c108.meetz.repository.UserRepository;
+import com.c108.meetz.util.SecurityUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static com.c108.meetz.domain.Role.FAN;
@@ -173,5 +175,50 @@ public class MailService {
                 throw new BadRequestException();
             }
         }
+    }
+
+    public void sendImageToFan(List<MultipartFile> files){
+        User user = getUser();
+        MimeMessage message = javaMailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(senderEmail);
+            helper.setTo(user.getOriginEmail());
+            message.setSubject("[MEET:Z] 스타와 찍은 사진을 보내드립니다.");
+
+            String body = "";
+            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>";
+            body += "    <div style='border: 1px solid #ccc; padding: 20px; border-radius: 10px; background-color: #fff;'>";
+            body += "        <div style='background-color: #FE4D5C; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;'>";
+            body += "            <h1 style='margin: 0; color: #fff;'>MEET:Z</h1>";
+            body += "        </div>";
+            body += "        <div style='height: 20px;'></div>";
+            body += "        <p style='font-size: 16px; color: #333; text-align: center;'>안녕하세요.</p>";
+            body += "        <p style='font-size: 16px; color: #333; text-align: center;'>MEET:Z 서비스를 이용해 주셔서 감사합니다.</p>";
+            body += "        <p style='font-size: 16px; color: #333; text-align: center;'>첨부된 사진을 확인해주세요.</p>";
+            body += "    <p style='font-size: 16px; color: #333; text-align: center;'>감사합니다.</p>";
+            body += "        <div style='margin: 20px 0; text-align: center;'>";
+            body += "        </div>";
+            body += "    </div>";
+            body += "    <p style='font-size: 20px; color: #FE4D5C; text-align: center;'>MEET:Z</p>";
+            body += "</div>";
+
+            helper.setText(body, true);
+            for(MultipartFile file : files){
+                String fileName = file.getOriginalFilename();
+                InputStreamSource inputSteamSource = file::getInputStream;
+                helper.addAttachment(fileName, inputSteamSource);
+            }
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            throw new BadRequestException();
+        }
+    }
+
+    private User getUser(){
+        String email = SecurityUtil.getCurrentUserEmail();
+        return userRepository.findByEmail(email).orElseThrow(() ->
+                new NotFoundException("user not found"));
     }
 }
