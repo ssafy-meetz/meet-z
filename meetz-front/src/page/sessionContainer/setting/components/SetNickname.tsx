@@ -2,19 +2,7 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
 import fetchUserData from '../../../../lib/fetchUserData';
 import putModifyFanNickname from '../../../../apis/session/modifyFanNickname';
-import { StarDto } from '../../../../types/types';
-
-interface MeetingInfoDto {
-  chatRoomId: number;
-  meetingDuration: number;
-  meetingId: number;
-  meetingName: string;
-  meetingstart: string;
-  nickname: string;
-  starList: StarDto[];
-  term: number;
-  userPosition: number;
-}
+import { MeetingInfoDto } from '../../../../types/types';
 
 const SetNickname: React.FC = () => {
   const { nextStep } = useEnvSettingStore();
@@ -22,7 +10,7 @@ const SetNickname: React.FC = () => {
   const { accessToken } = fetchUserData();
   const [meetingInfo, setMeetingInfo] = useState<MeetingInfoDto>(JSON.parse(sessionStorage.getItem('mi') || ""));
 
-  // 로컬 스토리지에서 닉네임을 불러오는 함수
+  // 세션 스토리지에서 닉네임을 불러오는 함수
   useEffect(() => {
     const storedNickname = meetingInfo.nickname;
 
