@@ -21,12 +21,19 @@ const ParticipateStarInput = forwardRef<HTMLInputElement>((props, ref) => {
     setInputWidth(Math.max(70, value.length * 16)); // 최소 너비 70px, 문자당 16px 추가
   };
 
+  const handleOnkeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      handleAddParticipant();
+    }
+  }
+
   return (
     <div className='flex items-center'>
       <input
         type='text'
         value={inputValue}
         onChange={handleInputChange}
+        onKeyDown={handleOnkeyDown}
         ref={ref}
         className='text-xl font-normal py-1 focus:outline-none focus:border-[#FF4F5D] border-b hover:border-[#FF4F5D] min-w-[70px] max-w-full'
         placeholder='입력'
