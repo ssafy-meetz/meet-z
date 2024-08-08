@@ -1,13 +1,36 @@
-// src/components/Blacklist/DeleteCheckModal.tsx
-import React from 'react';
 import Alert from '/src/assets/images/alert.png';
 import { useBlackStore } from '../../../../zustand/useBlackStore';
+import deleteBlacklist from '../../../../apis/meeting/deleteBlacklist';
+import fetchUserData from '../../../../lib/fetchUserData';
 
-const DeleteCheckModal: React.FC = () => {
-  const { isDeleteModalOpen, closeDeleteModal, openDeletedModal } =
+const DeleteCheckModal = ({
+  blacklistId,
+}: {
+  blacklistId: number | undefined;
+}) => {
+  const { accessToken } = fetchUserData();
+  const { setIsDelete, closeDeleteModal, openDeletedModal, updateBlacklist } =
     useBlackStore();
 
-  if (!isDeleteModalOpen) return null;
+  const handleDelete = async () => {
+    try {
+      const response = await deleteBlacklist(
+        accessToken || '',
+        blacklistId || 0
+      );
+      if (response.code === 200) {
+        setIsDelete(true);
+        updateBlacklist(blacklistId || 0); // 블랙리스트 업데이트
+        openDeletedModal();
+      } else {
+        console.error('삭제 실패', response.message);
+        setIsDelete(false);
+      }
+    } catch (error: any) {
+      console.error('삭제 중 오류발생', error.message);
+      setIsDelete(false);
+    }
+  };
 
   return (
     <div
@@ -31,10 +54,7 @@ const DeleteCheckModal: React.FC = () => {
           </div>
           <div className='flex justify-center gap-5'>
             <button
-              onClick={() => {
-                openDeletedModal(); // 삭제 완료 모달 열기
-                closeDeleteModal(); // 삭제 확인 모달 닫기
-              }}
+              onClick={handleDelete} // 삭제 처리 함수 연결
               className='text-xl text-white border px-5 py-1 hover:bg-[#ff5d6a] border-[#FF4F5D] bg-[#ff4f5d] rounded-lg'
             >
               진행
