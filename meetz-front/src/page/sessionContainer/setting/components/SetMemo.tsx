@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import useEnvSettingStore from '../../../../zustand/useEnvSettingStore';
 import { TbTrashX } from 'react-icons/tb';
+import { MeetingInfoDto } from '../../../../types/types';
 
 interface Memo {
   star: string;
@@ -13,6 +14,8 @@ const SetMemo: React.FC = () => {
   const [selectedMemo, setSelectedMemo] = useState<string>('');
   const [memoText, setMemoText] = useState<string>('');
   const [memos, setMemos] = useState<Memo[]>([]);
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfoDto>(JSON.parse(sessionStorage.getItem('mi') || ""));
+
 
   // 로컬 스토리지에서 메모를 불러오는 함수
   const loadMemosFromStorage = (): Memo[] => {
@@ -141,9 +144,8 @@ const SetMemo: React.FC = () => {
                 onChange={handleSelectChange}
                 className='border p-2 rounded-lg w-full focus:outline-none focus:border-[#ff4f5d] cursor-pointer'
               >
-                <option value=''>스타 선택</option>
-                <option value='이승원'>이승원</option>
-                <option value='손다인'>손다인</option>
+                <option value='' disabled>스타 선택</option>
+                {meetingInfo.starList.map((star) => <option value={star.name} key={star.email}>{star.name}</option>)}
               </select>
             </div>
             <div className='relative h-[188px]'>
