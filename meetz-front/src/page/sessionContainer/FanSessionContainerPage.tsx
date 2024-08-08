@@ -6,6 +6,7 @@ import fetchUserData from "../../lib/fetchUserData";
 import FanSessionPage from "./session/pages/FanSessionPage";
 import FanSettingPage from "./setting/pages/FanSettingPage";
 import { useOpenvidu } from "../../hooks/session/useOpenvidu";
+import useSaveImage from "../../hooks/session/useSaveImage";
 type SessionInfo = {
   timer: number;
   starName: string;
@@ -22,7 +23,8 @@ const FanSessionContainerPage = () => {
     setStartName,
     setNextStarName,
   } = useSessionStore();
-  const { leaveSession } = useOpenvidu();
+  const { sendImage } = useSaveImage();
+  const { leaveSession, session } = useOpenvidu();
 
   //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
@@ -62,9 +64,6 @@ const FanSessionContainerPage = () => {
       };
       await leaveSession();
       await setInfo(info);
-      if (parseData.waitingNum === 0 && !settingDone) {
-        alert("카메라 설정이 완료되어야 미팅 입장이 가능합니다!");
-      }
       setWait(parseData.waitingNum);
       setRemain(parseData.remainStarNum);
 
@@ -95,6 +94,13 @@ const FanSessionContainerPage = () => {
     return <FanSessionPage />;
   }
   if (remain === -1) {
+    if (
+      !localStorage.getItem("images") &&
+      localStorage.getItem("images") != "[]"
+    ) {
+      sendImage();
+    }
+
     return <SessionSwitchPage />;
   }
   return <FanSettingPage />;
