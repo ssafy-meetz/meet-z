@@ -2,6 +2,8 @@ import { useState } from "react";
 import checkNotBlackedFan from "../../../../apis/meeting/CheckNotBlackedFan";
 import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
 import fetchUserData from "../../../../lib/fetchUserData";
+import useEmailValidation from "../../../../hooks/form/useEmailValidation";
+import usePhoneValidation from "../../../../hooks/form/usePhoneValidation";
 
 const AddFanInputBox = () => {
   const { accessToken } = fetchUserData();
@@ -9,10 +11,16 @@ const AddFanInputBox = () => {
   const [addBtnClicked, setAddBtnClicked] = useState(false);
   const [isBlacked, setIsBlacked] = useState(false);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const { email, setEmail, isValidEmail, handleEmailChange } = useEmailValidation();
+  const { phone, setPhone, isValidPhone, handlePhoneChange } = usePhoneValidation();
 
   const checkFanHandler = async () => {
+    if (!name || !isValidEmail || !isValidPhone) {
+      alert("모든 정보를 입력해주세요!");
+      return;
+    }
+
+
     try {
       const result = await checkNotBlackedFan(name, email, phone, accessToken || "");
       if (result) {
@@ -42,14 +50,14 @@ const AddFanInputBox = () => {
         />
         <input
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => handleEmailChange(e)}
           className="hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] flex-1 border-b border-gray-300 px-2 py-2 mr-2"
           type="text"
           placeholder="이메일"
         />
         <input
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => handlePhoneChange(e)}
           className="hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] flex-1 border-b border-gray-300 px-2 py-2 mr-2"
           type="text"
           placeholder="연락처( - 없이 입력)"
