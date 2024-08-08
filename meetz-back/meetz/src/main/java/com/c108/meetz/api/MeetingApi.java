@@ -128,4 +128,12 @@ public class MeetingApi {
         mailService.sendImageToFan(files);
         return ApiResponse.success(OK);
     }
+
+    @PostMapping("/report/{meetingId}/{userId}")
+    public ApiResponse<ReportResponseDto> reportUser(@PathVariable int meetingId, @PathVariable int userId) {
+        ReportResponseDto response = reportService.saveReport(meetingId, userId);
+        return ApiResponse.success(OK, response);
+    }
+
+
 }
