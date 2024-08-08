@@ -85,8 +85,20 @@ export type messageDto = {
 }
 
 export type BlacklistDto = {
-  blacklistId:number;
+  blacklistId: number;
   name: string;
   email: string;
   phone: string;
+}
+
+export type MeetingInfoDto = {
+  chatRoomId: number;
+  meetingDuration: number;
+  meetingId: number;
+  meetingName: string;
+  meetingstart: string;
+  nickname: string;
+  starList: StarDto[];
+  term: number;
+  userPosition: number;
 }

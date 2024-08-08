@@ -1,9 +1,17 @@
+import { useCallback, useState } from "react";
+import { MeetingInfoDto } from "../../../../types/types";
 import useEnvSettingStore from "../../../../zustand/useEnvSettingStore";
 import { useSessionStore } from "../../../../zustand/useSessionStore";
 
 const SetWait = () => {
   const { beforeStep } = useEnvSettingStore();
   const { timer, wait } = useSessionStore();
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfoDto>(JSON.parse(sessionStorage.getItem('mi') || ""));
+
+  const memorizedStarList = useCallback(() => {
+    return meetingInfo.starList.map(star => star.name).join(' - ');
+  }, [meetingInfo])
+
   //SSE 수신 기다림 수신 되면, sessionId, starName localStorage로 이동!!
   return (
     <div className="flex flex-col w-[790px] items-center justify-center  ">
@@ -11,7 +19,7 @@ const SetWait = () => {
         <div className="flex flex-col items-center text-2xl">
           <span className=" font-semibold">오늘 팬 싸인회 순서는?</span>
           <span className="text-[#FE9374] font-bold">
-            이승원-손다인-김태연-신민경-강창우
+            {memorizedStarList()}
           </span>
         </div>
         <div className="flex flex-col items-center gap-3">
