@@ -179,8 +179,8 @@ public class MailService {
 
     public void sendImageToFan(List<MultipartFile> files){
         User user = getUser();
-        if(files == null || files.isEmpty()){
-            throw new BadRequestException("첨부된 사진이 없습니다.");
+        for(MultipartFile file : files) {
+            if(file.isEmpty()) throw new BadRequestException("사진이 없습니다.");
         }
         MimeMessage message = javaMailSender.createMimeMessage();
 
