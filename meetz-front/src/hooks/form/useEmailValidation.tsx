@@ -20,7 +20,7 @@ const useEmailValidation = () => {
   }
 
   return {
-    email, isValidEmail, handleEmailChange
+    email, setEmail, isValidEmail, handleEmailChange
   }
 }
 

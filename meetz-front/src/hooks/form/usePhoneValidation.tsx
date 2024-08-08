@@ -17,7 +17,7 @@ const usePhoneValidation = () => {
   }
 
   return {
-    phone, isValidPhone, handlePhoneChange
+    phone, setPhone, isValidPhone, handlePhoneChange
   }
 }
 
