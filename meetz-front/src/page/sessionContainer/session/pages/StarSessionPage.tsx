@@ -23,7 +23,7 @@ function StarSessionPage() {
   };
   useEffect(() => {
     getSession();
-  });
+  }, []);
 
   const getSession = async () => {
     if (accessToken) {
