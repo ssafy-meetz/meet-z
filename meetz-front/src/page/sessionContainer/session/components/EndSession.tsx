@@ -1,4 +1,3 @@
-import React from 'react';
 import logo from '/src/assets/images/sessionlogo.png';
 
 const EndSession = () => {
