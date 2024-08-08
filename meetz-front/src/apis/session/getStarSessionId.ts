@@ -7,7 +7,7 @@ const getStarSessionId = async (accessToken: string) => {
       },
     });
     if (status === 200) {
-      return data;
+      return data.data;
     }
   } catch (error: any) {
     console.error(error);
