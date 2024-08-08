@@ -1,0 +1,14 @@
+/* Add this CSS either in your component's CSS file or as a global CSS file */
+.flash-animation {
+    animation: flash 0.5s ease-in-out;
+  }
+  
+  @keyframes flash {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  
