@@ -9,10 +9,19 @@ type SessionInfo = {
   fanId: string;
   timer: number;
   starName: string;
+  fanName: string;
+  remain: string;
 };
 const StarSessionContainerPage = () => {
-  const [remain, setRemain] = useState(200);
-  const { settingDone, setTimer, setStartName, setFanId } = useSessionStore();
+  const {
+    settingDone,
+    remain,
+    setTimer,
+    setStartName,
+    setFanId,
+    setFanName,
+    setRemain,
+  } = useSessionStore();
   useEffect(() => {
     fetchSSE();
   }, []);
@@ -22,6 +31,7 @@ const StarSessionContainerPage = () => {
       setTimer(info.timer);
       setStartName(info.starName);
       setFanId(info.fanId);
+      setFanName(info.fanName);
       resolve();
     });
   };
@@ -50,10 +60,11 @@ const StarSessionContainerPage = () => {
         fanId: parseData.fanId,
         timer: parseData.timer,
         starName: parseData.starName,
+        fanName: parseData.currentFanName,
+        remain: parseData.remainFanNum,
       };
 
       setInfo(info);
-      setRemain(parseData.remain);
       eventSource.onerror = (e: any) => {
         eventSource.close();
         if (e.error) {
@@ -66,12 +77,13 @@ const StarSessionContainerPage = () => {
     };
   };
 
+  if (remain === -1) {
+    return <SessionSwitchPage />;
+  }
   if (settingDone) {
     return <StarSessionPage />;
   }
-  if (remain === 0) {
-    return <SessionSwitchPage />;
-  }
+
   return <StarLoadingPage />;
 };
 export default StarSessionContainerPage;
