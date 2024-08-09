@@ -2,7 +2,22 @@ import logo from '/src/assets/images/logo.png';
 import { useRef, useEffect, useState } from 'react';
 import { useSessionStore } from '../../../../zustand/useSessionStore'; // 상태 관리용 zustand 스토어 import
 
-const StarLoadingPage = () => {
+type FanDto = {
+  name: string;
+  nickname: string;
+}
+
+interface MeetingInfo {
+  name: string;
+  meetingName: string;
+  meetingId: number;
+  meetingDuration: number;
+  meetingStart: string;
+  term: number;
+  fanList: FanDto[];
+}
+
+const StarLoadingPage = ({ meetingInfo }: { meetingInfo: MeetingInfo }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
@@ -96,7 +111,7 @@ const StarLoadingPage = () => {
         <div className='flex justify-between items-end font-medium text-xl mb-2'>
           <img src={logo} alt='logo' className='w-[169px] h-[32px]' />
           <span className='text-[#ff7777] font-semibold text-shadow-shine cursor-default'>
-            우주 최강 이승원 앨범 출시 팬 싸인회
+            {meetingInfo.meetingName}
           </span>
         </div>
         <div className='flex flex-col border-2 p-20 px-24 rounded-3xl h-[662px] border-[#d9d9d9] bg-white shadow-2xl '>
@@ -104,7 +119,7 @@ const StarLoadingPage = () => {
             <span className='text-3xl font-semibold'>웹캠 연결</span>
             <span className='text-2xl'>
               <span className='text-3xl text-[#ff7777] font-semibold'>
-                창우{' '}
+                {`${meetingInfo.name}`}
               </span>
               님
             </span>

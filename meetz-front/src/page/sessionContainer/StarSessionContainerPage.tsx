@@ -5,14 +5,33 @@ import StarSessionPage from "./session/pages/StarSessionPage";
 import StarLoadingPage from "./setting/pages/StarLoadingPage";
 import fetchUserData from "../../lib/fetchUserData";
 import { EventSourcePolyfill } from "event-source-polyfill";
+
 type SessionInfo = {
   fanId: string;
   timer: number;
   starName: string;
 };
+
+type FanDto = {
+  name: string;
+  nickname: string;
+}
+
+interface MeetingInfo {
+  name: string;
+  meetingName: string;
+  meetingId: number;
+  meetingDuration: number;
+  meetingStart: string;
+  term: number;
+  fanList: FanDto[];
+}
+
 const StarSessionContainerPage = () => {
   const [remain, setRemain] = useState(200);
   const { settingDone, setTimer, setStartName, setFanId } = useSessionStore();
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfo>(JSON.parse(window.sessionStorage.getItem('mis') || ''));
+
   useEffect(() => {
     fetchSSE();
   }, []);
@@ -72,6 +91,6 @@ const StarSessionContainerPage = () => {
   if (remain === 0) {
     return <SessionSwitchPage />;
   }
-  return <StarLoadingPage />;
+  return <StarLoadingPage meetingInfo={meetingInfo} />;
 };
 export default StarSessionContainerPage;

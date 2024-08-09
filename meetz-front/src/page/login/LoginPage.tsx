@@ -15,6 +15,8 @@ const LoginPage = () => {
         clearUserData();
         navigate('/', { replace: true });
         return;
+      } else {
+        navigate(-1);
       }
     }
   }, [])
