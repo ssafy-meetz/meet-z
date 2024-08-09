@@ -30,6 +30,7 @@ interface MeetingInfo {
 }
 
 const StarSessionContainerPage = () => {
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfo>(JSON.parse(sessionStorage.getItem('mis') || ''));
   const {
     settingDone,
     remain,
@@ -101,6 +102,6 @@ const StarSessionContainerPage = () => {
     return <StarSessionPage />;
   }
 
-  return <StarLoadingPage />;
+  return <StarLoadingPage meetingInfo={meetingInfo} />;
 };
 export default StarSessionContainerPage;

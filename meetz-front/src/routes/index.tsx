@@ -11,10 +11,8 @@ import CreatePage from '../page/meeting/page/CreatePage';
 import ModifyPage from '../page/meeting/page/ModifyPage';
 import ChatPage from '../page/meeting/page/ChatPage';
 import LoadChatPage from '../page/meeting/page/LoadChatPage';
-import FanSettingPage from '../page/sessionContainer/setting/pages/FanSettingPage';
 import RecordPage from '../page/RecordPage';
 import SessionContainerPage from '../page/sessionContainer/SessionContainerPage';
-import StarLoadingPage from '../page/sessionContainer/setting/pages/StarLoadingPage';
 import BlacklistCheckPage from '../page/meeting/page/BlacklistCheckPage';
 
 const Router: React.FC = () => {
@@ -23,8 +21,6 @@ const Router: React.FC = () => {
       <Routes>
         <Route path='/' element={<LoginPage />} />
         <Route path='/signup' element={<SignupPage />} />
-        <Route path='/setting' element={<FanSettingPage />} />
-        <Route path='/loading' element={<StarLoadingPage />} />
         <Route path='/manage/:meetingId' element={<ChatPage />} />
         <Route path='/meeting' element={<MeetingLayout />}>
           {/* 미팅 미완료 */}
