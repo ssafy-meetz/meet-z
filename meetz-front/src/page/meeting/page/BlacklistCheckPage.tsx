@@ -129,7 +129,7 @@ const BlacklistCheckPage = () => {
                     <td className='py-2'>
                       <button
                         onClick={() => deleteHandler(fan.blacklistId)}
-                        className='border-[#ff4f5d] text-4xl text-[#ff4f5d] hover:text-[#ff979f] py-1 px-3 rounded-full transition'
+                        className='border-[#ff4f5d] text-4xl text-[#ff4f5d] active:scale-95 duration-100 ease-in-out transform hover:scale-105 hover:text-[#ff7883] py-1 px-3 rounded-full transition'
                       >
                         <AiOutlineClose />
                       </button>
@@ -149,7 +149,7 @@ const BlacklistCheckPage = () => {
         <div className='flex justify-center py-20'>
           <button
             onClick={cancelHandler}
-            className='w-32 h-14 hover:bg-[#ff626f] transition font-semibold rounded-2xl text-white bg-[#ff4f5d]'
+            className='w-32 h-14 active:scale-95 duration-100 ease-in-out transform hover:scale-105 hover:bg-[#ff626f] transition font-semibold rounded-2xl text-white bg-[#ff4f5d]'
           >
             돌아가기
           </button>
