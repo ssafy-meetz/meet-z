@@ -1,9 +1,18 @@
-import { forwardRef } from "react";
-import { FaPlus } from "react-icons/fa6";
-import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
+import { forwardRef } from 'react';
+import { FaPlus } from 'react-icons/fa6';
+import useMeetingSettingStore from '../../../../zustand/useMeetingSettingStore';
 
 const ParticipateStarInput = forwardRef<HTMLInputElement>((props, ref) => {
-  const { stars, newStar, inputValue, inputWidth, setStars, setNewStar, setInputValue, setInputWidth } = useMeetingSettingStore();
+  const {
+    stars,
+    newStar,
+    inputValue,
+    inputWidth,
+    setStars,
+    setNewStar,
+    setInputValue,
+    setInputWidth,
+  } = useMeetingSettingStore();
 
   const handleAddParticipant = (): void => {
     if (newStar.trim() !== '') {
@@ -25,7 +34,7 @@ const ParticipateStarInput = forwardRef<HTMLInputElement>((props, ref) => {
     if (event.key === 'Enter') {
       handleAddParticipant();
     }
-  }
+  };
 
   return (
     <div className='flex items-center'>
@@ -41,13 +50,13 @@ const ParticipateStarInput = forwardRef<HTMLInputElement>((props, ref) => {
       />
       <button
         onClick={handleAddParticipant}
-        className='text-xl p-2 rounded flex items-center gap-1'
+        className='text-xl p-2 rounded flex items-center hover:scale-105 active:scale-95 hover:text-[#ff4f5d] transition duration-100 ease-in-out transform gap-1'
       >
-        <FaPlus className='h-5 w-5 font-thin' />
+        <FaPlus className='h-5 w-5 font-thin ' />
         추가
       </button>
     </div>
-  )
+  );
 });
 
-export default ParticipateStarInput
+export default ParticipateStarInput;
