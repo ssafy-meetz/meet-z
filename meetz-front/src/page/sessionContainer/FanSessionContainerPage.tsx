@@ -87,7 +87,6 @@ const FanSessionContainerPage = () => {
         nextStarName: parseData.nextStarName,
         sessionId: parseData.viduToken,
       };
-      await leaveSession();
       await setInfo(info);
       setIsBreak(parseData.isBreak);
       setWait(parseData.waitingNum);
@@ -119,11 +118,12 @@ const FanSessionContainerPage = () => {
       resolve();
     });
   };
-  if (isBreak) {
-    return <SessionLoadingPage />;
-  }
+
   if (remain === -1) {
     return <SessionSwitchPage />;
+  }
+  if (isBreak) {
+    return <SessionLoadingPage />;
   }
 
   if (wait === 0 && settingDone) {
