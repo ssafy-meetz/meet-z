@@ -88,7 +88,7 @@ const DetailPage = () => {
             <span className='text-2xl font-semibold'>팬 리스트</span>
             <button
               onClick={openMailModal}
-              className='border border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white rounded-3xl px-4 py-2 text-[#ff4f5d]'
+              className='border  border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white rounded-3xl px-4 py-2 text-[#ff4f5d]'
             >
               메일 발송
             </button>
@@ -97,13 +97,13 @@ const DetailPage = () => {
           <div className='flex justify-center gap-10 pt-20'>
             <button
               onClick={openDeleteModal}
-              className='w-32 h-14 duration-100 ease-in-out transform hover:scale-105 hover:bg-[#ff626f] transition font-semibold rounded-2xl text-white bg-[#ff4f5d]'
+              className='w-32 h-14 active:scale-95 duration-100 ease-in-out transform hover:scale-105 hover:bg-[#ff626f] transition font-semibold rounded-2xl text-white bg-[#ff4f5d]'
             >
               일정삭제
             </button>
             <button
               onClick={cancelHandler}
-              className='w-32 h-14  font-semibold rounded-2xl text-[#ff4f5d] border border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white'
+              className='w-32 h-14 active:scale-95 font-semibold rounded-2xl text-[#ff4f5d] border border-[#ff4f5d] hover:border-[#FF4F5D] focus:outline-none focus:border-[#FF4F5D] transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 bg-white'
             >
               돌아가기
             </button>
@@ -114,7 +114,9 @@ const DetailPage = () => {
         <SendEmailModal meetingId={meetingData?.meetingId} />
       )}
       {sendModalOpend && modalStep === 1 && <LoadEmailModal />}
-      {sendModalOpend && modalStep === 2 && <CompleteEmailModal meetingData={meetingData} />}
+      {sendModalOpend && modalStep === 2 && (
+        <CompleteEmailModal meetingData={meetingData} />
+      )}
 
       {isDeleteModalOpen && (
         <DeleteMeetingCheckModal meetingId={meetingData?.meetingId} />
