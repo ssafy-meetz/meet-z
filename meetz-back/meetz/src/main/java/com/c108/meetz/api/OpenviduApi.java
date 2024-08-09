@@ -185,14 +185,14 @@ public class OpenviduApi {
     }
 
     //test: 특정 클라이언트에게 메세지 전달
-    @GetMapping(path = "/sse/send")
-    public ApiResponse<String> sendEvent(@RequestParam("meetingId") int meetingId, @RequestParam("email") String email)
-            throws IOException, OpenViduJavaClientException, OpenViduHttpException {
-
-        openviduService.sendEventToFanV2(meetingId, email, 0);
-
-        return ApiResponse.success(HttpStatus.OK, "Send completed");
-    }
+//    @GetMapping(path = "/sse/send")
+//    public ApiResponse<String> sendEvent(@RequestParam("meetingId") int meetingId, @RequestParam("email") String email)
+//            throws IOException, OpenViduJavaClientException, OpenViduHttpException {
+//
+//        openviduService.sendEventToFanV2(meetingId, email, 0);
+//
+//        return ApiResponse.success(HttpStatus.OK, "Send completed");
+//    }
 
 
 
