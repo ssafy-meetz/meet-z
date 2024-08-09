@@ -655,7 +655,7 @@ public class OpenviduService {
         }
 
         for (FanInfo fanInfo : fans) {
-           if (fanInfo.emitter != null) {
+           if (fanInfo.emitter != null && fanInfo.remainStarNum > 0) {
                sendEventToFanV3(meetingId, fanInfo.email, fanSseResponseDto);
            }
         }
