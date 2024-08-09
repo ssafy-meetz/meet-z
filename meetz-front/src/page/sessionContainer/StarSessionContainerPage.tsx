@@ -5,6 +5,7 @@ import StarSessionPage from "./session/pages/StarSessionPage";
 import StarLoadingPage from "./setting/pages/StarLoadingPage";
 import fetchUserData from "../../lib/fetchUserData";
 import { EventSourcePolyfill } from "event-source-polyfill";
+import StarEndPage from "./session/pages/StarEndPage";
 
 type SessionInfo = {
   fanId: string;
@@ -30,6 +31,9 @@ interface MeetingInfo {
 }
 
 const StarSessionContainerPage = () => {
+  const [type,setType] = useState(0);
+  const {setTakePhoto} = useSessionStore();
+
   const [meetingInfo] = useState<MeetingInfo>(
     JSON.parse(sessionStorage.getItem("mis") || "")
   );
@@ -77,15 +81,13 @@ const StarSessionContainerPage = () => {
       const res = await e.data;
       const parseData = JSON.parse(res);
       console.log(parseData);
-      const info: SessionInfo = {
-        fanId: parseData.fanId,
-        timer: parseData.timer,
-        starName: parseData.starName,
-        fanName: parseData.currentFanName,
-        remain: parseData.remainFanNum,
-      };
-
-      setInfo(info);
+      setType(parseData.type);
+      if(type===1){
+        await setSessionInfo(parseData);
+      }else if(type===3){
+        setTakePhoto(true);
+      }
+      
       eventSource.onerror = (e: any) => {
         eventSource.close();
         if (e.error) {
@@ -98,8 +100,20 @@ const StarSessionContainerPage = () => {
     };
   };
 
-  if (remain === -1) {
-    return <SessionSwitchPage />;
+  const setSessionInfo=async (parseData:any)=>{
+    const info: SessionInfo = {
+      fanId: parseData.fanId,
+      timer: parseData.timer,
+      starName: parseData.starName,
+      fanName: parseData.currentFanName,
+      remain: parseData.remainFanNum,
+    };
+
+    setInfo(info);
+  }
+
+  if (type===4) {
+    return <StarEndPage />;
   }
   if (settingDone) {
     return <StarSessionPage />;
