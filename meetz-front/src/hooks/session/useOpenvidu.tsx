@@ -17,26 +17,22 @@ export const useOpenvidu = () => {
   const { getSessionId } = useSessionStore();
 
   // Leaving session
-  const leaveSession = useCallback(async () => {
-    if (session) {
-      try {
-        await new Promise<void>((resolve) => {
-          session.disconnect();
-          resolve();
-          console.log("기존 세션과 연결 종료");
-        });
-      } catch (error) {
-        console.error("Error leaving session:", error);
-      }
-      setOV(null);
-      setSession(null);
-      setSubscriber(null);
-      setPublisher(null);
-    }
+  const leaveSession = useCallback(() => {
+    if (session) session.disconnect();
+
+    setOV(null);
+    setSession(null);
+    setSessionId("");
+    setSubscriber(null);
+    setPublisher(null);
   }, [session]);
 
   // Joining session
   const joinSession = () => {
+    if (session) {
+      console.log("~기존 세션 종료~");
+      session.disconnect();
+    }
     if (getSessionId === "") return;
     const OVs = new OpenVidu();
     const newSession = OVs.initSession();
@@ -46,13 +42,13 @@ export const useOpenvidu = () => {
   };
 
   useEffect(() => {
-    // Cleanup on component unmount or leaveSession change
     window.addEventListener("beforeunload", leaveSession);
 
     return () => {
       window.removeEventListener("beforeunload", leaveSession);
     };
-  }, [leaveSession]);
+  }, []);
+
   useEffect(() => {
     if (!session) return;
 
@@ -73,7 +69,7 @@ export const useOpenvidu = () => {
 
     const getToken = async (): Promise<string> => {
       try {
-        const token = await createToken(sessionId);
+        const token = await createToken(getSessionId);
         return token;
       } catch (error) {
         throw new Error("Failed to get token.");
@@ -93,7 +89,6 @@ export const useOpenvidu = () => {
                 publishVideo: true,
                 mirror: true,
               });
-
               setPublisher(publishers);
               session
                 .publish(publishers)
@@ -102,11 +97,9 @@ export const useOpenvidu = () => {
             }
           })
           .catch(() => {});
-        console.log("!!");
-        console.log(session);
       })
       .catch(() => {});
-  }, [session, OV, sessionId]);
+  }, [session, OV, getSessionId]);
   return {
     session,
     sessionId,
