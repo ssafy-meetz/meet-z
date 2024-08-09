@@ -14,11 +14,8 @@ type SessionInfo = {
   sessionId: string;
 };
 const FanSessionContainerPage = () => {
-  const [wait, setWait] = useState(200);
-  const [remain, setRemain] = useState(200);
-  const [meetingDone, setMeetingDone] = useState(false);
-  const [isBreak, setIsBreak] = useState(false);
-  const [progressMeeting, setProgressMeeting] = useState(false);
+  const { wait, setWait, takePhoto, setTakePhoto } = useSessionStore();
+  const [type, setType] = useState(0);
   const {
     settingDone,
     setGetSessionId,
@@ -27,25 +24,16 @@ const FanSessionContainerPage = () => {
     setNextStarName,
   } = useSessionStore();
   const { sendImage } = useSaveImage();
+
   //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
     fetchSSE();
   }, []);
   useEffect(() => {
-    if (wait === 0) {
-      setProgressMeeting(true);
-    }
-  }, [wait]);
-  useEffect(() => {
-    if (!settingDone && progressMeeting) {
+    if (!settingDone && type === 1) {
       alert("카메라 설정이 완료되어야 미팅 입장이 진행됩니다.");
     }
-  }, [progressMeeting]);
-  useEffect(() => {
-    if (meetingDone) {
-      sendImage();
-    }
-  }, [meetingDone]);
+  }, [type]);
   //fetchSSE 연결
   const fetchSSE = () => {
     console.log("SSE 연결 시도");
@@ -71,19 +59,11 @@ const FanSessionContainerPage = () => {
       const res = await e.data;
       const parseData = JSON.parse(res);
       console.log(parseData);
-      const info: SessionInfo = {
-        timer: parseData.timer,
-        starName: parseData.currentStarName,
-        nextStarName: parseData.nextStarName,
-        sessionId: parseData.viduToken,
-      };
-      await setInfo(info);
-      setIsBreak(parseData.isBreak);
-      setWait(parseData.waitingNum);
-      setRemain(parseData.remainStarNum);
-
-      if (parseData.remainStarNum === -1) {
-        setMeetingDone(true);
+      setType(parseData.type);
+      if (parseData.type === 1) {
+        await moveNextSession(parseData);
+      } else if (type === 3) {
+        setTakePhoto(true);
       }
       //SSE에러 발생 시 SSE와 연결 종료
       eventSource.onerror = (e: any) => {
@@ -98,7 +78,15 @@ const FanSessionContainerPage = () => {
     };
   };
 
-  //
+  const moveNextSession = async (parseData: any) => {
+    const info: SessionInfo = {
+      timer: parseData.timer,
+      starName: parseData.currentStarName,
+      nextStarName: parseData.nextStarName,
+      sessionId: parseData.viduToken,
+    };
+    await setInfo(info);
+  };
   const setInfo = async (info: SessionInfo) => {
     return new Promise<void>((resolve) => {
       setTimer(info.timer);
@@ -108,20 +96,24 @@ const FanSessionContainerPage = () => {
       resolve();
     });
   };
+  switch (type) {
+    case 2:
+      return <SessionLoadingPage />;
 
-  if (remain === -1) {
-    return <SessionSwitchPage />;
-  }
-  if (isBreak) {
-    return <SessionLoadingPage />;
-  }
+    case 4:
+      sendImage();
+      return <SessionSwitchPage />;
 
-  if (wait === 0 && settingDone) {
-    return <FanSessionPage />;
-  }
+    case 1:
+    case 3:
+      if (settingDone) {
+        return <FanSessionPage />;
+      }
+      break;
 
-  return <FanSettingPage />;
-  // return <FanSessionPage />;
+    default:
+      return <FanSettingPage />;
+  }
 };
 
 export default FanSessionContainerPage;
