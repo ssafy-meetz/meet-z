@@ -8,7 +8,7 @@ const sendEmailToFans = async (meetingId: number, accessToken: string) => {
                 'Authorization': `Bearer ${accessToken}`
             }
         })
-        console.log(data)
+
         if (data.code === 200) {
             return true;
         }
