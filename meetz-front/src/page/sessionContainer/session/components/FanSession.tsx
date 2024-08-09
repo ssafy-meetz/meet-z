@@ -5,25 +5,27 @@ import Video from "./Video";
 import { useSessionStore } from "../../../../zustand/useSessionStore";
 import camera_icon from "/src/assets/images/camera.png";
 import useSaveImage from "../../../../hooks/session/useSaveImage";
-import "./flash.css"
+
+import "./flash.css";
 
 interface SessionProps {
   subscriber: Subscriber | null;
   publisher: Publisher;
+  fanName: string | null;
 }
 interface Memo {
   star: string;
   text: string;
 }
 
-function FanSession({ subscriber, publisher }: SessionProps) {
+function FanSession({ subscriber, publisher, fanName }: SessionProps) {
   const [count, setCount] = useState(0);
-  const [fanName, setFanName] = useState<String | null>("");
   const [memo, setMemo] = useState<String | null>("");
   const [takePhoto, setTakePhoto] = useState<boolean>(false);
   const { starName, nextStarName } = useSessionStore();
   const { compositionImage, addImageToLocalStorage } = useSaveImage();
-  const [flash, setFlash] = useState<boolean>(false); 
+  const [flash, setFlash] = useState<boolean>(false);
+
   const toggleTakePhoto = () => {
     setTakePhoto(true);
   };
@@ -32,9 +34,7 @@ function FanSession({ subscriber, publisher }: SessionProps) {
   };
 
   useEffect(() => {
-    const storedFanName: String | null = localStorage.getItem("nickname");
     const storedMemos = localStorage.getItem("memos");
-    setFanName(storedFanName);
     if (storedMemos) {
       try {
         const memos: Memo[] = JSON.parse(storedMemos);
@@ -127,7 +127,9 @@ function FanSession({ subscriber, publisher }: SessionProps) {
           <div className="text-6xl text-white font-bold">{count}</div>
         </div>
       )}
-      {flash && <div className="fixed inset-0 bg-white opacity-75 flash-animation"></div>}
+      {flash && (
+        <div className="fixed inset-0 bg-white opacity-75 flash-animation"></div>
+      )}
     </>
   );
 }
