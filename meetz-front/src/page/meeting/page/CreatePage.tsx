@@ -31,17 +31,6 @@ const CreatePage: React.FC = () => {
   } = useMeetingTimeStore();
   const { accessToken } = fetchUserData();
 
-  function convertTo24H(time: string): string {
-    let [timePart, modifier] = time.split(' ');
-    let [hours, minutes] = timePart.split(':');
-    let hoursNum = parseInt(hours, 10);
-
-    if (modifier.toUpperCase() === 'PM' && hoursNum !== 12) hoursNum += 12;
-    if (modifier.toUpperCase() === 'AM' && hoursNum === 12) hoursNum = 0;
-
-    return `${hoursNum.toString().padStart(2, '0')}:${minutes}`;
-  }
-
   const saveHandler = async () => {
     if (
       !meetingName ||
@@ -53,7 +42,13 @@ const CreatePage: React.FC = () => {
       return;
     }
 
-    const meetingStart = `${selectedDate && selectedDate.toISOString().split('T')[0]} ${selectedTime && convertTo24H(selectedTime.value)}`;
+    if (!selectedTime || selectedTime.value === '') {
+      alert('시작 시간을 다시 확인하세요!');
+      return;
+    }
+
+    const date = new Date();
+    const meetingStart = date.getFullYear() + '-' + String(date.getMonth()).padStart(2, '0') + '-' + date.getDate() + ' ' + selectedTime.value;
     const starList = stars.map((star) => {
       return { name: star };
     });
@@ -61,11 +56,12 @@ const CreatePage: React.FC = () => {
     const requestData = {
       meetingName,
       meetingStart,
-      meetingDuration: selectedDuration ? parseInt(selectedDuration.value) : 0,
-      term: selectedBreak ? parseInt(selectedBreak.value) : 0,
+      meetingDuration: selectedDuration && parseInt(selectedDuration?.value) || 0,
+      term: selectedBreak && parseInt(selectedBreak.value) || 0,
       starList,
       fanList: notBlackList,
     };
+
     try {
       const { data, code } = await postMeetingToCreate(
         requestData,
