@@ -2,7 +2,7 @@ import logo from '/src/assets/images/sessionlogo.png';
 
 const EndSession = () => {
   // 문구를 구성하는 각 문자에 고유한 애니메이션을 적용
-  const endMessage = '카카오 프렌즈 팬싸인회가 종료되었습니다.';
+  const endMessage = '팬싸인회가 종료되었습니다.';
   const emailMessage = '스타와 찍은 사진은 이메일로 전송되었습니다.';
 
   // 각 문자를 span으로 감싸서 개별 애니메이션을 적용
@@ -24,9 +24,12 @@ const EndSession = () => {
 
   return (
     <div className='flex flex-col items-center gap-7 p-10  min-h-screen justify-center'>
-      <img src={logo} alt="logo" className='w-[300px] h-[60px] mb-6' />
+      <img
+        src={logo}
+        alt='logo'
+        className='w-[300px] h-[60px] animate-staggeredFadeIn'
+      />
       <div className='flex flex-col items-center text-center'>
-    
         <div className='text-white font-medium text-4xl mb-2'>
           {renderStaggeredText(endMessage)}
         </div>
@@ -36,6 +39,6 @@ const EndSession = () => {
       </div>
     </div>
   );
-}
+};
 
 export default EndSession;
