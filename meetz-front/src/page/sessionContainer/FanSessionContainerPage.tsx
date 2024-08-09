@@ -7,6 +7,7 @@ import FanSessionPage from "./session/pages/FanSessionPage";
 import FanSettingPage from "./setting/pages/FanSettingPage";
 import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 import useSaveImage from "../../hooks/session/useSaveImage";
+import SessionLoadingPage from "./session/pages/SessionLoadingPage";
 type SessionInfo = {
   timer: number;
   starName: string;
@@ -17,6 +18,7 @@ const FanSessionContainerPage = () => {
   const [wait, setWait] = useState(200);
   const [remain, setRemain] = useState(200);
   const [meetingDone, setMeetingDone] = useState(false);
+  const [isBreak, setIsBreak] = useState(false);
   const [progressMeeting, setProgressMeeting] = useState(false);
   const {
     settingDone,
@@ -87,6 +89,7 @@ const FanSessionContainerPage = () => {
       };
       await leaveSession();
       await setInfo(info);
+      setIsBreak(parseData.isBreak);
       setWait(parseData.waitingNum);
       setRemain(parseData.remainStarNum);
       //현재 임시로 remain이 0인 경우 사진 발송 진행!
@@ -116,9 +119,13 @@ const FanSessionContainerPage = () => {
       resolve();
     });
   };
+  if (isBreak) {
+    return <SessionLoadingPage />;
+  }
   if (remain === -1) {
     return <SessionSwitchPage />;
   }
+
   if (wait === 0 && settingDone) {
     return <FanSessionPage />;
   }
