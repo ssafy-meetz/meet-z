@@ -6,6 +6,7 @@ import usePasswordValidation from '../../../hooks/form/usePasswordValidation';
 import postUserLogin from '../../../apis/auth/login';
 import setUserData from '../../../lib/setUserData';
 import getMeetingInfoAtEnterFan from '../../../apis/meeting/getMeetingInfoAtEnterFan';
+import getMeetingInfoAtEnterStar from '../../../apis/meeting/getMeetingInfoAtEnterStar';
 
 const LoginBox = () => {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ const LoginBox = () => {
         return;
       }
 
-      //팬이라면 미팅 설정페이지로 이동
+      // 팬이라면 미팅 설정페이지로 이동
       if (role === 'FAN') {
         try {
           const meetingInfo = await getMeetingInfoAtEnterFan(accessToken);
@@ -65,18 +66,28 @@ const LoginBox = () => {
 
       // 스타라면 미팅 대기 페이지로 이동
       if (role === 'STAR') {
-        navigate('/session');
+        try {
+          const meetingInfo = await getMeetingInfoAtEnterStar(accessToken);
+          if (meetingInfo && meetingInfo.meetingId !== null) {
+            sessionStorage.setItem("mis", JSON.stringify(meetingInfo));
+            navigate("/session");
+          } else {
+            throw new Error("미팅 정보를 불러오는 데 실패했습니다.");
+          }
+        } catch (error: any) {
+          if (error.message === '존재하지 않는 회원입니다.') {
+            alert('존재하지 않는 회원입니다.');
+          } else if (error.message === '올바른 형식이 아닙니다.') {
+            alert('올바른 형식이 아닙니다.');
+          } else {
+            alert('로그인 중 오류가 발생했습니다.');
+          }
+        }
       }
-    } catch (error: any) {
-      if (error.message === '존재하지 않는 회원입니다.') {
-        alert('존재하지 않는 회원입니다.');
-      } else if (error.message === '올바른 형식이 아닙니다.') {
-        alert('올바른 형식이 아닙니다.');
-      } else {
-        alert('로그인 중 오류가 발생했습니다.');
-      }
+    } catch (error) {
+      alert('로그인 중 오류가 발생했습니다.');
     }
-  };
+  }
 
   return (
     <div className='bg-white rounded-2xl w-full max-w-[464px] flex flex-col items-center shadow-lg  animate-fadeIn'>
@@ -97,7 +108,7 @@ const LoginBox = () => {
               checked={!isManager}
               onChange={onChangeRadioBtn}
             />
-            <span>팬 / 아이돌</span>
+            <span>팬 / 스타</span>
           </label>
           <label className='flex items-center'>
             <input
