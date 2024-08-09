@@ -5,7 +5,6 @@ import StarSessionPage from "./session/pages/StarSessionPage";
 import StarLoadingPage from "./setting/pages/StarLoadingPage";
 import fetchUserData from "../../lib/fetchUserData";
 import { EventSourcePolyfill } from "event-source-polyfill";
-import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 type SessionInfo = {
   fanId: string;
   timer: number;
@@ -13,7 +12,6 @@ type SessionInfo = {
 };
 const StarSessionContainerPage = () => {
   const [remain, setRemain] = useState(200);
-
   const { settingDone, setTimer, setStartName, setFanId } = useSessionStore();
   useEffect(() => {
     fetchSSE();
@@ -53,6 +51,7 @@ const StarSessionContainerPage = () => {
         timer: parseData.timer,
         starName: parseData.starName,
       };
+
       setInfo(info);
       setRemain(parseData.remain);
       eventSource.onerror = (e: any) => {

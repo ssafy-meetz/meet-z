@@ -1,12 +1,14 @@
-import getFanReport from "../../../../apis/session/getFanReport";
+import getFanReport from "../../../../apis/session/sendFanReport";
 import { useReportModal } from "../../../../zustand/useReportModal";
+import { useSessionStore } from "../../../../zustand/useSessionStore";
 import Alert from "/src/assets/images/alert.png";
 
 const ReportFanModal = () => {
   const { setOpenModal, setConfirmModal } = useReportModal();
+  const fanId = useSessionStore((state) => state.fanId);
   const confirmReport = async () => {
     //api 팬 신고
-    // await getFanReport();
+    await getFanReport(fanId);
 
     setConfirmModal(true);
     setOpenModal(false);
