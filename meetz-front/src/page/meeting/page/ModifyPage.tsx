@@ -83,7 +83,23 @@ const ModifyPage: React.FC = () => {
   }
 
   const saveHandler = async () => {
-    const meetingStart = `${selectedDate && selectedDate.toISOString().split('T')[0]} ${selectedTime && convertTo24H(selectedTime.value)}`;
+    if (
+      !meetingName ||
+      !selectedDate ||
+      stars.length === 0 ||
+      notBlackList.length === 0
+    ) {
+      alert('모든 항목을 입력해주세요!');
+      return;
+    }
+
+    if (!selectedTime || selectedTime.value === '') {
+      alert('시작 시간을 다시 확인하세요!');
+      return;
+    }
+
+    const date = new Date();
+    const meetingStart = date.getFullYear() + '-' + String(date.getMonth()).padStart(2, '0') + '-' + date.getDate() + ' ' + selectedTime.value;
     const starList = stars.map((star) => {
       return { name: star };
     });
@@ -91,8 +107,8 @@ const ModifyPage: React.FC = () => {
     const requestData = {
       meetingName,
       meetingStart,
-      meetingDuration: selectedDuration ? parseInt(selectedDuration.value) : 0,
-      term: selectedBreak ? parseInt(selectedBreak.value) : 0,
+      meetingDuration: selectedDuration && parseInt(selectedDuration?.value) || 0,
+      term: selectedBreak && parseInt(selectedBreak.value) || 0,
       starList,
       fanList: notBlackList,
     };
@@ -137,10 +153,10 @@ const ModifyPage: React.FC = () => {
           starList,
           fanList,
         } = data;
+
         const timeOption =
           timeOptions.find(
-            (time) => time.value === convertTo12H(meetingStart.split(' ')[1])
-          ) || null;
+            (time) => time.value === meetingStart.split(' ')[1]) || null;
         const durationOption =
           durationOptions.find(
             (option) => option.value === meetingDuration.toString()
@@ -148,9 +164,8 @@ const ModifyPage: React.FC = () => {
         const breakOption =
           breakOptions.find(
             (option) =>
-              option.value ===
-              `${Math.floor(term / 60)}:${(term % 60).toString().padStart(2, '0')}`
-          ) || null;
+              option.value === term.toString()) || null;
+
         setSelectedTime(timeOption);
         setSelectedDuration(durationOption);
         setSelectedBreak(breakOption);
@@ -158,7 +173,7 @@ const ModifyPage: React.FC = () => {
         saveNotBlackList();
         setMeetingName(meetingName);
         setStars(starList.map((star: StarDto) => star.name));
-        setSelectedDate(new Date(meetingStart));
+        setSelectedDate(meetingStart.split(" ")[0]);
       }
     }
   };
