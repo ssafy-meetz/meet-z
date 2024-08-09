@@ -70,11 +70,12 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
         scrollToBottom();
       }, 200);
     } catch (error: any) {
-      if (error.response && error.response.data.message) {
-        const eMsg = error.response.data.message;
-        alert(eMsg);
-        return;
-      }
+      const eMsg = error;
+      setExcelFile(null);
+      setBlackList([]);
+      setTempNotBlackList([]);
+      alert(`${eMsg}`.split(': ')[1]);
+      return;
     }
   };
 
