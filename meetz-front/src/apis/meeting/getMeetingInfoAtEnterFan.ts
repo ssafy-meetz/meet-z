@@ -17,7 +17,6 @@ const getMeetingInfoAtEnterFan = async (accessToken: string): Promise<FanEnterDa
   try {
     const { data } = await instance.get<{ code: number, data: FanEnterDataDto }>('/api/meeting/info', {
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${accessToken}`
       }
     })
