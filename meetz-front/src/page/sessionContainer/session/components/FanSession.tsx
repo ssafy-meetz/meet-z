@@ -7,6 +7,7 @@ import camera_icon from "/src/assets/images/camera.png";
 import useSaveImage from "../../../../hooks/session/useSaveImage";
 
 import "./flash.css";
+import sendTakePhoto from "../../../../apis/session/sendTakePhoto";
 
 interface SessionProps {
   subscriber: Subscriber | null;
@@ -21,13 +22,14 @@ interface Memo {
 function FanSession({ subscriber, publisher, fanName }: SessionProps) {
   const [count, setCount] = useState(0);
   const [memo, setMemo] = useState<String | null>("");
-  const [takePhoto, setTakePhoto] = useState<boolean>(false);
+  const { takePhoto, setTakePhoto } = useSessionStore();
   const { starName, nextStarName } = useSessionStore();
   const { compositionImage, addImageToLocalStorage } = useSaveImage();
   const [flash, setFlash] = useState<boolean>(false);
 
   const toggleTakePhoto = () => {
-    setTakePhoto(true);
+    //사진 촬영 요청
+    sendTakePhoto();
   };
   const handleCompleteTakePhoto = () => {
     setTakePhoto(false);
