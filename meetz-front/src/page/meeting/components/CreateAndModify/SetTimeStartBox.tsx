@@ -12,16 +12,23 @@ type OptionDto = {
 const SetTimeStartBox = () => {
   const { selectedDate, selectedTime, setSelectedTime } = useMeetingTimeStore();
 
+  // 현재 시간 가져오기
   const today = new Date();
   const formattedToday = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
-  const currentTime = today.getHours() + ':' + String(today.getMinutes()).padStart(2, '0');
+  const currentTime = today.getTime(); // 현재 시간을 밀리초 단위로 가져옴
 
   const modifiedTimeOptions = useMemo(() => {
     if (selectedDate === formattedToday) {
-      return timeOptions.map(option => ({
-        ...option,
-        isDisabled: option.value < currentTime // 현재 시간보다 이전 시간은 비활성화
-      }));
+      return timeOptions.map(option => {
+        const [hours, minutes] = option.value.split(':').map(Number);
+        const optionTime = new Date(today);
+        optionTime.setHours(hours, minutes, 0, 0); // option의 시간 설정
+
+        return {
+          ...option,
+          isDisabled: optionTime.getTime() < currentTime // 현재 시간보다 이전 시간은 비활성화
+        };
+      });
     }
     return timeOptions;
   }, [selectedDate, formattedToday, currentTime]);
@@ -46,7 +53,7 @@ const SetTimeStartBox = () => {
         />
       </div>
     </div>
-  )
+  );
 }
 
 export default SetTimeStartBox;
