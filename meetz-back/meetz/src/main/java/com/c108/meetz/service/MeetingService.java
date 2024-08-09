@@ -38,6 +38,7 @@ public class MeetingService {
     private final BlackListRepository blackListRepository;
 
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("xls", "xlsx");
+    private static final List<String> EXPECTED_HEADERS = List.of("No", "Name", "Email", "Phone(-제외)");
 
     public MeetingSaveResponseDto saveMeeting(MeetingSaveRequestDto meetingSaveRequestDto) {
         if(!SecurityUtil.getCurrentUserRole().equals("MANAGER")){
@@ -71,18 +72,17 @@ public class MeetingService {
     }
 
     public ExcelResponseDto readExcelFile(MultipartFile file) {
-        if(file.isEmpty()) throw new BadRequestException("파일을 첨부해주세요.");
-        if(!isExcelFile(file)) throw new BadRequestException("엑셀파일만 첨부할 수 있습니다.");
+        if(!isExcelFile(file)) throw new ForbiddenException("올바른 파일이 아닙니다.");
         String email = SecurityUtil.getCurrentUserEmail();
         int managerId = managerRepository.findByEmail(email).get().getManagerId();
         try {
             List<FanSaveDto> dtos = parseExcel(file);
             List<FanSaveDto> blackList = new ArrayList<>();
             List<FanSaveDto> notBlackList = new ArrayList<>();
-            for(FanSaveDto dto : dtos){
-                if(blackListRepository.existsByNameAndPhoneAndManager_ManagerId(dto.name(), dto.phone(), managerId)){
+            for (FanSaveDto dto : dtos) {
+                if (blackListRepository.existsByNameAndPhoneAndManager_ManagerId(dto.name(), dto.phone(), managerId)) {
                     blackList.add(dto);
-                }else{
+                } else {
                     notBlackList.add(dto);
                 }
             }
@@ -91,8 +91,10 @@ public class MeetingService {
                     notBlackList.isEmpty() ? null : notBlackList,
                     notBlackList.size()
             );
+        }catch (BadRequestException e){
+            throw e;
         }catch(Exception e){
-            throw new InternalServerErrorException();
+            throw new ForbiddenException("올바른 파일이 아닙니다.");
         }
     }
     private boolean isExcelFile(MultipartFile file) {
@@ -109,21 +111,37 @@ public class MeetingService {
 
     private List<FanSaveDto> parseExcel(MultipartFile file) throws Exception {
         List<FanSaveDto> result = new ArrayList<>();
+        boolean hasData = false; //데이터가 있는 지 확인하기 위한 플래그
         try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(0);
+            Row headerRow = sheet.getRow(0);
+            if(!isValidHeader(headerRow)){
+                throw new ForbiddenException("올바른 파일이 아닙니다.");
+            }
             for (Row row : sheet) {
                 if (row.getRowNum() == 0) continue;
                 String name = getCellValue(row.getCell(1));
                 String email = getCellValue(row.getCell(2));
                 String phone = getCellValue(row.getCell(3));
-                if (name.isEmpty() && email.isEmpty() && phone.isEmpty()) {
-                    continue;
+                if (!name.isEmpty() || !email.isEmpty() || !phone.isEmpty()) {
+                    hasData = true;
+                    FanSaveDto dto = new FanSaveDto(name, email, phone);
+                    result.add(dto);
                 }
-                FanSaveDto dto = new FanSaveDto(name, email, phone);
-                result.add(dto);
             }
         }
+        if(!hasData) throw new BadRequestException("명단이 비었습니다.");
         return result;
+    }
+    private boolean isValidHeader(Row headerRow){
+        if(headerRow == null) return false;
+        for(int i=0; i< EXPECTED_HEADERS.size(); i++){
+            Cell cell = headerRow.getCell(i);
+            if(cell == null || !EXPECTED_HEADERS.get(i).equals(cell.getStringCellValue())){
+                return false;
+            }
+        }
+        return true;
     }
 
     private String getCellValue(Cell cell) {
