@@ -18,8 +18,6 @@ const sendExcelFile = async (formData: FormData, accessToken: string) => {
       switch (status) {
         case 403:
           throw new Error("양식에 맞지 않는 파일입니다. 올바른 양식을 사용해주세요.");
-        case 500:
-          throw new Error("양식에 맞지 않는 파일입니다. 올바른 양식을 사용해주세요.");
         case 400:
           throw new Error("명단이 비어있습니다. 양식 파일에 팬을 추가해주세요.");
         default:
