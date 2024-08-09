@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import javax.print.attribute.standard.Media;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class OpenviduApi {
         return ApiResponse.success(HttpStatus.OK, a);
     }
 
-
+    //미팅방 시작 테스트용 api
     @GetMapping("/test1/{meetingId}")
     public ApiResponse<Void> test1(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
 
@@ -66,7 +67,7 @@ public class OpenviduApi {
         return ApiResponse.success(HttpStatus.OK);
     }
 
-    //2: 방 세션에 연결하고 토큰을 넘겨주는 api
+    //2: 방 세션에 연결하고 sessionId를 넘겨주는 api
     @GetMapping("/vidu/{meetingId}/{starIdx}")
     public ApiResponse<String> participateSession(@PathVariable("meetingId") int meetingId, @PathVariable("starIdx") int starIdx) throws OpenViduJavaClientException, OpenViduHttpException {
         String token = openviduService.getTokenV2(meetingId, starIdx);
@@ -78,10 +79,10 @@ public class OpenviduApi {
         return ApiResponse.success(HttpStatus.OK, token);
     }
 
-    //3: 방에 있는 세션 삭제하는 api
+    //3: 미팅방 삭제 api
     @DeleteMapping("/vidu/{meetingId}")
     public ApiResponse<Void> delRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
-        openviduService.deleteMeetingRoomV2(meetingId);
+        openviduService.endMeeting(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
@@ -116,12 +117,6 @@ public class OpenviduApi {
         }
 
         return ApiResponse.success(HttpStatus.OK, sb.toString());
-    }
-
-    @GetMapping("/vidu/star")
-    public ApiResponse<String> getStarToken() throws OpenViduJavaClientException, OpenViduHttpException {
-        String token = openviduService.getStarToken();
-        return ApiResponse.success(HttpStatus.OK, token);
     }
 
     //testCode: 세션을 생성하는 함수
@@ -176,24 +171,12 @@ public class OpenviduApi {
         return emitter;
     }
 
-    //test : 모든 클라이언트들에게 메세지 전달
-    @GetMapping(path = "/sse/broadcast")
-    public ApiResponse<String> boardcastTest(@RequestParam("meetingId") int meetingId) throws IOException {
-        openviduService.broadcastFanV2(meetingId);
-        log.info("Broadcasted completed");
-        return ApiResponse.success(HttpStatus.OK, "Broadcast completed");
+    @GetMapping(path = "/picture")
+    public ApiResponse<Void> sendPictureEvent() throws IOException {
+
+        openviduService.sendPictureEvent();
+
+        return ApiResponse.success(HttpStatus.OK);
     }
-
-    //test: 특정 클라이언트에게 메세지 전달
-//    @GetMapping(path = "/sse/send")
-//    public ApiResponse<String> sendEvent(@RequestParam("meetingId") int meetingId, @RequestParam("email") String email)
-//            throws IOException, OpenViduJavaClientException, OpenViduHttpException {
-//
-//        openviduService.sendEventToFanV2(meetingId, email, 0);
-//
-//        return ApiResponse.success(HttpStatus.OK, "Send completed");
-//    }
-
-
 
 }
