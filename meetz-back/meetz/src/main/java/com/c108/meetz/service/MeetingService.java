@@ -343,7 +343,7 @@ public class MeetingService {
         List<FanNameInfo> fanList = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).stream()
                 .map(FanNameInfo::from)
                 .toList();
-        return MeetingInfoStarResponseDto.of(meeting, fanList);
+        return MeetingInfoStarResponseDto.of(meeting, fanList, user.getName());
 
     }
 }
