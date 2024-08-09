@@ -1,5 +1,3 @@
-import React from "react";
-import { useState } from "react";
 import { Publisher, Subscriber } from "openvidu-browser";
 import Video from "./Video";
 import { useSessionStore } from "../../../../zustand/useSessionStore";
@@ -9,13 +7,8 @@ interface SessionProps {
   subscriber: Subscriber | null;
   publisher: Publisher;
 }
-interface Memo {
-  star: string;
-  text: string;
-}
-
 function StarSession({ subscriber, publisher }: SessionProps) {
-  const { starName, fanName, fanId } = useSessionStore();
+  const { starName, fanName } = useSessionStore();
   return (
     <div className="flex w-full align-middle">
       <div className="relative w-1/2" id="meetingVideo-star">
