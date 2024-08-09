@@ -6,6 +6,7 @@ import usePasswordValidation from "../../../hooks/form/usePasswordValidation";
 import postUserLogin from "../../../apis/auth/login";
 import setUserData from "../../../lib/setUserData";
 import getMeetingInfoAtEnterFan from "../../../apis/meeting/getMeetingInfoAtEnterFan";
+import getMeetingInfoAtEnterStar from "../../../apis/meeting/getMeetingInfoAtEnterStar";
 
 const LoginBox = () => {
   const navigate = useNavigate();
@@ -65,6 +66,17 @@ const LoginBox = () => {
 
       // 스타라면 미팅 대기 페이지로 이동
       if (role === "STAR") {
+        try {
+          const meetingInfo = await getMeetingInfoAtEnterStar(accessToken);
+          if (meetingInfo && meetingInfo.meetingId !== null) {
+            sessionStorage.setItem("mis", JSON.stringify(meetingInfo));
+            navigate("/session");
+          } else {
+            throw new Error("미팅 정보를 불러오는 데 실패했습니다.");
+          }
+        } catch (error) {
+          alert(error);
+        }
         navigate("/session");
       }
     } catch (error: any) {
