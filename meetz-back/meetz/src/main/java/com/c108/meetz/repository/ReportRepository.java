@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
-    Optional<Report> findByMeeting_MeetingIdAndUser_UserId(int meetingId, int userId);
+    // 특정 미팅에서 특정 팬을 신고한 기록이 있는지 확인
+    Optional<Report> findByMeeting_MeetingIdAndFan_UserId(int meetingId, int userId);
 }
