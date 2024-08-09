@@ -47,9 +47,6 @@ function FanSession({ subscriber, publisher, fanName }: SessionProps) {
       } catch {}
     }
   }, []);
-  useEffect(() => {
-    if (!takePhoto) return;
-  }, [takePhoto]);
 
   //3초 타이머 설정
   useEffect(() => {
