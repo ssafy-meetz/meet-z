@@ -6,7 +6,7 @@ import {
   Publisher,
 } from "openvidu-browser";
 import { useSessionStore } from "../../zustand/useSessionStore";
-import { createSession, createToken } from "../../apis/session/openviduAPI";
+import { createToken } from "../../apis/session/openviduAPI";
 
 export const useOpenvidu = () => {
   const [session, setSession] = useState<OVSession | null>(null);
@@ -23,6 +23,7 @@ export const useOpenvidu = () => {
         await new Promise<void>((resolve) => {
           session.disconnect();
           resolve();
+          console.log("기존 세션과 연결 종료");
         });
       } catch (error) {
         console.error("Error leaving session:", error);
@@ -52,6 +53,15 @@ export const useOpenvidu = () => {
       window.removeEventListener("beforeunload", leaveSession);
     };
   }, [leaveSession]);
+  useEffect(() => {
+    if (!session) return;
+
+    session.on("streamDestroyed", (event) => {
+      if (subscriber && event.stream.streamId === subscriber.stream.streamId) {
+        setSubscriber(null);
+      }
+    });
+  }, [subscriber, session]);
 
   useEffect(() => {
     if (!session) return;
@@ -92,8 +102,8 @@ export const useOpenvidu = () => {
             }
           })
           .catch(() => {});
-          console.log("!!");
-          console.log(session);
+        console.log("!!");
+        console.log(session);
       })
       .catch(() => {});
   }, [session, OV, sessionId]);
@@ -105,5 +115,6 @@ export const useOpenvidu = () => {
     joinSession,
     setSessionId,
     leaveSession,
+    setSubscriber,
   };
 };
