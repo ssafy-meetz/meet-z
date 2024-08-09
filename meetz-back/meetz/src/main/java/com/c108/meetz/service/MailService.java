@@ -12,6 +12,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,6 +21,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +43,7 @@ public class MailService {
     private final ManagerRepository managerRepository;
     private final MeetingRepository meetingRepository;
     private final UserRepository userRepository;
+    private final ImageService imageService;
 
     public boolean checkEmail(String email) {
         return managerRepository.existsByEmail(email);
@@ -177,7 +183,7 @@ public class MailService {
         }
     }
 
-    public void sendImageToFan(List<MultipartFile> files){
+    public void sendImageToFan(List<MultipartFile> files, int frameId){
         User user = getUser();
         for(MultipartFile file : files) {
             if(file.isEmpty()) throw new BadRequestException("사진이 없습니다.");
@@ -208,13 +214,17 @@ public class MailService {
             body += "</div>";
 
             helper.setText(body, true);
-            for(MultipartFile file : files){
-                String fileName = file.getOriginalFilename();
-                InputStreamSource inputSteamSource = file::getInputStream;
-                helper.addAttachment(fileName, inputSteamSource);
+            for(int i=0; i<files.size(); i++){
+                MultipartFile file = files.get(i);
+                BufferedImage mergedImage = imageService.mergeImage(file, frameId);
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                ImageIO.write(mergedImage, "jpg", outputStream);
+                byte[] bytes= outputStream.toByteArray();
+                String filename = "meetz_photo_" + (i+1) + ".jpg";
+                helper.addAttachment(filename, new ByteArrayResource(bytes));
             }
             javaMailSender.send(message);
-        } catch (MessagingException e) {
+        } catch (MessagingException | IOException e) {
             throw new BadRequestException();
         }
     }
