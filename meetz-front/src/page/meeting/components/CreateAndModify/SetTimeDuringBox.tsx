@@ -16,7 +16,7 @@ const SetTimeDuringBox = () => {
         <Select
           options={durationOptions}
           value={selectedDuration}
-          onChange={(option) => setSelectedDuration(option)}
+          onChange={(option) => { setSelectedDuration(option) }}
           styles={customStyles}
           className='text-xl w-40'
           placeholder='선택'
