@@ -5,7 +5,6 @@ import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 import fetchUserData from "../../lib/fetchUserData";
 import FanSessionPage from "./session/pages/FanSessionPage";
 import FanSettingPage from "./setting/pages/FanSettingPage";
-import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 import useSaveImage from "../../hooks/session/useSaveImage";
 import SessionLoadingPage from "./session/pages/SessionLoadingPage";
 type SessionInfo = {
@@ -28,8 +27,6 @@ const FanSessionContainerPage = () => {
     setNextStarName,
   } = useSessionStore();
   const { sendImage } = useSaveImage();
-  const { leaveSession } = useOpenvidu();
-
   //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
     fetchSSE();
@@ -46,16 +43,9 @@ const FanSessionContainerPage = () => {
   }, [progressMeeting]);
   useEffect(() => {
     if (meetingDone) {
-      console.log("Sending image to server...");
       sendImage();
     }
   }, [meetingDone]);
-  useEffect(() => {
-    // 상태가 업데이트된 후 이동할 페이지를 결정
-    if (remain === -1) {
-      console.log("Remain is -1, navigating to SessionSwitchPage");
-    }
-  }, [remain]);
   //fetchSSE 연결
   const fetchSSE = () => {
     console.log("SSE 연결 시도");
@@ -91,7 +81,7 @@ const FanSessionContainerPage = () => {
       setIsBreak(parseData.isBreak);
       setWait(parseData.waitingNum);
       setRemain(parseData.remainStarNum);
-      //현재 임시로 remain이 0인 경우 사진 발송 진행!
+
       if (parseData.remainStarNum === -1) {
         setMeetingDone(true);
       }
