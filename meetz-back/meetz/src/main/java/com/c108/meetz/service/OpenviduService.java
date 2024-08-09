@@ -700,11 +700,18 @@ public class OpenviduService {
             return;
         }
 
-        StarInfo star = meetingRooms.get(meetingId).get(fan.curStarIdx);
+
+        StarInfo star = null;
+
+
+
+        if (fan.curStarIdx >= 0) {
+            star = meetingRooms.get(meetingId).get(fan.curStarIdx);
+        }
 
         if (star == null) {
             log.info("스타 정보를 찾을 수 없음");
-            return;
+//            return;
         }
 
         FanSseResponseDto pictureFanDto = FanSseResponseDto.takePicture();
@@ -713,8 +720,11 @@ public class OpenviduService {
 
         if (fan.emitter != null) {
             fan.emitter.send(pictureFanDto, MediaType.APPLICATION_JSON);
+            log.info("fan에게 정보 보냄");
+        } else {
+            log.info("fan emiiter를 찾을 수 없음");
         }
-        if (star.emitter != null) {
+        if (star != null && star.emitter != null) {
             star.emitter.send(pictureStarDto, MediaType.APPLICATION_JSON);
         }
     }
