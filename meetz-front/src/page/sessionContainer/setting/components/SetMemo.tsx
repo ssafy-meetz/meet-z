@@ -145,7 +145,7 @@ const SetMemo: React.FC = () => {
                 className='border p-2 rounded-lg w-full focus:outline-none focus:border-[#ff4f5d] cursor-pointer'
               >
                 <option value='' disabled>스타 선택</option>
-                {meetingInfo.starList.map((star) => <option value={star.name} key={star.email}>{star.name}</option>)}
+                {meetingInfo.starList.map((star, idx) => <option value={star.name} key={idx}>{star.name}</option>)}
               </select>
             </div>
             <div className='relative h-[188px]'>
