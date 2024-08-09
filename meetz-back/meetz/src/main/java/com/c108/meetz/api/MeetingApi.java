@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -126,9 +125,9 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
 
-    @PostMapping(value = "/image", consumes = "multipart/form-data")
-    public ApiResponse<Void> uploadImage(@RequestPart("image") List<MultipartFile> files) {
-        mailService.sendImageToFan(files);
+    @PostMapping(value = "/image/{frameId}", consumes = "multipart/form-data")
+    public ApiResponse<Void> uploadImage(@RequestPart("image") List<MultipartFile> files, @PathVariable int frameId) {
+        mailService.sendImageToFan(files, frameId);
         return ApiResponse.success(OK);
     }
 
