@@ -1,7 +1,6 @@
 package com.c108.meetz.domain;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,22 +24,30 @@ public class Report {
     private Meeting meeting;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "star_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private User user;
+    private User star;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ReportReason reason;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fan_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private User fan;
+
+    @Column(name = "isReported", nullable = false)
+    private boolean isReported;
+
+    @Column(name = "isProfanity", nullable = false)
+    private boolean isProfanity;
 
     @Column(name = "file_path", nullable = true)
     private String filePath;
 
-    @Builder
-    public Report(Meeting meeting, User user, ReportReason reason, String filePath) {
+    public Report(Meeting meeting, User star, User fan, boolean isReported, boolean isProfanity, String filePath) {
         this.meeting = meeting;
-        this.user = user;
-        this.reason = reason;
+        this.star = star;
+        this.fan = fan;
+        this.isReported = isReported;
+        this.isProfanity = isProfanity;
         this.filePath = filePath;
     }
 }

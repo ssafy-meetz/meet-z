@@ -132,15 +132,17 @@ public class MeetingApi {
         return ApiResponse.success(OK);
     }
 
-    @PostMapping("/report/{meetingId}/{userId}")
-    public ApiResponse reportUser(@PathVariable int meetingId, @PathVariable int userId) {
-        reportService.saveReport(meetingId, userId);
+    // 신고 생성 엔드포인트
+    @PostMapping("/report/{userId}")
+    public ApiResponse<Void> reportUser(@PathVariable int userId) {
+        reportService.saveReport(userId);
         return ApiResponse.success(OK);
     }
 
-    @DeleteMapping("/report/{meetingId}/{userId}")
-    public ApiResponse cancelReport(@PathVariable int meetingId, @PathVariable int userId) {
-        reportService.cancelReport(meetingId, userId);
+    // 신고 취소 엔드포인트
+    @DeleteMapping("/report/{userId}")
+    public ApiResponse<Void> cancelReport(@PathVariable int userId) {
+        reportService.cancelReport(userId);
         return ApiResponse.success(OK);
     }
 
