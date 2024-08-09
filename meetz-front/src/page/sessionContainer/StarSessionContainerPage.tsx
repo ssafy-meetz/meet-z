@@ -11,13 +11,13 @@ type SessionInfo = {
   timer: number;
   starName: string;
   fanName: string;
-  remain: string;
+  remain: number;
 };
 
 type FanDto = {
   name: string;
   nickname: string;
-}
+};
 
 interface MeetingInfo {
   name: string;
@@ -30,7 +30,9 @@ interface MeetingInfo {
 }
 
 const StarSessionContainerPage = () => {
-  const [meetingInfo, setMeetingInfo] = useState<MeetingInfo>(JSON.parse(sessionStorage.getItem('mis') || ''));
+  const [meetingInfo] = useState<MeetingInfo>(
+    JSON.parse(sessionStorage.getItem("mis") || "")
+  );
   const {
     settingDone,
     remain,
@@ -50,6 +52,7 @@ const StarSessionContainerPage = () => {
       setStartName(info.starName);
       setFanId(info.fanId);
       setFanName(info.fanName);
+      setRemain(info.remain);
       resolve();
     });
   };
