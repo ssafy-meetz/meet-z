@@ -114,11 +114,11 @@ const SignupBox = () => {
   const formClickHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!notDuplicated) {
-      alert('이메일을 다시 확인해주세요.')
+      alert('이메일을 다시 확인해주세요.');
       return;
     }
     if (!isAuthenticated) {
-      alert('이메일 인증을 완료하세요.')
+      alert('이메일 인증을 완료하세요.');
       return;
     }
     if (!isValidPassword) {
@@ -162,7 +162,7 @@ const SignupBox = () => {
   };
 
   return (
-    <div className='bg-white rounded-2xl w-[464px] h-[660px] flex flex-col items-center'>
+    <div className='bg-white rounded-2xl w-[464px] h-[660px] flex flex-col items-center  animate-fadeIn'>
       <form className='w-[360px] my-[64px]' onSubmit={formClickHandler}>
         <div className='flex items-center justify-between w-[269px] h[24px] mb-[40px]'>
           <img src={logo} alt='Meet:Z 로고' className='w-[102px] h-[19px]' />
@@ -174,12 +174,12 @@ const SignupBox = () => {
               type='email'
               placeholder='이메일(example@company.com)'
               value={email}
-              className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-[256px]'
+              className='border border-[#C4C4C4] h-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-[256px]'
               onChange={handleEmailChange}
             />
             <button
               type='button'
-              className='flex items-center justify-center w-[96px] h-full text-[#FF4F5D] rounded-lg transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 border border-solid border-[#FF4F5D]'
+              className='flex items-center justify-center  w-[96px] active:scale-95 h-full text-[#FF4F5D] rounded-lg transition duration-100 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105 border border-solid border-[#FF4F5D]'
               onClick={checkDuplicate}
             >
               중복확인
@@ -190,17 +190,18 @@ const SignupBox = () => {
               ref={authCodeInputRef}
               type='password'
               placeholder='인증번호를 입력해주세요.'
-              className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-[256px]'
+              className='border border-[#C4C4C4] h-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-[256px]'
               value={authCode}
               onChange={(e) => setAuthCode(e.target.value)}
             />
             <button
               type='button'
-              className={`flex items-center justify-center w-[96px] h-full text-[#FF4F5D] transition duration-100 ease-in-out transform rounded-lg border border-solid border-[#FF4F5D]
+              className={`flex items-center justify-center w-[96px] h-full text-[#FF4F5D] transition active:scale-95 duration-100 ease-in-out transform rounded-lg border border-solid border-[#FF4F5D]
                 ${isActive ? 'bg-[#ff4f5d] text-white scale-105' : ''}
-                ${isAuthenticated
-                  ? 'bg-gray-100 text-gray-400 border-gray-400'
-                  : 'hover:bg-[#ff4f5d] hover:text-white hover:scale-105'
+                ${
+                  isAuthenticated
+                    ? 'bg-gray-100 text-gray-400 border-gray-400'
+                    : 'hover:bg-[#ff4f5d] hover:text-white hover:scale-105'
                 }`}
               onClick={getEmailAuthenticate}
               disabled={isAuthenticated}
@@ -216,34 +217,34 @@ const SignupBox = () => {
             type='password'
             value={password}
             placeholder='비밀번호 (영문, 특수문자를 포함하는 8자 이상)'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full'
+            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
             onChange={handlePasswordChange}
           />
           <input
             type='password'
             value={secondPW}
             placeholder='비밀번호 확인'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full'
+            className='border  border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
             onChange={(e) => setSecondPW(e.target.value)}
           />
           <input
             type='text'
             value={company}
             placeholder='기관 또는 개인명'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full'
+            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
             onChange={(e) => setCompany(e.target.value)}
           />
           <input
             type='text'
             value={phone}
             placeholder='휴대폰 번호 입력 (‘-’ 제외 11자리 입력)'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full'
+            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D]  focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
             onChange={handlePhoneChange}
           />
         </div>
         <button
           type='submit'
-          className='mt-[48px] w-full bg-[#FF4F5D] text-white p-4 rounded-lg '
+          className='mt-[48px] w-full bg-[#FF4F5D]  duration-100 ease-in-out transform hover:scale-105 active:scale-95 hover:bg-[#fd5866] transition text-white p-4 rounded-lg '
         >
           가입하기
         </button>

@@ -5,6 +5,7 @@ import StarSessionPage from "./session/pages/StarSessionPage";
 import StarLoadingPage from "./setting/pages/StarLoadingPage";
 import fetchUserData from "../../lib/fetchUserData";
 import { EventSourcePolyfill } from "event-source-polyfill";
+
 type SessionInfo = {
   fanId: string;
   timer: number;
@@ -12,6 +13,22 @@ type SessionInfo = {
   fanName: string;
   remain: string;
 };
+
+type FanDto = {
+  name: string;
+  nickname: string;
+}
+
+interface MeetingInfo {
+  name: string;
+  meetingName: string;
+  meetingId: number;
+  meetingDuration: number;
+  meetingStart: string;
+  term: number;
+  fanList: FanDto[];
+}
+
 const StarSessionContainerPage = () => {
   const {
     settingDone,

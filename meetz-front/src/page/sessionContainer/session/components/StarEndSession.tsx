@@ -1,9 +1,8 @@
 import logo from '/src/assets/images/sessionlogo.png';
 
-const EndSession = () => {
-  // 문구를 구성하는 각 문자에 고유한 애니메이션을 적용
-  const endMessage = '팬싸인회가 종료되었습니다.';
-  const emailMessage = '스타와 찍은 사진은 이메일로 전송되었습니다.';
+const StarEndSession = () => {
+  const endMessage = '오늘도 수고 많으셨습니다.';
+  const emailMessage = '팬들과의 소중한 추억을 만들어 주셔서 감사합니다.';
 
   // 각 문자를 span으로 감싸서 개별 애니메이션을 적용
   const renderStaggeredText = (text: string) => {
@@ -41,4 +40,4 @@ const EndSession = () => {
   );
 };
 
-export default EndSession;
+export default StarEndSession;

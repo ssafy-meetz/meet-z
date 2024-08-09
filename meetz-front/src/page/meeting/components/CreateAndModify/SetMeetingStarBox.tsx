@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
-import ParticipateStarInput from "./ParticipateStarInput"
-import ParticipateStarList from "./ParticipateStarList"
-import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
+import { useEffect, useRef } from 'react';
+import ParticipateStarInput from './ParticipateStarInput';
+import ParticipateStarList from './ParticipateStarList';
+import useMeetingSettingStore from '../../../../zustand/useMeetingSettingStore';
 
 const SetMeetingStarBox = () => {
   const { inputWidth } = useMeetingSettingStore();
@@ -25,7 +25,7 @@ const SetMeetingStarBox = () => {
         <ParticipateStarList />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SetMeetingStarBox
+export default SetMeetingStarBox;

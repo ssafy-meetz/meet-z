@@ -14,7 +14,7 @@ const CleanFanList = ({
 
   return (
     <div
-      className='overflow-y-auto pb-6 border border-t-0 border-l-0 border-r-0 border-b-2 mt-6'
+      className='overflow-y-auto h-[465px] border border-t-0 border-l-0 border-r-0 border-b-2 mt-6'
       style={{
         scrollbarWidth: 'thin',
         scrollbarColor: 'rgba(0, 0, 0, 0.05) transparent',
@@ -45,7 +45,7 @@ const CleanFanList = ({
             ))}
         </tbody>
       </table>
-    </div >
+    </div>
   );
 };
 

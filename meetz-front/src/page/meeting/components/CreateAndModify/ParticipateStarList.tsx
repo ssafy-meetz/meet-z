@@ -1,5 +1,5 @@
-import { IoClose } from "react-icons/io5";
-import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore";
+import { IoClose } from 'react-icons/io5';
+import useMeetingSettingStore from '../../../../zustand/useMeetingSettingStore';
 
 const ParticipateStarList = () => {
   const { stars, setStars } = useMeetingSettingStore();
@@ -21,14 +21,14 @@ const ParticipateStarList = () => {
           </span>
           <button
             onClick={() => handleRemoveParticipant(index)}
-            className='text-[#FF4F5D] text-xl font-thin p-1 ml-2 hover:text-yellow-500 hover:scale-110 transition-all'
+            className='text-[#FF4F5D] text-xl font-thin p-1 ml-2 active:scale-95  hover:text-[#fa828c] hover:scale-110 transition-all'
           >
             <IoClose />
           </button>
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default ParticipateStarList
+export default ParticipateStarList;

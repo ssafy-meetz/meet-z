@@ -1,4 +1,4 @@
-import useMeetingTimeStore from "../../../../zustand/useMeetingTimeStore";
+import useMeetingTimeStore from '../../../../zustand/useMeetingTimeStore';
 
 const SetTimeDateBox = () => {
   const { setSelectedDate, selectedDate } = useMeetingTimeStore();
@@ -10,9 +10,9 @@ const SetTimeDateBox = () => {
       </div>
       <div>
         <input
-          value={selectedDate ? selectedDate.toISOString().split("T")[0] : ''}
-          className='w-40'
-          type="date"
+          value={selectedDate ? selectedDate.toISOString().split('T')[0] : ''}
+          className='w-40 cursor-text'
+          type='date'
           onChange={(e) => setSelectedDate(new Date(e.target.value))}
         />
       </div>
