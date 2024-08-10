@@ -17,10 +17,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -137,13 +139,13 @@ public class OpenviduService {
     //스케줄러 테스트
     //cron(초 분 시 일 월 요일 (년))
     // * : 모든 값, /: 증분 값(0/15, 0부터 시작해 15마다), -: 범위
-//    @Scheduled(cron = "1 0/5 * * * ?") //5분마다 실행
-//    public void scheduleTaskTest() {
-//        log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
-//        //1. 미팅 시작 시간 30분 전에 방에 대한 모든 세션 생성(미팅 테이블에서 시작 시간 범위를 (현재 시간 + 30 == 미팅 시작 시간)인거 불러오기)
-//        //2. 만약 미팅 세션이 안만들어진 방이라면 만들기
-//        //3. 미팅 시작시간이 된 방들에 대해선 현재 접속중인 사람들에게 방 이동 명령을 하게 만들어주는 함수 실행
-//    }
+    @Scheduled(cron = "1 0/5 * * * ?") //5분마다 실행
+    public void scheduleTaskTest() {
+        log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
+        //1. 미팅 시작 시간 30분 전에 방에 대한 모든 세션 생성(미팅 테이블에서 시작 시간 범위를 (현재 시간 + 30 == 미팅 시작 시간)인거 불러오기)
+        //2. 만약 미팅 세션이 안만들어진 방이라면 만들기
+        //3. 미팅 시작시간이 된 방들에 대해선 현재 접속중인 사람들에게 방 이동 명령을 하게 만들어주는 함수 실행
+    }
 
 
     public void automationMeetingRoomV2(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
@@ -406,6 +408,11 @@ public class OpenviduService {
     }
 
     //============================OpenViduService================================//
+
+    //방이 없으면 로그인이 되지 않게
+    public boolean existByMeetingRoomsId(int meetingRoomId) {
+        return meetingRooms.containsKey(meetingRoomId);
+    }
 
     //방의 모든 세션(스타의 방) 생성, 세션Id는 스타의 이메일
     public boolean initSessionV2(Integer meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
