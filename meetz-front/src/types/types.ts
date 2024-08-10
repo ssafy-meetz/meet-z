@@ -102,3 +102,11 @@ export type MeetingInfoDto = {
   term: number;
   userPosition: number;
 }
+
+export type ReportsDto = {
+  reportId: number;
+  reportedUserName: string;
+  starName: string;
+  isReported: boolean;
+  isProfanity: boolean;
+}
