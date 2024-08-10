@@ -135,20 +135,19 @@ public class OpenviduApi {
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
     }
 
-    //testCode: 방 접속 토큰을 주는 api(기본 코드)
-    @PostMapping("/vidu/{sessionId}/connections")
-    public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-                                                   @RequestBody(required = false) Map<String, Object> params)
-            throws OpenViduJavaClientException, OpenViduHttpException {
-        Session session = openvidu.getActiveSession(sessionId);
-        if (session == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
-        Connection connection = session.createConnection(properties);
-        return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
-    }
-
+//    //testCode: 방 접속 토큰을 주는 api(기본 코드)
+//    @PostMapping("/vidu/{sessionId}/connections")
+//    public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
+//                                                   @RequestBody(required = false) Map<String, Object> params)
+//            throws OpenViduJavaClientException, OpenViduHttpException {
+//        Session session = openvidu.getActiveSession(sessionId);
+//        if (session == null) {
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
+//        Connection connection = session.createConnection(properties);
+//        return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
+//    }
 
 
     //======================================SSE 관련 api 시작======================================//

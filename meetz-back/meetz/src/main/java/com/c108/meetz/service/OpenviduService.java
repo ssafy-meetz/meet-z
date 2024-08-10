@@ -671,6 +671,7 @@ public class OpenviduService {
     }
 
     public void sendPictureEvent() throws IOException {
+        //토큰을 통해 팬 정보 얻기
         User user = getUser();
 
         int meetingId = user.getMeeting().getMeetingId();
@@ -694,7 +695,7 @@ public class OpenviduService {
         StarInfo star = null;
 
 
-
+        //현재 팬이 스타랑 만나고 있을 떄
         if (fan.curStarIdx >= 0) {
             star = meetingRooms.get(meetingId).get(fan.curStarIdx);
         }
