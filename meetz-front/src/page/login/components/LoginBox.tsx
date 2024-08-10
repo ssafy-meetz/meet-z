@@ -79,6 +79,8 @@ const LoginBox = () => {
             alert('존재하지 않는 회원입니다.');
           } else if (error.message === '올바른 형식이 아닙니다.') {
             alert('올바른 형식이 아닙니다.');
+          } else if(error.code===403){
+            alert('아직 팬싸인회 입장이 불가능합니다.');
           } else {
             alert('로그인 중 오류가 발생했습니다.');
           }
