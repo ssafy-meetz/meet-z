@@ -108,8 +108,8 @@ public class MeetingApi {
     }
 
     @PostMapping(value = "/check-profanity", consumes = "multipart/form-data")
-    public ApiResponse<TranscriptionResponseDto> checkProfanity(@RequestPart("file") MultipartFile file) {
-        TranscriptionResponseDto response = audioProcessingService.processAudio(file);
+    public ApiResponse<TranscriptionResponseDto> checkProfanity(@RequestPart("file") MultipartFile file, int meetingId, int fanId, int starId) {
+        TranscriptionResponseDto response = audioProcessingService.processAudioAndHandleReport(file, meetingId, fanId, starId);
         return ApiResponse.success(OK, response);
     }
 
@@ -143,6 +143,18 @@ public class MeetingApi {
     public ApiResponse<Void> cancelReport(@PathVariable int userId) {
         reportService.cancelReport(userId);
         return ApiResponse.success(OK);
+    }
+
+    @GetMapping("/{meetingId}/report")
+    public ApiResponse<ReportListResponseDto> getReportList(@PathVariable int meetingId) {
+        ReportListResponseDto response = reportService.getReportList(meetingId);
+        return ApiResponse.success(OK, response);
+    }
+
+    @GetMapping("/{meetingId}/report/{reportId}")
+    public ApiResponse<ReportDetailResponseDto> getReportDetail(@PathVariable int meetingId, @PathVariable int reportId) {
+        ReportDetailResponseDto response = reportService.getReportDetail(meetingId, reportId);
+        return ApiResponse.success(OK, response);
     }
 
 }
