@@ -8,15 +8,15 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class TranscriptionResponseDto {
+    private String filePath; // 파일 경로를 추가
     private String transcript;
     private boolean hasProfanityInTranscript;
     private List<TranscriptionSegment> segments;
-    private String filePath; // 파일 경로를 추가
 
-    // 파일 경로를 포함하지 않는 생성자 추가
-    public TranscriptionResponseDto(String transcript, boolean hasProfanityInTranscript, List<TranscriptionSegment> segments) {
+
+    public TranscriptionResponseDto(String filePath, String transcript, boolean hasProfanityInTranscript, List<TranscriptionSegment> segments) {
+        this.filePath = filePath;
         this.transcript = transcript;
         this.hasProfanityInTranscript = hasProfanityInTranscript;
         this.segments = segments;
