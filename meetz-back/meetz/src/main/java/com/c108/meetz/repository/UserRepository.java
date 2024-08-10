@@ -26,5 +26,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Transactional
     @Query("UPDATE User u SET u.nickname = :nickname WHERE u.userId = :userId")
     void updateNickname(@Param("userId") int userId, @Param("nickname") String nickname);
-    
+
+    boolean existsByEmailAndMeeting_MeetingId(String email, int meetingId);
 }

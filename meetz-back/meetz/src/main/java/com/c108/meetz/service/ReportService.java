@@ -7,6 +7,7 @@ import com.c108.meetz.domain.Report;
 import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.response.ReportDetailResponseDto;
 import com.c108.meetz.dto.response.ReportListResponseDto;
+import com.c108.meetz.dto.response.ReportsListResponseDto;
 import com.c108.meetz.dto.response.TranscriptionResponseDto;
 import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.exception.DuplicateException;
@@ -52,9 +53,9 @@ public class ReportService {
         Meeting meeting = fan.getMeeting();  // 팬이 속한 미팅을 가져옴
 
         // 이미 신고된 사항인지 확인
-        Optional<Report> existingReport = reportRepository.findByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(
-                meeting.getMeetingId(), fan.getUserId(), star.getUserId());
-        if (existingReport.isPresent()) {
+        boolean reportExists = reportRepository.existsByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(meeting.getMeetingId(), fan.getUserId(), star.getUserId());
+
+        if (reportExists) {
             throw new DuplicateException("이미 신고하였습니다.");
         }
 
@@ -72,16 +73,21 @@ public class ReportService {
 
         Meeting meeting = fan.getMeeting();  // 팬이 속한 미팅을 가져옴
 
+        // 리포트를 조회하고 null 체크로 예외 처리
         Report report = reportRepository.findByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(
-                        meeting.getMeetingId(), fan.getUserId(), star.getUserId())
-                .orElseThrow(() -> new NotFoundException("신고를 찾을 수 없습니다."));
+                meeting.getMeetingId(), fan.getUserId(), star.getUserId());
 
+        if (report == null) {
+            throw new NotFoundException("신고를 찾을 수 없습니다.");
+        }
+
+        // 리포트가 존재하면 삭제 작업 수행
         reportRepository.delete(report);
     }
     /**
      * 특정 미팅에 대한 신고 목록을 조회하는 메서드.
      */
-    public ReportListResponseDto getReportList(int meetingId) {
+    public ReportsListResponseDto getReportList(int meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
 
@@ -93,7 +99,7 @@ public class ReportService {
         List<Report> reports = reportRepository.findByMeeting_MeetingId(meetingId);
 
         // ReportListResponseDto 생성 시 참가자 수를 포함
-        return ReportListResponseDto.fromEntities(meeting, reports, participantCount);
+        return new ReportsListResponseDto(meeting, reports, participantCount);
     }
 
     /**

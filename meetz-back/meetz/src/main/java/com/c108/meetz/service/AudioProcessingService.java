@@ -10,9 +10,11 @@ import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.response.TranscriptionResponseDto;
 import com.c108.meetz.dto.response.TranscriptionResponseDto.TranscriptionSegment;
 import com.c108.meetz.exception.BadRequestException;
+import com.c108.meetz.exception.NotFoundException;
 import com.c108.meetz.repository.MeetingRepository;
 import com.c108.meetz.repository.ReportRepository;
 import com.c108.meetz.repository.UserRepository;
+import com.c108.meetz.util.SecurityUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +29,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static com.c108.meetz.domain.Role.FAN;
 
 @Service
 @RequiredArgsConstructor
@@ -90,7 +90,7 @@ public class AudioProcessingService {
             boolean hasProfanityInTranscript = segments.stream().anyMatch(segment -> !segment.getBadWordsList().isEmpty());
 
             // TranscriptionResponseDto에 파일 경로도 포함시켜서 생성
-            TranscriptionResponseDto responseDto = new TranscriptionResponseDto(transcript, hasProfanityInTranscript, segments, null);
+            TranscriptionResponseDto responseDto = new TranscriptionResponseDto(null, transcript, hasProfanityInTranscript, segments);
 
             log.debug("응답 생성 완료: {}", responseDto);
 
@@ -108,12 +108,33 @@ public class AudioProcessingService {
      * 오디오 파일을 처리하여 비속어 여부를 확인한 후, 신고 데이터를 생성 또는 업데이트하는 메서드.
      *
      * @param file      업로드된 오디오 파일
-     * @param meetingId 미팅 ID
-     * @param starId    스타 사용자 ID
+     * @param email     스타의 email 정보
      * @return 변환된 텍스트와 비속어 여부가 포함된 TranscriptionResponseDto 객체
      */
-    public TranscriptionResponseDto processAudioAndHandleReport(MultipartFile file, int meetingId, int fanId, int starId) {
+    public TranscriptionResponseDto processAudioAndHandleReport(MultipartFile file, String email) {
         try {
+            // 접속한 팬 입장에서 데이터 전송
+            // SecurityUtil.getCurrentUserRole()
+            // SecurityUtil.getCurrentUserEmail()
+            // 스타의 이메일을 이용해 스타 번호와 미팅 번호 조회
+            User star = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new NotFoundException("스타 정보를 찾을 수 없습니다."));
+            int starId = star.getUserId();
+            int meetingId = star.getMeeting().getMeetingId();
+
+            // 현재 접속한 팬의 이메일을 이용해 팬 번호 조회
+            String fanEmail = SecurityUtil.getCurrentUserEmail();
+            boolean fanExists = userRepository.existsByEmailAndMeeting_MeetingId(fanEmail, meetingId);
+
+            if (!fanExists) {
+                log.debug("팬 정보를 찾을 수 없습니다. 이메일: {}", fanEmail);
+                throw new NotFoundException("팬 정보를 찾을 수 없습니다.");
+            }
+
+            User fan = userRepository.findByEmail(fanEmail)
+                    .orElseThrow(() -> new NotFoundException("팬 정보를 찾을 수 없습니다."));
+            int fanId = fan.getUserId();
+
             log.debug("processAudioAndHandleReport 시작");
 
             // 1. 오디오 파일 처리: MultipartFile을 임시 파일로 변환
@@ -141,7 +162,7 @@ public class AudioProcessingService {
             String fileUrl = handleReportAfterMeeting(file, meetingId, fanId, starId, hasProfanityInTranscript);
 
             // TranscriptionResponseDto에 파일 경로를 추가
-            TranscriptionResponseDto responseDto = new TranscriptionResponseDto(transcript, hasProfanityInTranscript, segments, fileUrl);
+            TranscriptionResponseDto responseDto = new TranscriptionResponseDto(fileUrl, transcript, hasProfanityInTranscript, segments);
 
             log.debug("응답 생성 완료: {}", responseDto);
 
@@ -173,41 +194,51 @@ public class AudioProcessingService {
         String fileUrl; // URL을 저장할 변수
         String bucketName = "meeting" + meetingId;  // 버킷 이름 설정
 
+        // 버킷 이름 로그 출력
+        System.out.println("버킷 이름: " + bucketName);
+
         // 1. 버킷 생성 (퍼블릭 접근 권한 부여)
         createPublicBucket(bucketName);
 
         // 기존 신고 데이터가 있는지 확인
-        Optional<Report> existingReport = reportRepository.findByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(meetingId, fanId, starId);
+        boolean reportExists = reportRepository.existsByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(meetingId, fanId, starId);
 
-        if (existingReport.isPresent()) {
+        if (reportExists) {
             // 신고가 이미 존재하는 경우: 파일 경로와 비속어 여부를 업데이트
-            Report report = existingReport.get();
+            Report report = reportRepository.findByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(meetingId, fanId, starId);
             String filePath = meetingId + "_" + starId + "_" + report.getFan().getUserId() + ".wav";
+            System.out.println("file, bucketName, filePath " + file + "," + bucketName + "," + filePath);
+            System.out.println("file" + file);
+            System.out.println("bucketName : " + bucketName);
+            System.out.println("filePath : " + filePath);
             fileUrl = s3UploadService.upload(file, bucketName, filePath); // fileUrl 저장
+
             report.setFilePath(fileUrl);
             report.setProfanity(hasProfanity);
             reportRepository.save(report);
-            log.debug("기존 신고 업데이트 완료: {}", report);
+            System.out.println("기존 신고 업데이트 완료: " + report);
         } else if (hasProfanity) {
             // 신고가 존재하지 않으며 비속어가 발견된 경우: 새로운 신고 생성
-            List<User> byMeetingMeetingIdAndRole = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
-            User fan = (User) byMeetingMeetingIdAndRole;
+            User fan = userRepository.findById(fanId).orElseThrow(()->new NotFoundException("팬 정보를 찾지 못했습니다.")); // DB에서 찾을 시 없을 수 있음, opritonal은 null or 객체 반환, Repository findById Optional<User> 반환,
             Report newReport = new Report(meeting, star, fan, true, hasProfanity, null);
             reportRepository.save(newReport);
 
             // 새로운 신고가 생성된 후 파일을 S3에 업로드
-            String filePath = meetingId + "_" + starId + "_" + fan.getUserId() + ".wav";
+            String filePath = meetingId + "_" + starId + "_" + fan.getUserId() + ".wav"; // Optional User 선언 시 throw 안 해도 됨.
             fileUrl = s3UploadService.upload(file, bucketName, filePath); // fileUrl 저장
+            System.out.println(" fileurl: " + fileUrl);
             newReport.setFilePath(fileUrl);
             reportRepository.save(newReport);
 
-            log.debug("새 신고 생성 및 파일 업로드 완료: {}", newReport);
+            System.out.println("새 신고 생성 및 파일 업로드 완료: " + newReport);
         } else {
             fileUrl = ""; // 비속어가 발견되지 않으면 빈 문자열
         }
 
         return fileUrl; // URL 반환
     }
+
+
 
     /**
      * 클로바 스피치 API 응답을 파싱하여 텍스트와 비속어를 추출하는 메서드.
