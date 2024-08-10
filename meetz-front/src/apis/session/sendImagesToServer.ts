@@ -4,7 +4,7 @@ import instance from "../axios";
 const sendImageToServer = async (formData: FormData) => {
   const { accessToken } = fetchUserData();
   try {
-    const { data } = await instance.post("api/meeting/image", formData, {
+    const { data } = await instance.post("/api/meeting/image", formData, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "multipart/form-data",
