@@ -1,3 +1,4 @@
+import postLogout from '../../apis/auth/postLogout';
 import clearUserData from '../../lib/clearUserData';
 import logo from '/src/assets/images/logo.png';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -9,6 +10,7 @@ const Header = () => {
   const logoutHandler = () => {
     localStorage.clear();
     clearUserData();
+    postLogout(localStorage.getItem('rt') || '');
     alert('로그아웃 되었습니다.');
     navigate('/');
   };
@@ -27,9 +29,8 @@ const Header = () => {
               완료된 미팅
             </Link>
             <div
-              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${
-                isActive('end') ? 'scale-x-100' : 'scale-x-0'
-              }`}
+              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${isActive('end') ? 'scale-x-100' : 'scale-x-0'
+                }`}
             ></div>
           </div>
           <div className='relative group'>
@@ -37,9 +38,8 @@ const Header = () => {
               미완료 미팅
             </Link>
             <div
-              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${
-                isActive('yet') ? 'scale-x-100' : 'scale-x-0'
-              }`}
+              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${isActive('yet') ? 'scale-x-100' : 'scale-x-0'
+                }`}
             ></div>
           </div>
           <div className='relative group'>
@@ -47,9 +47,8 @@ const Header = () => {
               블랙리스트
             </Link>
             <div
-              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${
-                isActive('blacklist') ? 'scale-x-100' : 'scale-x-0'
-              }`}
+              className={`absolute bottom-[-8px] left-0 right-0 h-[2px] bg-[#ff4f5d] transform transition-transform duration-200 origin-center scale-x-0 group-hover:scale-x-100 ${isActive('blacklist') ? 'scale-x-100' : 'scale-x-0'
+                }`}
             ></div>
           </div>
           <div className='relative group'>
