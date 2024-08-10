@@ -17,8 +17,8 @@ public class ReportsListResponseDto {
     public String meetingName;
     public String meetingStart;
     public String meetingEnd;
-    public String meetingDuration;
-    public String meetingTerm;
+    public int meetingDuration;
+    public int meetingTerm;
     public int totalParticipants;
     public int reportCount;
     public List<ReportsDetailResponseDto> reports;
@@ -34,8 +34,8 @@ public class ReportsListResponseDto {
         this.meetingName = meeting.getMeetingName();
         this.meetingStart = meeting.getMeetingStart().toString();
         this.meetingEnd = meeting.getMeetingEnd().toString();
-        this.meetingDuration = String.valueOf(meeting.getMeetingDuration());
-        this.meetingTerm = String.valueOf(meeting.getTerm());
+        this.meetingDuration = meeting.getMeetingDuration();
+        this.meetingTerm = meeting.getTerm();
         this.totalParticipants = participantCount;
         this.reportCount = reports.size();
         this.reports = ReportsDetailResponseDto.getReports(reports);
