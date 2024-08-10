@@ -13,6 +13,14 @@ public class TranscriptionResponseDto {
     private String transcript;
     private boolean hasProfanityInTranscript;
     private List<TranscriptionSegment> segments;
+    private String filePath; // 파일 경로를 추가
+
+    // 파일 경로를 포함하지 않는 생성자 추가
+    public TranscriptionResponseDto(String transcript, boolean hasProfanityInTranscript, List<TranscriptionSegment> segments) {
+        this.transcript = transcript;
+        this.hasProfanityInTranscript = hasProfanityInTranscript;
+        this.segments = segments;
+    }
 
     @Data
     @NoArgsConstructor
@@ -22,6 +30,6 @@ public class TranscriptionResponseDto {
         private String endTime;
         private String text;
         private List<String> badWordsList;
-
     }
+
 }
