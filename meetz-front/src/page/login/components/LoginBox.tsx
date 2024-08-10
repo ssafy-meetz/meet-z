@@ -19,6 +19,49 @@ const LoginBox = () => {
     setIsManager(e.target.value === 'manager');
   };
 
+  const routeAfterLogin = async (role: string, accessToken: string) => {
+    if (role === 'MANAGER') {
+      navigate('/meeting/yet');
+      return;
+    }
+
+    // 팬이라면 미팅 설정페이지로 이동
+    if (role === 'FAN') {
+      try {
+        const meetingInfo = await getMeetingInfoAtEnterFan(accessToken);
+        if (meetingInfo && meetingInfo.meetingId !== null) {
+          sessionStorage.setItem('mi', JSON.stringify(meetingInfo));
+          navigate('/session');
+        } else {
+          throw new Error('미팅 정보를 불러오는 데 실패했습니다.');
+        }
+      } catch (error) {
+        alert(error);
+      }
+    }
+
+    // 스타라면 미팅 대기 페이지로 이동
+    if (role === 'STAR') {
+      try {
+        const meetingInfo = await getMeetingInfoAtEnterStar(accessToken);
+        if (meetingInfo && meetingInfo.meetingId !== null) {
+          sessionStorage.setItem("mis", JSON.stringify(meetingInfo));
+          navigate("/session");
+        } else {
+          throw new Error("미팅 정보를 불러오는 데 실패했습니다.");
+        }
+      } catch (error: any) {
+        if (error.message === '존재하지 않는 회원입니다.') {
+          alert('존재하지 않는 회원입니다.');
+        } else if (error.message === '올바른 형식이 아닙니다.') {
+          alert('올바른 형식이 아닙니다.');
+        } else {
+          alert('로그인 중 오류가 발생했습니다.');
+        }
+      }
+    }
+  }
+
   const formClickHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -43,47 +86,7 @@ const LoginBox = () => {
 
       localStorage.setItem('rt', refreshToken);
       setUserData(role, expireAt, accessToken);
-
-      if (role === 'MANAGER') {
-        navigate('/meeting/yet');
-        return;
-      }
-
-      // 팬이라면 미팅 설정페이지로 이동
-      if (role === 'FAN') {
-        try {
-          const meetingInfo = await getMeetingInfoAtEnterFan(accessToken);
-          if (meetingInfo && meetingInfo.meetingId !== null) {
-            sessionStorage.setItem('mi', JSON.stringify(meetingInfo));
-            navigate('/session');
-          } else {
-            throw new Error('미팅 정보를 불러오는 데 실패했습니다.');
-          }
-        } catch (error) {
-          alert(error);
-        }
-      }
-
-      // 스타라면 미팅 대기 페이지로 이동
-      if (role === 'STAR') {
-        try {
-          const meetingInfo = await getMeetingInfoAtEnterStar(accessToken);
-          if (meetingInfo && meetingInfo.meetingId !== null) {
-            sessionStorage.setItem("mis", JSON.stringify(meetingInfo));
-            navigate("/session");
-          } else {
-            throw new Error("미팅 정보를 불러오는 데 실패했습니다.");
-          }
-        } catch (error: any) {
-          if (error.message === '존재하지 않는 회원입니다.') {
-            alert('존재하지 않는 회원입니다.');
-          } else if (error.message === '올바른 형식이 아닙니다.') {
-            alert('올바른 형식이 아닙니다.');
-          } else {
-            alert('로그인 중 오류가 발생했습니다.');
-          }
-        }
-      }
+      routeAfterLogin(role, accessToken);
     } catch (error: any) {
       alert(error.message);
     }
