@@ -17,16 +17,16 @@ import java.io.IOException;
 
 
 public class JWTFilter extends OncePerRequestFilter {
-   private final JWTUtil jwtUtil;
-   public JWTFilter(JWTUtil jwtUtil){
-       this.jwtUtil = jwtUtil;
-   }
+    private final JWTUtil jwtUtil;
+    public JWTFilter(JWTUtil jwtUtil){
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         logger.debug("jwtfilter 시작");
-       //request 에서 Authorization 헤더 찾음
-       String authorization = request.getHeader("Authorization");
+        //request 에서 Authorization 헤더 찾음
+        String authorization = request.getHeader("Authorization");
         if(authorization == null || !authorization.startsWith("Bearer ")){
             filterChain.doFilter(request, response);
             return;
@@ -47,6 +47,14 @@ public class JWTFilter extends OncePerRequestFilter {
             throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
 
         }
+        String email = jwtUtil.getEmail(token);
+        String storedToken = jwtUtil.getToken(email);
+
+        //로그인한 유저가 있다면 현재 로그인 시도를 차단
+        if(storedToken != null && !storedToken.equals(token)){
+            throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
+        }
+        jwtUtil.storeToken(email, token);
 
         //토큰이 access인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(token);
@@ -72,8 +80,7 @@ public class JWTFilter extends OncePerRequestFilter {
 //            return;
 //        }
 
-        //username, role값을 획득
-        String email = jwtUtil.getEmail(token);
+        //role값을 획득
         String role = jwtUtil.getRole(token);
 
         CommonDto commonDto = new CommonDto(email, role);
