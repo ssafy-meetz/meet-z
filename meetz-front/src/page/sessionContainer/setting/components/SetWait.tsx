@@ -23,7 +23,7 @@ const SetWait = () => {
           </span>
         </div>
         <div className="flex flex-col items-center gap-3">
-          <span className="font-semibold text-2xl">이승원과의 만남까지</span>
+          <span className="font-semibold text-2xl">{meetingInfo.starList[0].name}님과의 만남까지</span>
           <span className="font-bold text-5xl">
             <span className="text-[#FE9374]">{wait}</span>명 (약{" "}
             {Math.floor((wait * timer) / 60)}분)
