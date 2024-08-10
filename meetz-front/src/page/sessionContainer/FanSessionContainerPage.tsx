@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSessionStore } from "../../zustand/useSessionStore";
 import { EventSourcePolyfill } from "event-source-polyfill";
-import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 import fetchUserData from "../../lib/fetchUserData";
 import FanSessionPage from "./session/pages/FanSessionPage";
 import FanSettingPage from "./setting/pages/FanSettingPage";
-import useSaveImage from "../../hooks/session/useSaveImage";
 import SessionLoadingPage from "./session/pages/SessionLoadingPage";
-import { useOpenvidu } from "../../hooks/session/useOpenvidu";
+import PickPhotoPage from "./pickPhoto/PickPhotoPage";
+import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 type SessionInfo = {
   timer: number;
   wait: number;
@@ -16,7 +15,7 @@ type SessionInfo = {
   sessionId: string;
 };
 const FanSessionContainerPage = () => {
-  const { wait, setWait, setTakePhoto } = useSessionStore();
+  const { isSessionEnd, setWait, setTakePhoto } = useSessionStore();
   const [type, setType] = useState(0);
   const {
     settingDone,
@@ -25,7 +24,7 @@ const FanSessionContainerPage = () => {
     setStartName,
     setNextStarName,
   } = useSessionStore();
-  const { sendImage } = useSaveImage();
+  
 
   //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
@@ -105,7 +104,9 @@ const FanSessionContainerPage = () => {
       return <SessionLoadingPage />;
 
     case 4:
-      sendImage();
+      if(isSessionEnd){
+        return <PickPhotoPage />;
+      }
       return <SessionSwitchPage />;
 
     case 1:
