@@ -14,6 +14,7 @@ import LoadChatPage from '../page/meeting/page/LoadChatPage';
 import RecordPage from '../page/RecordPage';
 import SessionContainerPage from '../page/sessionContainer/SessionContainerPage';
 import BlacklistCheckPage from '../page/meeting/page/BlacklistCheckPage';
+import PickPhotoPage from '../page/sessionContainer/pickPhoto/PickPhotoPage';
 
 const Router: React.FC = () => {
   return (
@@ -37,6 +38,8 @@ const Router: React.FC = () => {
         </Route>
         <Route path='/session' element={<SessionContainerPage />} />
         <Route path='/test' element={<RecordPage />} />
+        <Route path='/pick' element={<PickPhotoPage />} />
+
       </Routes>
     </BrowserRouter>
   );
