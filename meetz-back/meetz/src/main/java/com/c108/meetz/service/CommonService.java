@@ -5,6 +5,7 @@ import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.request.CommonDto;
 import com.c108.meetz.dto.request.LoginRequestDto;
 import com.c108.meetz.dto.response.LoginResponseDto;
+import com.c108.meetz.exception.ForbiddenException;
 import com.c108.meetz.exception.NotFoundException;
 import com.c108.meetz.exception.UnauthorizedException;
 import com.c108.meetz.jwt.JWTUtil;
@@ -29,6 +30,7 @@ import java.util.List;
 @Service
 public class CommonService {
 
+    private final OpenviduService openviduService;
     private final ManagerRepository managerRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserRepository userRepository;
@@ -66,6 +68,14 @@ public class CommonService {
         if (existingAccessToken != null) {
             throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
         }
+
+        //방 생성이 되지 않았을 때 로그인을 막자.
+        int meetingId = user.getMeeting().getMeetingId();
+
+        if (!openviduService.existByMeetingRoomsId(meetingId)) {
+            throw new ForbiddenException("아직 대기방이 생성되지 않았습니다.");
+        }
+
         String access = jwtUtil.createJwt("access", user.getEmail(), String.valueOf(user.getRole()), ACCESS_TOKEN_EXPIRATION);
         String refresh = jwtUtil.createJwt("refresh", user.getEmail(), String.valueOf(user.getRole()), REFRESH_TOKEN_EXPIRATION);
         redisTemplate.opsForValue().set(user.getEmail(), access);
