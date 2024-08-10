@@ -10,7 +10,12 @@ const Header = () => {
   const logoutHandler = () => {
     localStorage.clear();
     clearUserData();
-    postLogout(localStorage.getItem('rt') || '');
+
+    try {
+      postLogout(localStorage.getItem('rt') || '');
+    } catch (error: any) {
+    }
+
     alert('로그아웃 되었습니다.');
     navigate('/');
   };
