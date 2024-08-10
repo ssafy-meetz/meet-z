@@ -5,7 +5,7 @@ const getFanReport = async (fanId: string) => {
   const { accessToken } = fetchUserData();
   try {
     const { data, status } = await instance.post(
-      `api/meeting/report/${fanId}`,
+      `/api/meeting/report/${fanId}`,
       {
         Authorization: `Bearer ${accessToken}`,
       }

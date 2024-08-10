@@ -9,12 +9,13 @@ import useSaveImage from "../../hooks/session/useSaveImage";
 import SessionLoadingPage from "./session/pages/SessionLoadingPage";
 type SessionInfo = {
   timer: number;
+  wait: number;
   starName: string;
   nextStarName: string;
   sessionId: string;
 };
 const FanSessionContainerPage = () => {
-  const { wait, setWait, takePhoto, setTakePhoto } = useSessionStore();
+  const { wait, setWait, setTakePhoto } = useSessionStore();
   const [type, setType] = useState(0);
   const {
     settingDone,
@@ -62,7 +63,7 @@ const FanSessionContainerPage = () => {
       setType(parseData.type);
       if (parseData.type === 1) {
         await moveNextSession(parseData);
-      } else if (type === 3) {
+      } else if (parseData.type === 3) {
         setTakePhoto(true);
       }
       //SSE에러 발생 시 SSE와 연결 종료
@@ -84,6 +85,7 @@ const FanSessionContainerPage = () => {
       starName: parseData.currentStarName,
       nextStarName: parseData.nextStarName,
       sessionId: parseData.viduToken,
+      wait: parseData.waitingNum
     };
     await setInfo(info);
   };
@@ -93,6 +95,7 @@ const FanSessionContainerPage = () => {
       setStartName(info.starName);
       setNextStarName(info.nextStarName);
       setGetSessionId(info.sessionId);
+      setWait(info.wait);
       resolve();
     });
   };

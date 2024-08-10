@@ -34,31 +34,43 @@ function StarSession({ subscriber, publisher }: SessionProps) {
     setTimeout(() => setFlash(false), 500);
     setTakePhoto(false);
   }
-  return (
-    <div className="flex w-full align-middle">
-      <div className="relative w-1/2" id="meetingVideo-star">
-        <Video streamManager={publisher} />
-        <p className="absolute top-0 left-0 p-1 text-white bg-black bg-opacity-75 rounded">
-          {starName}
-        </p>
-      </div>
-      <div
-        className="flex flex-col relative w-1/2 justify-center"
-        id="meetingVideo-fan"
-      >
-        {subscriber && <Video streamManager={subscriber} />}
-        {subscriber && (
-          <p className="absolute top-0 right-0 p-1 text-white bg-black bg-opacity-75 rounded">
-            {fanName}
+  const renderSubscribers = () => {
+    return (
+      <div className="flex w-full align-middle">
+        <div className="relative w-1/2" id="meetingVideo-star">
+          <Video streamManager={publisher} />
+          <p className="absolute top-0 left-0 p-1 text-white bg-black bg-opacity-75 rounded">
+            {starName}
           </p>
-        )}
-        {!subscriber && <Loading width={150} height={150} />}
+        </div>
+        <div
+          className="flex flex-col relative w-1/2 justify-center"
+          id="meetingVideo-fan"
+        >
+          {subscriber && <Video streamManager={subscriber} />}
+          {subscriber && (
+            <p className="absolute top-0 right-0 p-1 text-white bg-black bg-opacity-75 rounded">
+              {fanName}
+            </p>
+          )}
+          {!subscriber && <Loading width={150} height={150} />}
+        </div>
       </div>
+      
+    );
+  }
+  return (
+    <>
+      {renderSubscribers()}
+      {count !== null && count > 0 && (
+        <div className="fixed inset-0 flex justify-center items-center">
+          <div className="text-6xl text-white font-bold">{count}</div>
+        </div>
+      )}
       {flash && (
-      <div className="fixed inset-0 bg-white opacity-75 flash-animation"></div>
-    )}
-    </div>
-    
-  );
+        <div className="fixed inset-0 bg-white opacity-75 flash-animation"></div>
+      )}
+    </>
+  )
 }
 export default StarSession;
