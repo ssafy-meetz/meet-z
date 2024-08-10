@@ -1,9 +1,13 @@
 package com.c108.meetz.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.S3Object;
 import com.c108.meetz.domain.Meeting;
 import com.c108.meetz.domain.Report;
 import com.c108.meetz.domain.User;
-import com.c108.meetz.dto.response.ReportResponseDto;
+import com.c108.meetz.dto.response.ReportDetailResponseDto;
+import com.c108.meetz.dto.response.ReportListResponseDto;
+import com.c108.meetz.dto.response.TranscriptionResponseDto;
 import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.exception.DuplicateException;
 import com.c108.meetz.exception.NotFoundException;
@@ -15,9 +19,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 
+import static com.c108.meetz.domain.Role.FAN;
 import static com.c108.meetz.domain.Role.STAR;
 
 @Service
@@ -27,89 +33,126 @@ public class ReportService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
-
-    // 현재 로그인된 스타의 ID를 가져오는 메서드
-    private int getCurrentUserId() {
-        String email = SecurityUtil.getCurrentUserEmail();  // 이메일로 사용자 식별
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
-        return user.getUserId();
-    }
-
-    // 현재 스타의 진행 중인 미팅 ID를 반환하는 메서드
-    private int getCurrentMeetingIdForStar() {
-        String email = SecurityUtil.getCurrentUserEmail();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
-        return user.getMeeting().getMeetingId(); // 현재 스타가 속한 미팅 ID 반환
-    }
+    private final MeetingRepository meetingRepository;
+    private final AudioProcessingService audioProcessingService;
+    private final AmazonS3 s3Client;
 
     /**
-     * 특정 팬에 대한 신고를 저장하는 메서드
-     *
-     * @param fanId 신고할 사용자의 ID
+     * 현재 스타 사용자가 팬(Fan)을 신고하는 메서드.
      */
-    public void saveReport(int fanId) {
-        // 현재 로그인된 스타의 ID를 가져옴
-        int starId = getCurrentUserId();
-        log.info("saveReport called with starId: {} and fanId: {}", starId, fanId);
+    public void saveReport(int userId) {
+        User star = getCurrentUser(); // 현재 로그인된 스타 사용자
+        User fan = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("팬을 찾을 수 없습니다."));
 
-        // 현재 사용자가 스타인지 확인
-        if (!SecurityUtil.getCurrentUserRole().equals("STAR")) {
-            log.error("접근 권한이 없습니다.");
-            throw new BadRequestException("접근 권한이 없습니다.");
+        if (fan.getRole() != FAN) {
+            throw new BadRequestException("신고 대상이 팬이 아닙니다.");
         }
 
-        // 현재 스타의 진행 중인 미팅 ID 가져옴
-        int meetingId = getCurrentMeetingIdForStar();
+        Meeting meeting = fan.getMeeting();  // 팬이 속한 미팅을 가져옴
 
-        // 동일한 미팅과 사용자에 대한 신고가 이미 존재하는지 확인
-        Optional<Report> existingReport = reportRepository.findByMeeting_MeetingIdAndFan_UserId(meetingId, fanId);
+        // 이미 신고된 사항인지 확인
+        Optional<Report> existingReport = reportRepository.findByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(
+                meeting.getMeetingId(), fan.getUserId(), star.getUserId());
         if (existingReport.isPresent()) {
-            log.error("이미 신고하였습니다.");
             throw new DuplicateException("이미 신고하였습니다.");
         }
 
-        Meeting meeting = userRepository.findById(starId)
-                .map(User::getMeeting)
-                .orElseThrow(() -> new NotFoundException("Meeting not found"));
-
-        User star = userRepository.findById(starId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
-        User fan = userRepository.findById(fanId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
-        // Report 엔티티 생성 및 저장
         Report report = new Report(meeting, star, fan, true, false, null);
         reportRepository.save(report);
-
-        log.info("Report saved successfully without file path");
     }
 
     /**
-     * 사용자 신고를 취소 (삭제)하는 메서드
-     *
-     * @param userId 신고 취소할 사용자 ID
+     * 현재 스타 사용자가 신고를 취소하는 메서드.
      */
     public void cancelReport(int userId) {
-        // 현재 로그인된 스타의 ID를 가져옴
-        int starId = getCurrentUserId();
-        log.info("cancelReport called with starId: {} and userId: {}", starId, userId);
+        User star = getCurrentUser(); // 현재 로그인된 스타 사용자
+        User fan = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("팬을 찾을 수 없습니다."));
 
-        // 현재 스타의 진행 중인 미팅 ID를 가져옴
-        int meetingId = getCurrentMeetingIdForStar();
+        Meeting meeting = fan.getMeeting();  // 팬이 속한 미팅을 가져옴
 
-        // 신고 정보 조회, 없으면 예외 발생
-        Report report = reportRepository.findByMeeting_MeetingIdAndFan_UserId(meetingId, userId)
-                .orElseThrow(() -> {
-                    log.error("Report not found for meetingId: {} and userId: {}", meetingId, userId);
-                    return new NotFoundException("Report not found");
-                });
+        Report report = reportRepository.findByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(
+                        meeting.getMeetingId(), fan.getUserId(), star.getUserId())
+                .orElseThrow(() -> new NotFoundException("신고를 찾을 수 없습니다."));
 
-        // 신고 정보 삭제
         reportRepository.delete(report);
-        log.info("Report deleted successfully for meetingId: {} and userId: {}", meetingId, userId);
     }
-}
+    /**
+     * 특정 미팅에 대한 신고 목록을 조회하는 메서드.
+     */
+    public ReportListResponseDto getReportList(int meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new NotFoundException("Meeting not found"));
 
+//        verifyManagerAuthorization(meeting);
+
+        // 참가자 수 계산
+        int participantCount = meetingRepository.countFansInMeeting(meetingId);
+
+        List<Report> reports = reportRepository.findByMeeting_MeetingId(meetingId);
+
+        // ReportListResponseDto 생성 시 참가자 수를 포함
+        return ReportListResponseDto.fromEntities(meeting, reports, participantCount);
+    }
+
+    /**
+     * 특정 신고에 대한 세부 정보를 조회하는 메서드.
+     */
+    public ReportDetailResponseDto getReportDetail(int meetingId, int reportId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new NotFoundException("Meeting not found"));
+
+//        verifyManagerAuthorization(meeting);
+
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new NotFoundException("Report not found"));
+
+        // 동적으로 URL을 생성
+        String urlPrefix = String.format("https://kr.object.ncloudstorage.com/meeting%d/", meetingId);
+
+        // S3에서 오디오 파일을 가져옴
+        String bucketName = "meeting" + meetingId;
+        S3Object s3Object = s3Client.getObject(bucketName, report.getFilePath().replace(urlPrefix,""));
+        InputStream inputStream = s3Object.getObjectContent();
+
+        // 오디오 파일을 텍스트로 변환
+        TranscriptionResponseDto transcriptionResponse = audioProcessingService.processAudioFromStream(inputStream);
+
+        return ReportDetailResponseDto.fromEntity(report, transcriptionResponse);
+    }
+
+
+    /**
+     * 현재 로그인된 사용자의 정보를 가져오는 유틸리티 메서드.
+     */
+    private User getCurrentUser() {
+        String email = SecurityUtil.getCurrentUserEmail();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+    }
+
+    /**
+     * 특정 미팅에서 스타 사용자를 찾는 메서드.
+     */
+    private List<User> findStarInMeeting(Meeting meeting) {
+
+        List<User> stars = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), STAR);
+
+        if (stars.isEmpty()) {
+            throw new NotFoundException("해당 미팅에서 스타 사용자를 찾을 수 없습니다.");
+        }
+
+        return stars; // 모든 스타 사용자 반환
+    }
+
+//    /**
+//     * 현재 로그인된 관리자가 해당 미팅에 접근 권한이 있는지 확인하는 메서드.
+//     */
+//    private void verifyManagerAuthorization(Meeting meeting) {
+//        String currentManagerEmail = SecurityUtil.getCurrentUserEmail();
+//        if (!meeting.getManager().getEmail().equals(currentManagerEmail)) {
+//            throw new BadRequestException("접근 권한이 없습니다.");
+//        }
+//    }
+}

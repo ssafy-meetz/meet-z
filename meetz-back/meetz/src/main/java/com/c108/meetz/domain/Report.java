@@ -14,9 +14,9 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Report {
 
     @Id
-    @Column(name = "report_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reportId;
+    @Column(name = "report_id")
+    private int reportId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id", nullable = false)
