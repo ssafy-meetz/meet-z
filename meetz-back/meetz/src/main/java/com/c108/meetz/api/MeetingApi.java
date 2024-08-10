@@ -109,7 +109,7 @@ public class MeetingApi {
     }
 
     @PostMapping(value = "/check-profanity", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<TranscriptionResponseDto> checkProfanity(@RequestPart(value="file") MultipartFile file, @RequestParam String email) {
+    public ApiResponse<TranscriptionResponseDto> checkProfanity(@RequestPart("file") MultipartFile file, @RequestParam("email") String email) {
         audioProcessingService.processAudioAndHandleReport(file, email); // 접속한 팬 입장에서 데이터 전송, RequestParam String email은 스타 이메일
         return ApiResponse.success(OK);
     }
