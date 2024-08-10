@@ -67,6 +67,12 @@ public class OpenviduApi {
         return ApiResponse.success(HttpStatus.OK);
     }
 
+    @GetMapping("/vidu/star")
+    public ApiResponse<String> getStarToken() throws OpenViduJavaClientException, OpenViduHttpException {
+        String token = openviduService.getStarToken();
+        return ApiResponse.success(HttpStatus.OK, token);
+    }
+
     //2: 방 세션에 연결하고 sessionId를 넘겨주는 api
     @GetMapping("/vidu/{meetingId}/{starIdx}")
     public ApiResponse<String> participateSession(@PathVariable("meetingId") int meetingId, @PathVariable("starIdx") int starIdx) throws OpenViduJavaClientException, OpenViduHttpException {

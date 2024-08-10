@@ -533,7 +533,7 @@ public class OpenviduService {
     }
 
     //star의 token을 얻는 함수
-/*    public String getStarToken() throws OpenViduJavaClientException, OpenViduHttpException {
+    public String getStarToken() throws OpenViduJavaClientException, OpenViduHttpException {
 
         User user = getUser();
         String userEmail = null;
@@ -549,20 +549,10 @@ public class OpenviduService {
             if (starInfo.email.equals(userEmail)) {
 
                 return starInfo.session.getSessionId();
-                //프로퍼티 생성
-//                ConnectionProperties connectionProperties = new ConnectionProperties.Builder()
-//                        .type(ConnectionType.WEBRTC)
-//                        .role(OpenViduRole.PUBLISHER) //Publisher는 화면 및 음성 공유 가능
-//                        .data("handsomeChangWoo")//사용자 관련 데이터 전송
-//                        .build();
-//
-//                //커넥션 생성
-//                Connection connection = starInfo.session.createConnection(connectionProperties);
-//                return connection.getToken();
             }
         }
         return null;
-    }*/
+    }
 
     //emitter를 만들어서 클라이언트에게 전달
     public SseEmitter subscribFan() {
