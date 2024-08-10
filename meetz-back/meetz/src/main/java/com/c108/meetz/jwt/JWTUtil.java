@@ -1,6 +1,7 @@
 package com.c108.meetz.jwt;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Jwts;
 import javax.crypto.SecretKey;
@@ -12,9 +13,22 @@ import java.util.Date;
 public class JWTUtil {
 
     private SecretKey secretKey;
-
-    public JWTUtil(@Value("${spring.jwt.secret}")String secret) {
+    private final RedisTemplate<String, String> redisTemplate;
+    public JWTUtil(@Value("${spring.jwt.secret}")String secret, RedisTemplate<String, String> redisTemplate) {
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        this.redisTemplate = redisTemplate;
+    }
+    //redis에 토큰 저장
+    public void storeToken(String email, String token){
+        redisTemplate.opsForValue().set(email, token);
+    }
+    //redis에서 토큰 값 가져오기
+    public String getToken(String email){
+        return redisTemplate.opsForValue().get(email);
+    }
+    //redis에서 토큰 삭제
+    public void deleteToken(String email){
+        redisTemplate.delete(email);
     }
     public String getEmail(String token) {
 
