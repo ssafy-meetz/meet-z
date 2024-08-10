@@ -14,6 +14,7 @@ import com.c108.meetz.repository.UserRepository;
 import com.c108.meetz.util.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,6 +35,7 @@ public class CommonService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
+    private final RedisTemplate<String, String> redisTemplate;
 
     private static final long ACCESS_TOKEN_EXPIRATION = 86400000L;
     private static final long REFRESH_TOKEN_EXPIRATION = 86400000L * 60;
@@ -44,8 +46,14 @@ public class CommonService {
             if(!bCryptPasswordEncoder.matches(loginRequestDto.password(), manager.getPassword())){
                 throw new NotFoundException("존재하지 않는 회원입니다.");
             }
+            // Redis에서 기존의 access 토큰을 확인
+            String existingAccessToken = redisTemplate.opsForValue().get(manager.getEmail());
+            if (existingAccessToken != null) {
+                throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
+            }
             String access = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", ACCESS_TOKEN_EXPIRATION);
             String refresh = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", REFRESH_TOKEN_EXPIRATION);
+            redisTemplate.opsForValue().set(manager.getEmail(), access);
             manager.setToken(refresh);
             managerRepository.save(manager);
             LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
@@ -55,6 +63,11 @@ public class CommonService {
         }
 
         User user = userRepository.findByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
+        // Redis에서 기존의 access 토큰을 확인
+        String existingAccessToken = redisTemplate.opsForValue().get(user.getEmail());
+        if (existingAccessToken != null) {
+            throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
+        }
 
         //방 생성이 되지 않았을 때 로그인을 막자.
         int meetingId = user.getMeeting().getMeetingId();
@@ -65,7 +78,7 @@ public class CommonService {
 
         String access = jwtUtil.createJwt("access", user.getEmail(), String.valueOf(user.getRole()), ACCESS_TOKEN_EXPIRATION);
         String refresh = jwtUtil.createJwt("refresh", user.getEmail(), String.valueOf(user.getRole()), REFRESH_TOKEN_EXPIRATION);
-        user.setToken(refresh);
+        redisTemplate.opsForValue().set(user.getEmail(), access);
         userRepository.save(user);
         LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
         Authentication authentication  = new UsernamePasswordAuthenticationToken(user.getEmail(), null, List.of(new SimpleGrantedAuthority(String.valueOf(user.getRole()))));
@@ -80,12 +93,14 @@ public class CommonService {
         String refreshToken = header.substring(7);
         String email = jwtUtil.getEmail(refreshToken);
         String role = jwtUtil.getRole(refreshToken);
+        redisTemplate.delete(email);
         if(role.equals("MANAGER")){
             boolean isExist = managerRepository.existsByToken(refreshToken);
             if(isExist){
                 Manager manager = managerRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 회원입니다."));
                 String newRefreshToken = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", 86400000L * 60);
                 String newAccessToken = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", 86400000L);
+                redisTemplate.opsForValue().set(manager.getEmail(), newAccessToken);
                 manager.setToken(newRefreshToken);
                 managerRepository.save(manager);
                 LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
@@ -100,6 +115,7 @@ public class CommonService {
             User user = userRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 회원입니다."));
             String newRefreshToken = jwtUtil.createJwt("refresh", user.getEmail(), String.valueOf(user.getRole()), 86400000L * 60);
             String newAccessToken = jwtUtil.createJwt("access", user.getEmail(), String.valueOf(user.getRole()), 86400000L);
+            redisTemplate.opsForValue().set(user.getEmail(), newAccessToken);
             user.setToken(newRefreshToken);
             userRepository.save(user);
             LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
