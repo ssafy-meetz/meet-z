@@ -14,7 +14,6 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import javax.print.attribute.standard.Media;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -40,20 +39,21 @@ public class OpenviduApi {
     public void init() {
         this.openvidu = new OpenVidu(OPENVIDU_URL, OPENVIDU_SECRET);
     }
-    //
+    //미팅방 생성 및 삭제를 한번에 해주는 api
     @GetMapping("/test/{meetingId}")
-    public ApiResponse<Integer> test(@PathVariable("meetingId") int meetingId) {
+    public ApiResponse<Void> test(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
 
-        int a = openviduService.getRoomSize(meetingId);
+        openviduService.initSession(meetingId);
+        openviduService.initFanInfo(meetingId);
 
-        return ApiResponse.success(HttpStatus.OK, a);
+        return ApiResponse.success(HttpStatus.OK);
     }
 
     //미팅방 시작 테스트용 api
     @GetMapping("/test1/{meetingId}")
     public ApiResponse<Void> test1(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
 
-        openviduService.automationMeetingRoomV2(meetingId);
+        openviduService.automationMeetingRoom(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
@@ -62,7 +62,7 @@ public class OpenviduApi {
     @PostMapping("/vidu/{meetingId}")
     public ApiResponse<Void> initRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
 
-        openviduService.initSessionV2(meetingId);
+        openviduService.initSession(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
     }
@@ -134,20 +134,6 @@ public class OpenviduApi {
 
         return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
     }
-
-//    //testCode: 방 접속 토큰을 주는 api(기본 코드)
-//    @PostMapping("/vidu/{sessionId}/connections")
-//    public ResponseEntity<String> createConnection(@PathVariable("sessionId") String sessionId,
-//                                                   @RequestBody(required = false) Map<String, Object> params)
-//            throws OpenViduJavaClientException, OpenViduHttpException {
-//        Session session = openvidu.getActiveSession(sessionId);
-//        if (session == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
-//        Connection connection = session.createConnection(properties);
-//        return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
-//    }
 
 
     //======================================SSE 관련 api 시작======================================//

@@ -55,6 +55,7 @@ public class OpenviduService {
         public FanInfo(String email, String name, int remainStarNum, int fanId) {
             this.fanId = fanId;
             viduToken = null;
+            this.name = name;
             this.emitter = null;
             this.email = email;
             this.curStarIdx = -1;
@@ -115,7 +116,7 @@ public class OpenviduService {
     private static final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     //emiiter 설정 상수
-    private static final long TIMEOUT = 3 * 60 * 60 * 1000; //1000ms = 1s
+    private static final long TIMEOUT = 6 * 60 * 60 * 1000; //1000ms = 1s
     private static final long RECONNECTION_TIMEOUT = 1000L;
 
     @PostConstruct
@@ -139,44 +140,45 @@ public class OpenviduService {
     //스케줄러
     //cron(초 분 시 일 월 요일 (년))
     // * : 모든 값, /: 증분 값(0/15, 0부터 시작해 15마다), -: 범위
-//    @Scheduled(cron = "1 0/5 * * * ?") //5분마다 실행
-//    @Scheduled(cron = "0/30 * * * * ?") //5분마다 실행
-//    public void scheduleTaskTest() throws OpenViduJavaClientException, OpenViduHttpException, IOException {
-//        log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
-//        //1. 미팅 시작 시간 30분 전에 방에 대한 모든 세션 생성(미팅 테이블에서 시작 시간 범위를 (현재 시간 + 30 == 미팅 시작 시간)인거 불러오기)
-//        //2. 만약 미팅 세션이 안만들어진 방이라면 만들기
-//        //3. 미팅 시작시간이 된 방들에 대해선 현재 접속중인 사람들에게 방 이동 명령을 하게 만들어주는 함수 실행
-//        LocalDateTime now = LocalDateTime.now();
-//        LocalDateTime startTime = now.minusHours(1).minusMinutes(1);
-//        LocalDateTime endTime = now.plusMinutes(1);
-//        List<Meeting> meetings = meetingRepository.findMeetingsInTimeRange(startTime, endTime);
-//        if (meetings != null) {
-//            for (Meeting meeting : meetings) {
-//                log.info("미팅방 정보 미팅 시작 시간:{}, 미팅 종료 시간:{}", meeting.getMeetingStart(), meeting.getMeetingEnd());
-//
-//                //미팅방 세션 생성해야 하면
-//                LocalDateTime meetingStart = meeting.getMeetingStart();
-//
-//                //아직 생성되지 않았다면 미팅방 생성
-//                if (!existByMeetingRoomsId(meeting.getMeetingId())) {
-//                    initSessionV2(meeting.getMeetingId());
-//                    initFanInfo(meeting.getMeetingId());
-//                }
-//
-//                //미팅방 시작
-//                //미팅방 시작
-//                LocalDateTime thirtySecondsAgo = now.minusSeconds(30);
-//                LocalDateTime thirtySecondsLater = now.plusSeconds(30);
-//
-//                if (meetingStart.isAfter(thirtySecondsAgo) && meetingStart.isBefore(thirtySecondsLater)) {
-//                    automationMeetingRoomV2(meeting.getMeetingId());
-//                }
-//
-//            }
-//        }
-//    }
+    @Scheduled(cron = "1 0/10 * * * ?") //10분마다 실행
+//    @Scheduled(cron = "0/30 * * * * ?") //30초마다 실행
+    public void scheduleTaskTest() throws OpenViduJavaClientException, OpenViduHttpException, IOException {
+        log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
+        //1. 미팅 시작 시간 30분 전에 방에 대한 모든 세션 생성(미팅 테이블에서 시작 시간 범위를 (현재 시간 + 30 == 미팅 시작 시간)인거 불러오기)
+        //2. 만약 미팅 세션이 안만들어진 방이라면 만들기
+        //3. 미팅 시작시간이 된 방들에 대해선 현재 접속중인 사람들에게 방 이동 명령을 하게 만들어주는 함수 실행
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.minusMinutes(1);
+        LocalDateTime endTime = now.plusMinutes(31);
+        log.info("시간 범위 {} ~ {}", startTime, endTime);
+        List<Meeting> meetings = meetingRepository.findMeetingsInTimeRange(startTime, endTime);
+        if (meetings != null) {
+            for (Meeting meeting : meetings) {
+                log.info("미팅방 정보 미팅 시작 시간:{}, 미팅 종료 시간:{}", meeting.getMeetingStart(), meeting.getMeetingEnd());
 
-    public void automationMeetingRoomV2(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
+                //미팅방 세션 생성해야 하면
+                LocalDateTime meetingStart = meeting.getMeetingStart();
+
+                //아직 생성되지 않았다면 미팅방 생성
+                if (!existByMeetingRoomsId(meeting.getMeetingId())) {
+                    initSession(meeting.getMeetingId());
+                    initFanInfo(meeting.getMeetingId());
+                }
+
+                //미팅방 시작
+                //미팅방 시작
+                LocalDateTime thirtySecondsAgo = now.minusSeconds(30);
+                LocalDateTime thirtySecondsLater = now.plusSeconds(30);
+
+                if (meetingStart.isAfter(thirtySecondsAgo) && meetingStart.isBefore(thirtySecondsLater)) {
+                    automationMeetingRoom(meeting.getMeetingId());
+                }
+
+            }
+        }
+    }
+
+    public void automationMeetingRoom(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         List<StarInfo> stars = meetingRooms.get(meetingId);
         List<FanInfo> fans = fanEmitterMap.get(meetingId);
 
@@ -274,7 +276,7 @@ public class OpenviduService {
 
             FanSseResponseDto responseDto = null;
 
-            //sessionId
+            //sessionId를 보낼지 말지
             if (i <= endTokenSendSize) {
 
                 fan.viduToken = stars.get(fan.curStarIdx).session.getSessionId();
@@ -306,21 +308,24 @@ public class OpenviduService {
                 emitter.send(responseDto, MediaType.APPLICATION_JSON);
             }
 
+            for (int j = 0; j <= currentPhase; j++) {
+                stars.get(j).remainFanNum = Math.max(stars.get(j).remainFanNum - 1, 0);
+            }
+
             //star에게도 dto보내기
 
-            StarSseResponseDto starSseDto = StarSseResponseDto.sendNext(
-                    10000,
-                    fan.name,
-                    fan.fanId,
-                    meeting.getMeetingDuration()
-            );
-
-
+            StarSseResponseDto starSseDto = null;
 
             SseEmitter starEmitter = null;
             if (fan.curStarIdx >= 0) {
-                log.info("{}번 스타에게 팬 정보({}) 넘기기", fan.curStarIdx, i);
+                log.info("{}번 스타에게 팬 정보(name: {}, id: {}, {}) 넘기기", fan.curStarIdx, fan.name, fan.fanId, stars.get(fan.curStarIdx).remainFanNum);
                 starEmitter = stars.get(fan.curStarIdx).emitter;
+                starSseDto =  StarSseResponseDto.sendNext(
+                        stars.get(fan.curStarIdx).remainFanNum,
+                        fan.name,
+                        fan.fanId,
+                        meeting.getMeetingDuration()
+                );
             }
 
             if (starEmitter != null) {
@@ -349,7 +354,7 @@ public class OpenviduService {
     private void scheduleNextAutomationV2(int meetingId) {
         scheduler.schedule(() -> {
             try {
-                automationMeetingRoomV2(meetingId);
+                automationMeetingRoom(meetingId);
             } catch (OpenViduJavaClientException e) {
                 throw new RuntimeException(e);
             } catch (OpenViduHttpException e) {
@@ -443,7 +448,7 @@ public class OpenviduService {
     }
 
     //방의 모든 세션(스타의 방) 생성, 세션Id는 스타의 이메일
-    public boolean initSessionV2(Integer meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public boolean initSession(Integer meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
         registMeetingInfo(meetingId);
         //roomId를 통해 스타의 정보를 불러온다.
         List<User> users = userRepository.findByMeeting_MeetingIdAndRole(meetingId, Role.STAR);
@@ -558,6 +563,14 @@ public class OpenviduService {
         for (User user : users) {
             fanInfos.add(new FanInfo(user.getEmail(), user.getName(), starSize, user.getUserId()));
         }
+
+        //미팅방 팬 사이즈 입력
+        int fanSize = fanInfos.size();
+
+        for (StarInfo starInfo : starInfos) {
+            starInfo.remainFanNum = fanSize;
+        }
+
         return true;
     }
 
