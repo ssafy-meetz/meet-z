@@ -7,6 +7,7 @@ import FanSessionPage from "./session/pages/FanSessionPage";
 import FanSettingPage from "./setting/pages/FanSettingPage";
 import useSaveImage from "../../hooks/session/useSaveImage";
 import SessionLoadingPage from "./session/pages/SessionLoadingPage";
+import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 type SessionInfo = {
   timer: number;
   wait: number;
@@ -61,7 +62,7 @@ const FanSessionContainerPage = () => {
       const parseData = JSON.parse(res);
       console.log(parseData);
       setType(parseData.type);
-      if (parseData.type === 1) {
+      if (parseData.type === 1||2) {
         await moveNextSession(parseData);
       } else if (parseData.type === 3) {
         setTakePhoto(true);
