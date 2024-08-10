@@ -12,6 +12,7 @@ import com.c108.meetz.service.ReportService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,10 +108,10 @@ public class MeetingApi {
         return ApiResponse.success(OK, response);
     }
 
-    @PostMapping(value = "/check-profanity", consumes = "multipart/form-data")
-    public ApiResponse<TranscriptionResponseDto> checkProfanity(@RequestPart("file") MultipartFile file, int meetingId, int fanId, int starId) {
-        TranscriptionResponseDto response = audioProcessingService.processAudioAndHandleReport(file, meetingId, fanId, starId);
-        return ApiResponse.success(OK, response);
+    @PostMapping(value = "/check-profanity", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ApiResponse<TranscriptionResponseDto> checkProfanity(@RequestPart(value="file") MultipartFile file, @RequestParam String email) {
+        audioProcessingService.processAudioAndHandleReport(file, email); // 접속한 팬 입장에서 데이터 전송, RequestParam String email은 스타 이메일
+        return ApiResponse.success(OK);
     }
 
     @PutMapping("/nickname")
@@ -146,8 +147,8 @@ public class MeetingApi {
     }
 
     @GetMapping("/{meetingId}/report")
-    public ApiResponse<ReportListResponseDto> getReportList(@PathVariable int meetingId) {
-        ReportListResponseDto response = reportService.getReportList(meetingId);
+    public ApiResponse<ReportsListResponseDto> getReportList(@PathVariable int meetingId) {
+        ReportsListResponseDto response = reportService.getReportList(meetingId);
         return ApiResponse.success(OK, response);
     }
 
@@ -156,5 +157,4 @@ public class MeetingApi {
         ReportDetailResponseDto response = reportService.getReportDetail(meetingId, reportId);
         return ApiResponse.success(OK, response);
     }
-
 }
