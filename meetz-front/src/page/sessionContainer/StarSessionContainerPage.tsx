@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSessionStore } from "../../zustand/useSessionStore";
-import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 import StarSessionPage from "./session/pages/StarSessionPage";
 import StarLoadingPage from "./setting/pages/StarLoadingPage";
 import fetchUserData from "../../lib/fetchUserData";
@@ -39,7 +38,6 @@ const StarSessionContainerPage = () => {
   );
   const {
     settingDone,
-    remain,
     setTimer,
     setStartName,
     setFanId,
@@ -82,9 +80,9 @@ const StarSessionContainerPage = () => {
       const parseData = JSON.parse(res);
       console.log(parseData);
       setType(parseData.type);
-      if(type===1){
+      if(parseData.type===1){
         await setSessionInfo(parseData);
-      }else if(type===3){
+      }else if(parseData.type===3){
         setTakePhoto(true);
       }
       
