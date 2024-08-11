@@ -99,7 +99,7 @@ const ModifyPage: React.FC = () => {
     }
 
     const date = new Date();
-    const meetingStart = date.getFullYear() + '-' + String(date.getMonth()).padStart(2, '0') + '-' + date.getDate() + ' ' + selectedTime.value;
+    const meetingStart = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + date.getDate() + ' ' + selectedTime.value;
     const starList = stars.map((star) => {
       return { name: star };
     });
