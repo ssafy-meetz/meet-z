@@ -14,7 +14,7 @@ const getYetMeetingList = async (accessToken: string) => {
 
   } catch (error: any) {
     if (error.response.status === 401) {
-      throw new Error('만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.');
+      throw new Error('로그인 관련 에러가 발생했습니다. 다시 로그인 해주세요.');
     }
     throw new Error('알 수 없는 에러가 발생했습니다.');
   }
