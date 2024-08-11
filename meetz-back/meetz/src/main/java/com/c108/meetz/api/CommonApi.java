@@ -40,4 +40,10 @@ public class CommonApi {
         return ApiResponse.success(OK, response);
     }
 
+    @PostMapping("/leave")
+    public ApiResponse<Void> logout(@RequestParam(value="token") String token){
+        commonService.logout(token);
+        return ApiResponse.success(OK);
+    }
+
 }
