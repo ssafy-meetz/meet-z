@@ -98,15 +98,13 @@ const ModifyPage: React.FC = () => {
       return;
     }
 
-    const date = new Date();
-    const meetingStart = date.getFullYear() + '-' + String(date.getMonth()).padStart(2, '0') + '-' + date.getDate() + ' ' + selectedTime.value;
     const starList = stars.map((star) => {
       return { name: star };
     });
 
     const requestData = {
       meetingName,
-      meetingStart,
+      meetingStart: selectedDate + " " + selectedTime.value,
       meetingDuration: selectedDuration && parseInt(selectedDuration?.value) || 0,
       term: selectedBreak && parseInt(selectedBreak.value) || 0,
       starList,

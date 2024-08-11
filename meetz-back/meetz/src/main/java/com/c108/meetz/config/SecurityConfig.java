@@ -99,7 +99,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/login", "/", "/api/manager/join").permitAll()
+                        .requestMatchers("/api/login", "/", "/api/manager/join", "api/leave").permitAll()
                         .requestMatchers("/api/refresh").permitAll()
                         .requestMatchers("/api/manager/authemail", "/api/manager/checkemail").permitAll()
                         .requestMatchers("/api/manager/checkauth", "/api/manager/test").permitAll()

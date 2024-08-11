@@ -4,17 +4,28 @@ import loginImage from '/src/assets/images/login_image.png';
 import fetchUserData from '../../lib/fetchUserData';
 import clearUserData from '../../lib/clearUserData';
 import { useEffect } from 'react';
+import postLogout from '../../apis/auth/postLogout';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { accessToken } = fetchUserData();
 
+  const logoutHandler = async () => {
+    try {
+      await postLogout(localStorage.getItem('rt') || '');
+      localStorage.clear();
+      clearUserData();
+      alert('로그아웃 되었습니다.');
+      navigate('/', { replace: true });
+    } catch (error: any) {
+    }
+    return;
+  }
+
   useEffect(() => {
     if (accessToken) {
       if (window.confirm('현재 로그인 상태입니다. 로그아웃 후 로그인 페이지로 이동하시겠습니까?')) {
-        clearUserData();
-        navigate('/', { replace: true });
-        return;
+        logoutHandler();
       } else {
         navigate(-1);
       }

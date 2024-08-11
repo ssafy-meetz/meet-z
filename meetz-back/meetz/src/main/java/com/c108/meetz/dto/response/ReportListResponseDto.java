@@ -3,13 +3,24 @@ package com.c108.meetz.dto.response;
 import com.c108.meetz.domain.Meeting;
 import com.c108.meetz.domain.Report;
 
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import java.time.format.DateTimeFormatter;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public record ReportListResponseDto(
         String meetingName,
-        String meetingStart,
-        String meetingEnd,
+        String meetingStart,    // String 타입으로 수정
+        String meetingEnd,      // String 타입으로 수정
         String meetingDuration,
         String meetingTerm,
         int totalParticipants,
@@ -17,19 +28,17 @@ public record ReportListResponseDto(
         List<ReportDetailResponseDto> reports
 ) {
     public static ReportListResponseDto fromEntities(Meeting meeting, List<Report> reports, int participantCount) {
-        List<ReportDetailResponseDto> reportDtos = reports.stream()
-                .map(ReportDetailResponseDto::fromEntity) // List view에서는 fromEntity(report) 사용
-                .collect(Collectors.toList());
-
         return new ReportListResponseDto(
                 meeting.getMeetingName(),
-                meeting.getMeetingStart().toString(),
-                meeting.getMeetingEnd().toString(),
+                meeting.getMeetingStart().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),  // 여기도 포맷팅
+                meeting.getMeetingEnd().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),    // 여기도 포맷팅
                 String.valueOf(meeting.getMeetingDuration()),
                 String.valueOf(meeting.getTerm()),
                 participantCount,
                 reports.size(),
-                reportDtos
+                reports.stream()
+                        .map(ReportDetailResponseDto::fromEntity)
+                        .collect(Collectors.toList())
         );
     }
 }

@@ -7,6 +7,8 @@ import FanSettingPage from "./setting/pages/FanSettingPage";
 import SessionLoadingPage from "./session/pages/SessionLoadingPage";
 import PickPhotoPage from "./pickPhoto/PickPhotoPage";
 import SessionSwitchPage from "./session/pages/SessionSwitchPage";
+import { useOpenvidu } from "../../hooks/session/useOpenvidu";
+import useOpenviduStore from "../../zustand/useOpenviduStore";
 type SessionInfo = {
   timer: number;
   wait: number;
@@ -15,16 +17,19 @@ type SessionInfo = {
   sessionId: string;
 };
 const FanSessionContainerPage = () => {
-  const { isSessionEnd, setWait, setTakePhoto } = useSessionStore();
+  const { isSessionEnd, setWait, setTakePhoto, setIsSessionEnd } = useSessionStore();
+  const {session,setSessionId} = useOpenviduStore();
   const [type, setType] = useState(0);
+  const {leaveSession} = useOpenvidu();
   const {
     settingDone,
-    setGetSessionId,
     setTimer,
     setStartName,
     setNextStarName,
   } = useSessionStore();
-  
+  useEffect(()=>{
+    console.log(session);
+  },[session])
 
   //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
@@ -61,10 +66,20 @@ const FanSessionContainerPage = () => {
       const parseData = JSON.parse(res);
       console.log(parseData);
       setType(parseData.type);
-      if (parseData.type === 1||2) {
+      if(parseData.type!==3&&session){
+        leaveSession();
+      }
+      if (parseData.type === 1) {
         await moveNextSession(parseData);
       } else if (parseData.type === 3) {
         setTakePhoto(true);
+      } else if(parseData.type===4){
+        if (
+          !localStorage.getItem("images") ||
+          localStorage.getItem("images") === "[]"
+        ) {
+          setIsSessionEnd(true);
+        }
       }
       //SSE에러 발생 시 SSE와 연결 종료
       eventSource.onerror = (e: any) => {
@@ -94,7 +109,7 @@ const FanSessionContainerPage = () => {
       setTimer(info.timer);
       setStartName(info.starName);
       setNextStarName(info.nextStarName);
-      setGetSessionId(info.sessionId);
+      setSessionId(info.sessionId);
       setWait(info.wait);
       resolve();
     });
@@ -105,9 +120,10 @@ const FanSessionContainerPage = () => {
 
     case 4:
       if(isSessionEnd){
-        return <PickPhotoPage />;
+        return <SessionSwitchPage />;
       }
-      return <SessionSwitchPage />;
+      return <PickPhotoPage />;
+      
 
     case 1:
     case 3:

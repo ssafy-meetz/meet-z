@@ -7,19 +7,14 @@ import {
 } from "openvidu-browser";
 import { useSessionStore } from "../../zustand/useSessionStore";
 import { createToken } from "../../apis/session/openviduAPI";
+import useOpenviduStore from "../../zustand/useOpenviduStore";
 
 export const useOpenvidu = () => {
-  const [session, setSession] = useState<OVSession | null>(null);
-  const [subscriber, setSubscriber] = useState<Subscriber | null>(null);
-  const [publisher, setPublisher] = useState<Publisher | null>(null);
-  const [OV, setOV] = useState<OpenVidu | null>(null);
-  const [sessionId, setSessionId] = useState<string>("");
-  const { getSessionId } = useSessionStore();
+  const {session,subscriber,publisher,OV,sessionId,setSession,setSubscriber,setPublisher,setOV,setSessionId} =useOpenviduStore();
 
   // Leaving session
   const leaveSession = useCallback(() => {
     if (session) session.disconnect();
-
     setOV(null);
     setSession(null);
     setSessionId("");
@@ -31,14 +26,13 @@ export const useOpenvidu = () => {
   const joinSession = () => {
     if (session) {
       console.log("~기존 세션 종료~");
-      session.disconnect();
+      leaveSession();
     }
-    if (getSessionId === "") return;
+    if (sessionId === "") return;
     const OVs = new OpenVidu();
     const newSession = OVs.initSession();
     setOV(OVs);
     setSession(newSession);
-    setSessionId(getSessionId);
   };
 
   useEffect(() => {
@@ -69,7 +63,7 @@ export const useOpenvidu = () => {
 
     const getToken = async (): Promise<string> => {
       try {
-        const token = await createToken(getSessionId);
+        const token = await createToken(sessionId);
         return token;
       } catch (error) {
         throw new Error("Failed to get token.");
@@ -99,7 +93,7 @@ export const useOpenvidu = () => {
           .catch(() => {});
       })
       .catch(() => {});
-  }, [session, OV, getSessionId]);
+  }, [session, OV, setSessionId]);
   return {
     session,
     sessionId,

@@ -7,9 +7,9 @@ const Header = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
     try {
-      postLogout(localStorage.getItem('rt') || '');
+      await postLogout(localStorage.getItem('rt') || '');
       localStorage.clear();
       clearUserData();
       alert('로그아웃 되었습니다.');

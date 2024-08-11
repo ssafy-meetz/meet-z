@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,14 +89,14 @@ public class ReportService {
      * 특정 미팅에 대한 신고 목록을 조회하는 메서드.
      */
     public ReportsListResponseDto getReportList(int meetingId) {
+        // 미팅 정보 조회
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
-
-//        verifyManagerAuthorization(meeting);
 
         // 참가자 수 계산
         int participantCount = meetingRepository.countFansInMeeting(meetingId);
 
+        // 신고 목록 조회
         List<Report> reports = reportRepository.findByMeeting_MeetingId(meetingId);
 
         // ReportListResponseDto 생성 시 참가자 수를 포함

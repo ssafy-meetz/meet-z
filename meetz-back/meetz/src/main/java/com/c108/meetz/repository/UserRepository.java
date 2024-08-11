@@ -28,4 +28,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     void updateNickname(@Param("userId") int userId, @Param("nickname") String nickname);
 
     boolean existsByEmailAndMeeting_MeetingId(String email, int meetingId);
+
+    @Transactional
+    @Modifying
+    @Query("update User u set u.token=NULL where u.token=:token")
+    void updateTokenToNull(String token);
 }
