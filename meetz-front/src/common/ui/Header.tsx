@@ -8,16 +8,14 @@ const Header = () => {
   const { pathname } = useLocation();
 
   const logoutHandler = () => {
-    localStorage.clear();
-    clearUserData();
-
     try {
       postLogout(localStorage.getItem('rt') || '');
+      localStorage.clear();
+      clearUserData();
+      alert('로그아웃 되었습니다.');
+      navigate('/');
     } catch (error: any) {
     }
-
-    alert('로그아웃 되었습니다.');
-    navigate('/');
   };
 
   const isActive = (path: string) => pathname.includes(path);
