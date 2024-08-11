@@ -2,7 +2,6 @@ import { ReportsDto } from "../../../../types/types"
 import Accordion from "../Accordion"
 
 const MonitorList = ({ reports }: { reports: ReportsDto[] | null }) => {
-  console.log(reports)
 
   if (reports?.length === 0) {
 
@@ -16,10 +15,9 @@ const MonitorList = ({ reports }: { reports: ReportsDto[] | null }) => {
   return (
     <main className='py-7 pb-72'>
       <div className='justify-center items-center '>
-        {reports && reports.map((report, idx) => {
-          return (<Accordion title={`${idx}번 팬 - ${report.reportedUserName}`} />)
+        {reports && reports.map((report) => {
+          return (<Accordion key={report.reportId} report={report} title={`팬 : ${report.reportedUserName} - 스타 : ${report.starName}`} />)
         })}
-
       </div>
     </main>
   )
