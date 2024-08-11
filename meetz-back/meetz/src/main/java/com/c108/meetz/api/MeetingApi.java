@@ -3,12 +3,10 @@ package com.c108.meetz.api;
 import com.c108.meetz.dto.ApiResponse;
 import com.c108.meetz.dto.request.FanSaveDto;
 import com.c108.meetz.dto.request.MeetingSaveRequestDto;
+import com.c108.meetz.dto.request.WarningRequestDto;
 import com.c108.meetz.dto.response.*;
 import com.c108.meetz.exception.BadRequestException;
-import com.c108.meetz.service.AudioProcessingService;
-import com.c108.meetz.service.MailService;
-import com.c108.meetz.service.MeetingService;
-import com.c108.meetz.service.ReportService;
+import com.c108.meetz.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +29,7 @@ public class MeetingApi {
     private final MailService mailService;
     private final AudioProcessingService audioProcessingService;
     private final ReportService reportService;
+    private final WarningService warningService;
 
     @PostMapping("")
     public ApiResponse<MeetingSaveResponseDto> createMeeting(@Valid @RequestBody MeetingSaveRequestDto meetingSaveRequestDto, BindingResult bindingResult) {
@@ -156,5 +155,11 @@ public class MeetingApi {
     public ApiResponse<ReportDetailResponseDto> getReportDetail(@PathVariable int meetingId, @PathVariable int reportId) {
         ReportDetailResponseDto response = reportService.getReportDetail(meetingId, reportId);
         return ApiResponse.success(OK, response);
+    }
+
+    @PostMapping("/warning")
+    public ApiResponse<Void> saveWarning(@RequestBody WarningRequestDto warningRequestDto) {
+        warningService.saveWarning(warningRequestDto.userId(), warningRequestDto.reason());
+        return ApiResponse.success(OK);
     }
 }
