@@ -21,10 +21,10 @@ const DeleteMeetingCheckModal = ({ meetingId }: { meetingId: number }) => {
   return (
     <div
       className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'
-      onClick={closeDeleteModal} // 배경을 클릭하면 모달 닫기
+     
     >
       <div
-        onClick={(e) => e.stopPropagation()} // 모달 자체를 클릭해도 닫히지 않도록 이벤트 전파 막기
+        onClick={(e) => e.stopPropagation()} 
         className='w-[460px] h-[240px] flex flex-col items-center justify-center rounded-3xl border-2 border-[#FF4F5D] bg-white'
       >
         <div className='flex flex-col gap-6'>

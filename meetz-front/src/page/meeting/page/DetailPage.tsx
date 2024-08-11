@@ -26,7 +26,8 @@ const DetailPage = () => {
     openDeleteModal,
     isDeleteModalOpen,
     isDeletedModalOpen,
-  } = useDetailstore();
+    resetModals
+    } = useDetailstore();
   const { accessToken } = fetchUserData();
   const [meetingData, setMeetingData] = useState<MeetingDetailDto>();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -65,11 +66,16 @@ const DetailPage = () => {
 
   useEffect(() => {
     fetchMeetingData();
-  }, []);
+  }, [meetingId]);
+
+  useEffect(() => {
+    resetModals(); 
+  }, [meetingId, resetModals]);
 
   const cancelHandler = () => {
-    navigate(-1);
+    navigate("/meeting/yet");
   };
+  
   if (!meetingData) {
     return (
       <div className='flex justify-center items-center w-full h-screen'>
