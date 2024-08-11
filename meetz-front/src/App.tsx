@@ -5,12 +5,16 @@ import clearUserData from "./lib/clearUserData";
 
 function App() {
 
-  const handleUnload = () => {
+  const handleUnload = (event: BeforeUnloadEvent) => {
+    event.preventDefault();
+
+    // 로그아웃 로직은 이 메시지 확인 후 자동으로 처리됩니다.
     const rtk = window.localStorage.getItem('rt') || '';
-    // 로그아웃 API 호출
     navigator.sendBeacon(import.meta.env.VITE_API_DEPLOYED_URL + `/api/leave?token=${rtk}`);
     clearUserData();
     localStorage.clear();
+
+    return event;
   };
 
   useEffect(() => {
@@ -18,7 +22,6 @@ function App() {
 
     return () => {
       window.removeEventListener('beforeunload', handleUnload);
-      clearUserData();
       localStorage.clear();
     };
   }, []);
