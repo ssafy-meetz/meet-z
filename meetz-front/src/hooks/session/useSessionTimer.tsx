@@ -20,7 +20,7 @@ const useSessionTimer = () => {
     }, 1000);
 
     return () => clearInterval(secondId);
-  }, []);
+  }, [timer]);
   useEffect(() => {
     const formatTime = (totalTime: number) => {
       const minutes = Math.floor(totalTime / 60);
