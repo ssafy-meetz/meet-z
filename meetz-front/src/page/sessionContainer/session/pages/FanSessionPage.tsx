@@ -1,23 +1,23 @@
 import { useOpenvidu } from "../../../../hooks/session/useOpenvidu";
 import { useEffect, useState } from "react";
 import logo_white from "/src/assets/images/logo-white.png";
-import { useSessionStore } from "../../../../zustand/useSessionStore";
 import FanSession from "../components/FanSession";
 import useSessionTimer from "../../../../hooks/session/useSessionTimer";
 import { MeetingInfoDto } from "../../../../types/types";
+import useOpenviduStore from "../../../../zustand/useOpenviduStore";
 
 function FanSessionPage() {
-  const { session, publisher, subscriber, joinSession } = useOpenvidu();
+  const {joinSession } = useOpenvidu();
+  const {session, subscriber,publisher,sessionId} = useOpenviduStore();
   const { formatTime } = useSessionTimer();
-  const { getSessionId } = useSessionStore();
   const [meetingInfo] = useState<MeetingInfoDto>(
     JSON.parse(sessionStorage.getItem("mi") || "")
   );
   useEffect(() => {
-    if (getSessionId !== "") {
+    if (sessionId !== "") {
       joinSession();
     }
-  }, [getSessionId]);
+  }, [sessionId]);
 
   return (
     <div>
