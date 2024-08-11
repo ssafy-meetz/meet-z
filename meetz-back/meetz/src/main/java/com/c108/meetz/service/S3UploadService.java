@@ -1,8 +1,7 @@
 package com.c108.meetz.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.SdkClientException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +32,16 @@ public class S3UploadService {
     public String upload(MultipartFile file, String bucketName, String filePath) {
         try {
             // 버킷 이름 출력 (디버깅용)
-            System.out.println(String.format("bucketName : %s", bucketName));
+            log.debug("bucketName : {}", bucketName);
 
             // 버킷이 존재하지 않으면 생성
             if (!s3Client.doesBucketExistV2(bucketName)) {
-                s3Client.createBucket(bucketName);
-                log.debug("버킷 생성 완료: {}", bucketName);
+                // 버킷 생성
+                CreateBucketRequest createBucketRequest = new CreateBucketRequest(bucketName);
+                Bucket bucket = s3Client.createBucket(createBucketRequest);
+                // 퍼블릭 읽기 권한 설정
+                s3Client.setBucketAcl(bucketName, CannedAccessControlList.PublicRead);
+                log.debug("버킷 생성 및 퍼블릭 접근 권한 설정 완료: {}", bucketName);
             }
 
             // 파일 메타데이터 설정
@@ -46,12 +49,13 @@ public class S3UploadService {
             metadata.setContentLength(file.getSize());
             metadata.setContentType(file.getContentType());
 
-            // S3에 파일 업로드 요청 생성
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, filePath, file.getInputStream(), metadata);
+            // S3에 파일 업로드 요청 생성 및 퍼블릭 읽기 권한 설정
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, filePath, file.getInputStream(), metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead);  // 파일에 퍼블릭 읽기 권한 부여
             s3Client.putObject(putObjectRequest);
 
             // 파일 업로드 완료 메시지 출력 (디버깅용)
-            System.out.println(String.format("파일 업로드 완료: %s/%s", bucketName, filePath));
+            log.debug("파일 업로드 완료: {}/{}", bucketName, filePath);
 
             // 파일의 S3 URL 생성 및 반환
             String url = String.format("https://kr.object.ncloudstorage.com/%s/%s", bucketName, filePath);
