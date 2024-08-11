@@ -1,4 +1,4 @@
-import useMeetingSettingStore from "../../../../zustand/useMeetingSettingStore"
+import useMeetingSettingStore from '../../../../zustand/useMeetingSettingStore';
 
 const SetMeetingNameBox = () => {
   const { meetingName, setMeetingName } = useMeetingSettingStore();
@@ -6,9 +6,7 @@ const SetMeetingNameBox = () => {
   return (
     <div className='flex gap-14 py-5 border-b items-center'>
       <div className='w-40'>
-        <span className='text-xl text-[#3a3a3a] font-semibold'>
-          팬싸인회 이름
-        </span>
+        <span className='text-xl text-[#3a3a3a] font-semibold'>미팅 이름</span>
       </div>
       <input
         type='text'
@@ -18,7 +16,7 @@ const SetMeetingNameBox = () => {
         onChange={(e) => setMeetingName(e.target.value)}
       />
     </div>
-  )
-}
+  );
+};
 
-export default SetMeetingNameBox
+export default SetMeetingNameBox;

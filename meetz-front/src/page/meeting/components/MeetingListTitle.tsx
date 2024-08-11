@@ -21,7 +21,7 @@ const MeetingListTitle = ({ company }: { company: string }) => {
             onClick={handleButtonClick}
             className='transform duration-100 ease-in-out hover:scale-105 hover:bg-[#fd5866] active:scale-95 transition bg-[#FF4F5D] text-white p-1 px-4 text-[20px] rounded-full'
           >
-            팬싸인회 생성
+            미팅 생성
           </button>
         </div>
       </div>

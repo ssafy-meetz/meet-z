@@ -8,7 +8,9 @@ const SetNickname: React.FC = () => {
   const { nextStep } = useEnvSettingStore();
   const [nickname, setNickname] = useState<string>('');
   const { accessToken } = fetchUserData();
-  const [meetingInfo, setMeetingInfo] = useState<MeetingInfoDto>(JSON.parse(sessionStorage.getItem('mi') || ""));
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfoDto>(
+    JSON.parse(sessionStorage.getItem('mi') || '')
+  );
 
   // 세션 스토리지에서 닉네임을 불러오는 함수
   useEffect(() => {
@@ -29,7 +31,7 @@ const SetNickname: React.FC = () => {
     const newMeetingInfo = { ...meetingInfo, nickname };
     setMeetingInfo(newMeetingInfo);
     sessionStorage.setItem('mi', JSON.stringify(newMeetingInfo));
-    const result = await putModifyFanNickname(nickname, accessToken || "");
+    const result = await putModifyFanNickname(nickname, accessToken || '');
 
     if (!result) {
       alert('닉네임 변경에 실패했습니다.');
@@ -71,7 +73,9 @@ const SetNickname: React.FC = () => {
   return (
     <div className='flex flex-col w-[790px] items-center justify-center'>
       <div className='w-full flex flex-col px-24 h-full justify-center gap-1'>
-        <span className='text-3xl font-semibold cursor-default'>오늘 팬 싸인회에서</span>
+        <span className='text-3xl font-semibold cursor-default'>
+          오늘 미팅에서
+        </span>
         <span className='text-3xl font-semibold cursor-default'>
           사용할 닉네임을 설정해 주세요.
         </span>

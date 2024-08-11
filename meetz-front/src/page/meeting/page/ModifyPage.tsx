@@ -104,9 +104,10 @@ const ModifyPage: React.FC = () => {
 
     const requestData = {
       meetingName,
-      meetingStart: selectedDate + " " + selectedTime.value,
-      meetingDuration: selectedDuration && parseInt(selectedDuration?.value) || 0,
-      term: selectedBreak && parseInt(selectedBreak.value) || 0,
+      meetingStart: selectedDate + ' ' + selectedTime.value,
+      meetingDuration:
+        (selectedDuration && parseInt(selectedDuration?.value)) || 0,
+      term: (selectedBreak && parseInt(selectedBreak.value)) || 0,
       starList,
       fanList: notBlackList,
     };
@@ -154,15 +155,15 @@ const ModifyPage: React.FC = () => {
 
         const timeOption =
           timeOptions.find(
-            (time) => time.value === meetingStart.split(' ')[1]) || null;
+            (time) => time.value === meetingStart.split(' ')[1]
+          ) || null;
         const durationOption =
           durationOptions.find(
             (option) => option.value === meetingDuration.toString()
           ) || null;
         const breakOption =
-          breakOptions.find(
-            (option) =>
-              option.value === term.toString()) || null;
+          breakOptions.find((option) => option.value === term.toString()) ||
+          null;
 
         setSelectedTime(timeOption);
         setSelectedDuration(durationOption);
@@ -171,7 +172,7 @@ const ModifyPage: React.FC = () => {
         saveNotBlackList();
         setMeetingName(meetingName);
         setStars(starList.map((star: StarDto) => star.name));
-        setSelectedDate(meetingStart.split(" ")[0]);
+        setSelectedDate(meetingStart.split(' ')[0]);
       }
     }
   };
@@ -184,7 +185,7 @@ const ModifyPage: React.FC = () => {
     <div className='flex flex-col items-center'>
       <div className='max-w-screen-xl w-screen px-24'>
         <header className='justify-center items-center flex flex-col gap-3 py-20'>
-          <h1 className='text-4xl font-bold'>팬싸인회 수정</h1>
+          <h1 className='text-4xl font-bold'>미팅 수정</h1>
         </header>
         <main className='flex flex-col gap-20'>
           <div className='flex flex-col gap-1'>
