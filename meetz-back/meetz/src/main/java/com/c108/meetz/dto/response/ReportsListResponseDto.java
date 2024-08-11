@@ -2,6 +2,7 @@ package com.c108.meetz.dto.response;
 
 import com.c108.meetz.domain.Meeting;
 import com.c108.meetz.domain.Report;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.time.LocalDateTime;
@@ -17,8 +18,8 @@ import java.util.List;
 public class ReportsListResponseDto {
 
     public String meetingName;
-    public String meetingStart;
-    public String meetingEnd;
+    public @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime meetingStart;
+    public @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime meetingEnd;
     public int meetingDuration;
     public int meetingTerm;
     public int totalParticipants;
@@ -35,8 +36,8 @@ public class ReportsListResponseDto {
     public ReportsListResponseDto(Meeting meeting, List<Report> reports, int participantCount) {
 
         this.meetingName = meeting.getMeetingName();
-        this.meetingStart = String.valueOf(meeting.getMeetingStart());
-        this.meetingEnd = String.valueOf(meeting.getMeetingEnd());
+        this.meetingStart = meeting.getMeetingStart();
+        this.meetingEnd = meeting.getMeetingEnd();
         this.meetingDuration = meeting.getMeetingDuration();
         this.meetingTerm = meeting.getTerm();
         this.totalParticipants = participantCount;
