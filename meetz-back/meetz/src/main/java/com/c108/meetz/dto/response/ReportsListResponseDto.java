@@ -4,6 +4,7 @@ import com.c108.meetz.domain.Meeting;
 import com.c108.meetz.domain.Report;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +33,10 @@ public class ReportsListResponseDto {
      * @param participantCount  총 참가자 수
      */
     public ReportsListResponseDto(Meeting meeting, List<Report> reports, int participantCount) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         this.meetingName = meeting.getMeetingName();
-        this.meetingStart = meeting.getMeetingStart().format(formatter);  // LocalDateTime을 포맷하여 String으로 변환
-        this.meetingEnd = meeting.getMeetingEnd().format(formatter);      // LocalDateTime을 포맷하여 String으로 변환
+        this.meetingStart = String.valueOf(meeting.getMeetingStart());
+        this.meetingEnd = String.valueOf(meeting.getMeetingEnd());
         this.meetingDuration = meeting.getMeetingDuration();
         this.meetingTerm = meeting.getTerm();
         this.totalParticipants = participantCount;
