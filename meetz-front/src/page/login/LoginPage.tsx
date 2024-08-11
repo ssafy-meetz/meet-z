@@ -13,6 +13,7 @@ const LoginPage = () => {
   const logoutHandler = async () => {
     try {
       await postLogout(localStorage.getItem('rt') || '');
+      localStorage.clear();
       clearUserData();
       alert('로그아웃 되었습니다.');
       navigate('/', { replace: true });
