@@ -1,19 +1,48 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AudioPlayer from './AudioPlayer';
 import ScriptBox from './ScriptBox';
+import getReportedDetail from '../../../apis/meeting/getReportedDetail';
+import fetchUserData from '../../../lib/fetchUserData';
+import { useParams } from 'react-router-dom';
+import { ReportsDto } from '../../../types/types';
+import Loading from '../../../common/Loading';
 
 interface AccordionProps {
   title: string;
+  report: ReportsDto
 }
 
-const Accordion: React.FC<AccordionProps> = ({ title }) => {
+const Accordion: React.FC<AccordionProps> = ({ title, report }) => {
+  const { accessToken } = fetchUserData();
+  const { meetingId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
+  const [scriptLoading, setScriptLoading] = useState(false);
+  const [reportDetail, setReportDetail] = useState<ReportsDto | null>(null);
+
+  const fetchReportedDetail = async () => {
+    setScriptLoading(true);
+    try {
+      const { data } = await getReportedDetail(+(meetingId || 0), report.reportId, accessToken || '');
+
+
+    } catch (error) {
+
+    }
+    setScriptLoading(false);
+  }
+
+  const openAccordionHandler = () => {
+    fetchReportedDetail();
+    setIsOpen(!isOpen)
+  }
+
+
 
   return (
     <div className='border-b'>
       <div
         className='flex justify-between items-center py-7 cursor-pointer'
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={openAccordionHandler}
       >
         <span className='font-light text-2xl'>{title}</span>
         <svg
@@ -34,8 +63,15 @@ const Accordion: React.FC<AccordionProps> = ({ title }) => {
       </div>
       {isOpen && (
         <div className='p-4'>
-          <AudioPlayer />
-          <ScriptBox />
+          {scriptLoading ?
+            <div className='py-10'>
+              <Loading width={60} height={60} />
+            </div>
+            :
+            <>
+              <AudioPlayer />
+              <ScriptBox />
+            </>}
         </div>
       )}
     </div>
