@@ -132,5 +132,15 @@ public class CommonService {
         String role = SecurityUtil.getCurrentUserRole();
         return new CommonDto(email, role);
     }
+
+    public void logout(String token){
+        String email = jwtUtil.getEmail(token);
+        jwtUtil.deleteToken(email);
+        String role = jwtUtil.getRole(token);
+        if(role.equals("MANAGER")){
+            managerRepository.updateTokenToNull(token);
+        }
+        else userRepository.updateTokenToNull(token);
+    }
 }
 
