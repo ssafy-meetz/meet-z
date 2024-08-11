@@ -27,14 +27,29 @@ public class ImageService {
         InputStream frameImageStream = frameImageResource.getInputStream();
         BufferedImage frameImage = ImageIO.read(frameImageStream);
         BufferedImage origin = ImageIO.read(originImage.getInputStream());
-        int centerX = (frameImage.getWidth() - origin.getWidth()) / 2;
-        int centerY = (frameImage.getHeight() - origin.getHeight()) / 2;
+
+        // 원본 이미지 리사이징 (846 * 317 픽셀)
+        int targetWidth = 846;
+        int targetHeight = 317;
+        BufferedImage resizedOrigin = resizeImage(origin, targetWidth, targetHeight);
+        int centerX = (frameImage.getWidth() - resizedOrigin.getWidth()) / 2;
+        int centerY = (frameImage.getHeight() - resizedOrigin.getHeight()) / 2;
 
         Graphics2D graphics = frameImage.createGraphics();
-        graphics.drawImage(origin, centerX, centerY, null);
+        graphics.drawImage(resizedOrigin, centerX, centerY, null);
         graphics.dispose();
 
         return frameImage;
+    }
+
+    // 이미지 리사이징 메서드
+    private BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, originalImage.getType());
+        Graphics2D g = resizedImage.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+        g.dispose();
+        return resizedImage;
     }
 
 }
