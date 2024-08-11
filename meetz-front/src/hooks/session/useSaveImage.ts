@@ -121,12 +121,7 @@ const useSaveImage = () => {
     return "";
   };
   const sendImage = async (selectedFrame:number) => {
-    if (
-      !localStorage.getItem("images") ||
-      localStorage.getItem("images") === "[]"
-    ) {
-      return;
-    }
+
     const formData: FormData = addImagesToFormData();
     await sendImageToServer(formData,selectedFrame);
   };
