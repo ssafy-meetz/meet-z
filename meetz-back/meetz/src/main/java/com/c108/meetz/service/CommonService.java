@@ -79,6 +79,7 @@ public class CommonService {
         String access = jwtUtil.createJwt("access", user.getEmail(), String.valueOf(user.getRole()), ACCESS_TOKEN_EXPIRATION);
         String refresh = jwtUtil.createJwt("refresh", user.getEmail(), String.valueOf(user.getRole()), REFRESH_TOKEN_EXPIRATION);
         redisTemplate.opsForValue().set(user.getEmail(), access);
+        user.setToken(refresh);
         userRepository.save(user);
         LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
         Authentication authentication  = new UsernamePasswordAuthenticationToken(user.getEmail(), null, List.of(new SimpleGrantedAuthority(String.valueOf(user.getRole()))));
