@@ -21,6 +21,7 @@ const BlacklistCheckPage = () => {
     selectedBlacklistId,
     blacklist,
     setBlacklist,
+    // resetModals
   } = useBlackStore();
   const { accessToken } = fetchUserData();
   const [blacklistCompany, setBlacklistCompany] = useState(''); // 회사 이름
@@ -68,6 +69,13 @@ const BlacklistCheckPage = () => {
   const cancelHandler = () => {
     navigate(-1);
   };
+  
+  useEffect(() => {
+    // 컴포넌트가 마운트될 때 상태 초기화
+    useBlackStore.getState().closeDeleteModal();
+    useBlackStore.getState().closeDeletedModal();
+    useBlackStore.getState().setIsDelete(false);
+  }, []);
 
   // 모달을 여는 핸들러
   const deleteHandler = (blacklistId: number) => {

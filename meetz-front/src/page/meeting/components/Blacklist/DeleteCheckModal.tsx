@@ -35,7 +35,7 @@ const DeleteCheckModal = ({
   return (
     <div
       className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'
-      onClick={closeDeleteModal} // 배경을 클릭하면 모달 닫기
+    
     >
       <div
         onClick={(e) => e.stopPropagation()} // 모달 자체를 클릭해도 닫히지 않도록 이벤트 전파 막기
