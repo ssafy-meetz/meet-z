@@ -31,7 +31,7 @@ const postUserLogin = async (email: string, password: string, isManager: boolean
       } else if (e.response.status === 401) {
         throw new Error('이미 다른 기기에서 로그인 중입니다. 로그아웃 후 다시 시도하세요.')
       } else if (e.response.status === 403) {
-        throw new Error('미팅 시작 30분 전 부터 접속 가능합니다.');
+        throw new Error('입장 가능한 미팅이 존재하지 않습니다. 예정된 미팅은 시작 30분 전 부터 입장 가능합니다.');
       }
     }
     throw new Error('로그인 중 오류가 발생했습니다.');
