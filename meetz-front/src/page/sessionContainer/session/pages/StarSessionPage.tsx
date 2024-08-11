@@ -10,10 +10,12 @@ import CompleteReportFanModal from "../components/CompleteReportFanModal";
 import fetchUserData from "../../../../lib/fetchUserData";
 import getStarSessionId from "../../../../apis/session/getStarSessionId";
 import useSessionTimer from "../../../../hooks/session/useSessionTimer";
+import useOpenviduStore from "../../../../zustand/useOpenviduStore";
 
 function StarSessionPage() {
-  const { session, publisher, subscriber, joinSession } = useOpenvidu();
-  const { remain, getSessionId, setGetSessionId } = useSessionStore();
+  const { joinSession } = useOpenvidu();
+  const { remain } = useSessionStore();
+  const {sessionId, session, publisher, subscriber, setSessionId} = useOpenviduStore();
   const { openModal, confirmModal, setOpenModal } = useReportModal();
   const { accessToken } = fetchUserData();
   const { formatTime } = useSessionTimer();
@@ -28,14 +30,14 @@ function StarSessionPage() {
   const getSession = async () => {
     if (accessToken) {
       const id = await getStarSessionId(accessToken);
-      setGetSessionId(id);
+      setSessionId(id);
     }
   };
   useEffect(() => {
-    if (getSessionId !== "") {
+    if (sessionId !== "") {
       joinSession();
     }
-  }, [getSessionId]);
+  }, [sessionId]);
 
   return (
     <div>

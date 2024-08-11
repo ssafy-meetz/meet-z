@@ -9,7 +9,6 @@ import StarEndPage from "./session/pages/StarEndPage";
 type SessionInfo = {
   fanId: string;
   timer: number;
-  starName: string;
   fanName: string;
   remain: number;
 };
@@ -38,8 +37,8 @@ const StarSessionContainerPage = () => {
   );
   const {
     settingDone,
+    timer,
     setTimer,
-    setStartName,
     setFanId,
     setFanName,
     setRemain,
@@ -51,14 +50,12 @@ const StarSessionContainerPage = () => {
   const setInfo = (info: SessionInfo) => {
     return new Promise<void>((resolve) => {
       setTimer(info.timer);
-      setStartName(info.starName);
       setFanId(info.fanId);
       setFanName(info.fanName);
       setRemain(info.remain);
       resolve();
     });
   };
-
   const fetchSSE = () => {
     console.log("SSE 연결 시도");
     const { accessToken } = fetchUserData();
@@ -100,9 +97,8 @@ const StarSessionContainerPage = () => {
 
   const setSessionInfo=async (parseData:any)=>{
     const info: SessionInfo = {
-      fanId: parseData.fanId,
+      fanId: parseData.currentFanId,
       timer: parseData.timer,
-      starName: parseData.starName,
       fanName: parseData.currentFanName,
       remain: parseData.remainFanNum,
     };
