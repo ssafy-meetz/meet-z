@@ -19,12 +19,9 @@ const DeleteMeetingCheckModal = ({ meetingId }: { meetingId: number }) => {
     }
   };
   return (
-    <div
-      className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'
-     
-    >
+    <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
       <div
-        onClick={(e) => e.stopPropagation()} 
+        onClick={(e) => e.stopPropagation()}
         className='w-[460px] h-[240px] flex flex-col items-center justify-center rounded-3xl border-2 border-[#FF4F5D] bg-white'
       >
         <div className='flex flex-col gap-6'>
@@ -34,7 +31,7 @@ const DeleteMeetingCheckModal = ({ meetingId }: { meetingId: number }) => {
             </div>
             <div>
               <span className='text-xl font-semibold cursor-default'>
-                미팅일정을 삭제하시겠습니까?
+                미팅 일정을 삭제하시겠습니까?
               </span>
             </div>
           </div>

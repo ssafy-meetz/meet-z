@@ -53,9 +53,10 @@ const CreatePage: React.FC = () => {
 
     const requestData = {
       meetingName,
-      meetingStart: selectedDate + " " + selectedTime.value,
-      meetingDuration: selectedDuration && parseInt(selectedDuration?.value) || 0,
-      term: selectedBreak && parseInt(selectedBreak.value) || 0,
+      meetingStart: selectedDate + ' ' + selectedTime.value,
+      meetingDuration:
+        (selectedDuration && parseInt(selectedDuration?.value)) || 0,
+      term: (selectedBreak && parseInt(selectedBreak.value)) || 0,
       starList,
       fanList: notBlackList,
     };
@@ -89,7 +90,7 @@ const CreatePage: React.FC = () => {
     <div className='flex flex-col items-center'>
       <div className='max-w-screen-xl w-screen px-24'>
         <header className='justify-center items-center flex flex-col gap-3 py-20'>
-          <h1 className='text-4xl font-bold'>팬싸인회 생성</h1>
+          <h1 className='text-4xl font-bold'>미팅 생성</h1>
         </header>
         <main className='flex flex-col gap-20'>
           <div className='flex flex-col gap-1'>

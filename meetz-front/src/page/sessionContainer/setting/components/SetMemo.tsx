@@ -14,8 +14,9 @@ const SetMemo: React.FC = () => {
   const [selectedMemo, setSelectedMemo] = useState<string>('');
   const [memoText, setMemoText] = useState<string>('');
   const [memos, setMemos] = useState<Memo[]>([]);
-  const [meetingInfo, setMeetingInfo] = useState<MeetingInfoDto>(JSON.parse(sessionStorage.getItem('mi') || ""));
-
+  const [meetingInfo, setMeetingInfo] = useState<MeetingInfoDto>(
+    JSON.parse(sessionStorage.getItem('mi') || '')
+  );
 
   // 로컬 스토리지에서 메모를 불러오는 함수
   const loadMemosFromStorage = (): Memo[] => {
@@ -110,7 +111,7 @@ const SetMemo: React.FC = () => {
       <div className='w-full flex flex-col px-24 h-full justify-center gap-1'>
         <span className='text-3xl font-semibold'>메모 작성</span>
         <span className='text-[#7d7d7d] text-lg'>
-          팬 싸인회 진행 도중 참고하고 싶은 메모를 작성해 주세요.
+          미팅 진행 도중 참고하고 싶은 메모를 작성해 주세요.
         </span>
         <span className='text-[#7d7d7d] mb-8'>
           멤버별 한 개의 메모씩 저장이 가능합니다.
@@ -144,8 +145,14 @@ const SetMemo: React.FC = () => {
                 onChange={handleSelectChange}
                 className='border p-2 rounded-lg w-full focus:outline-none focus:border-[#ff4f5d] cursor-pointer'
               >
-                <option value='' disabled>스타 선택</option>
-                {meetingInfo.starList.map((star, idx) => <option value={star.name} key={idx}>{star.name}</option>)}
+                <option value='' disabled>
+                  스타 선택
+                </option>
+                {meetingInfo.starList.map((star, idx) => (
+                  <option value={star.name} key={idx}>
+                    {star.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className='relative h-[188px]'>

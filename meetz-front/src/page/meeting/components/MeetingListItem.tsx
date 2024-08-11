@@ -38,7 +38,7 @@ const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
             onClick={() => clickRouter('modify')}
             className='mt-2 bg-transparent active:scale-95 border border-[#FF4F5D] text-[#FF4F5D] py-1 px-2 rounded-full transition duration-200 ease-in-out transform hover:bg-[#ff4f5d] hover:text-white hover:scale-105'
           >
-            이벤트 수정
+            미팅 수정
           </button>
         )}
       </div>

@@ -2,7 +2,7 @@ import logo from '/src/assets/images/sessionlogo.png';
 
 const EndSession = () => {
   // 문구를 구성하는 각 문자에 고유한 애니메이션을 적용
-  const endMessage = '팬싸인회가 종료되었습니다.';
+  const endMessage = '미팅이 종료되었습니다.';
   const emailMessage = '스타와 찍은 사진은 이메일로 전송되었습니다.';
 
   // 각 문자를 span으로 감싸서 개별 애니메이션을 적용
