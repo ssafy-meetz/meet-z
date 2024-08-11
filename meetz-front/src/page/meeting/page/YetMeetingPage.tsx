@@ -23,13 +23,17 @@ const YetMeetingPage = () => {
   useCheckAuth('MANAGER');
 
   const fetchYetMeetingData = useCallback(async () => {
-    const { data } = await getYetMeetingList(accessToken || "");
-    return data;
+    try {
+      const { data } = await getYetMeetingList(accessToken || "");
+      return data;
+    } catch {
+      return [];
+    }
   }, [accessToken]);
 
   const transformMeetingData = (data: any, months: string[]) => {
     const transformedData: MeetingMonthData = {};
-    months.forEach((month) => {
+    data && months.forEach((month) => {
       if (data[month]) {
         transformedData[month] = {};
         Object.keys(data[month]).forEach((day) => {
