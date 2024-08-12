@@ -239,14 +239,13 @@ public class OpenviduService {
         }
 
         //남은 팬 수 줄이기
-
         int tmpIdx = Math.min(currentPhase, starSize - 1);
 
         for (int i = 0; i <= tmpIdx; i++) {
             stars.get(i).remainFanNum = Math.max(stars.get(i).remainFanNum - 1, 0);
         }
 
-        //
+        //type 1 보내기
         for (int i = startIdx; i <= endIdx; i++) { //팬미팅이 끝나지 않은 사람들의 범위
             //현재 팬의 idx
             FanInfo fan = fans.get(i);
@@ -285,7 +284,7 @@ public class OpenviduService {
 
             FanSseResponseDto responseDto = null;
 
-            //sessionId
+            //sessijonId를 넘겨줄 차례면
             if (i <= endTokenSendSize) {
 
                 fan.viduToken = stars.get(fan.curStarIdx).session.getSessionId();
@@ -309,8 +308,6 @@ public class OpenviduService {
                 );
                 log.info("대기할 {}번 팬: {}", i, responseDto.toString());
             }
-            log.info("{}번째 팬의 현재 starIdx: {}", i, fan.curStarIdx);
-
             SseEmitter emitter = fans.get(i).emitter;
             //sse연결이 되어 있으면 dto 보내기
             if (emitter != null) {
@@ -318,9 +315,6 @@ public class OpenviduService {
             }
 
             //star에게도 dto보내기
-
-
-
             StarSseResponseDto starSseDto = null;
             SseEmitter starEmitter = null;
             if (fan.curStarIdx >= 0) {
