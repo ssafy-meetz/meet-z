@@ -9,6 +9,7 @@ import PickPhotoPage from "./pickPhoto/PickPhotoPage";
 import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 import useOpenviduStore from "../../zustand/useOpenviduStore";
+import useCheckAuth from "../../hooks/meeting/useCheckAuth";
 type SessionInfo = {
   timer: number;
   wait: number;
@@ -112,17 +113,18 @@ const FanSessionContainerPage = () => {
     });
   };
   switch (type) {
-    case 2:
+    //0은 대기
+    case 2: // 2는 쉬는시간
       return <SessionLoadingPage />;
 
-    case 4:
+    case 4: // 종료 화면
       if (isSessionEnd) {
         return <SessionSwitchPage />;
       }
       return <PickPhotoPage />;
 
-    case 1:
-    case 3:
+    case 1: // 진행 중
+    case 3: //사진 촬영
       if (settingDone) {
         return <FanSessionPage />;
       }
