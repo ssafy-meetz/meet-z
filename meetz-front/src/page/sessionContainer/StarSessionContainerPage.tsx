@@ -29,8 +29,8 @@ interface MeetingInfo {
 }
 
 const StarSessionContainerPage = () => {
-  const [type,setType] = useState(0);
-  const {setTakePhoto} = useSessionStore();
+  const [type, setType] = useState(0);
+  const { setTakePhoto } = useSessionStore();
 
   const [meetingInfo] = useState<MeetingInfo>(
     JSON.parse(sessionStorage.getItem("mis") || "")
@@ -77,12 +77,12 @@ const StarSessionContainerPage = () => {
       const parseData = JSON.parse(res);
       console.log(parseData);
       setType(parseData.type);
-      if(parseData.type===1){
+      if (parseData.type === 1) {
         await setSessionInfo(parseData);
-      }else if(parseData.type===3){
+      } else if (parseData.type === 3) {
         setTakePhoto(true);
       }
-      
+
       eventSource.onerror = (e: any) => {
         eventSource.close();
         if (e.error) {
@@ -95,7 +95,7 @@ const StarSessionContainerPage = () => {
     };
   };
 
-  const setSessionInfo=async (parseData:any)=>{
+  const setSessionInfo = async (parseData: any) => {
     const info: SessionInfo = {
       fanId: parseData.currentFanId,
       timer: parseData.timer,
@@ -106,7 +106,7 @@ const StarSessionContainerPage = () => {
     setInfo(info);
   }
 
-  if (type===4) {
+  if (type === 4) {
     return <StarEndPage />;
   }
   if (settingDone) {
