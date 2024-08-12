@@ -11,7 +11,7 @@ interface SessionProps {
 function StarSession({ subscriber, publisher }: SessionProps) {
   const [count, setCount] = useState(0);
   const { starName, fanName } = useSessionStore();
-  const { takePhoto,setTakePhoto } = useSessionStore();
+  const { takePhoto, setTakePhoto } = useSessionStore();
   const [flash, setFlash] = useState<boolean>(false);
   useEffect(() => {
     if (!takePhoto) return;
@@ -26,14 +26,14 @@ function StarSession({ subscriber, publisher }: SessionProps) {
         return prevCount - 1;
       });
     }, 1000);
-    
+
     return () => clearInterval(timerId);
   }, [takePhoto]);
-  const capturePhoto = async () =>{
+  const capturePhoto = async () => {
     setFlash(true);
     setTimeout(() => setFlash(false), 500);
     setTakePhoto(false);
-  }
+  };
   const renderSubscribers = () => {
     return (
       <div className="flex w-full align-middle">
@@ -53,12 +53,11 @@ function StarSession({ subscriber, publisher }: SessionProps) {
               {fanName}
             </p>
           )}
-          {!subscriber && <Loading width={150} height={150} />}
+          {!subscriber && <Loading width={75} height={75} />}
         </div>
       </div>
-      
     );
-  }
+  };
   return (
     <>
       {renderSubscribers()}
@@ -71,6 +70,6 @@ function StarSession({ subscriber, publisher }: SessionProps) {
         <div className="fixed inset-0 bg-white opacity-75 flash-animation"></div>
       )}
     </>
-  )
+  );
 }
 export default StarSession;

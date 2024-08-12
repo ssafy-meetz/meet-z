@@ -126,6 +126,7 @@ const FanSessionContainerPage = () => {
       if (settingDone) {
         return <FanSessionPage />;
       }
+      return <FanSettingPage />;
 
     default:
       return <FanSettingPage />;
