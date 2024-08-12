@@ -72,9 +72,9 @@ public class CommonService {
         //방 생성이 되지 않았을 때 로그인을 막자.
         int meetingId = user.getMeeting().getMeetingId();
 
-        if (!openviduService.existByMeetingRoomsId(meetingId)) {
-            throw new ForbiddenException("입장 가능한 미팅이 존재하지 않습니다.");
-        }
+//        if (!openviduService.existByMeetingRoomsId(meetingId)) {
+//            throw new ForbiddenException("입장 가능한 미팅이 존재하지 않습니다.");
+//        }
 
         String access = jwtUtil.createJwt("access", user.getEmail(), String.valueOf(user.getRole()), ACCESS_TOKEN_EXPIRATION);
         String refresh = jwtUtil.createJwt("refresh", user.getEmail(), String.valueOf(user.getRole()), REFRESH_TOKEN_EXPIRATION);
