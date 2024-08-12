@@ -29,8 +29,8 @@ public class CommonApi {
     }
 
     @PostMapping("/refresh")
-    public ApiResponse<LoginResponseDto> tokenRefresh(@RequestHeader("Authorization") String header){
-        LoginResponseDto response = commonService.refreshToken(header);
+    public ApiResponse<LoginResponseDto> refreshToken(){
+        LoginResponseDto response = commonService.refreshToken();
         return ApiResponse.success(OK, response);
     }
 

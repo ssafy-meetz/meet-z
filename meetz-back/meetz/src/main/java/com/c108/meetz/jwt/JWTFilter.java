@@ -33,7 +33,7 @@ public class JWTFilter extends OncePerRequestFilter {
         }
         //헤더에서 access키에 담긴 토큰을 꺼냄
         String token = authorization.split(" ")[1];
-
+        String requestURI = request.getRequestURI();
         //토큰이 없다면 다음 필터로 넘김
         if(token == null){
             filterChain.doFilter(request, response);
@@ -45,21 +45,14 @@ public class JWTFilter extends OncePerRequestFilter {
         } catch (ExpiredJwtException e) {
             logger.debug("JWTFilter: 토큰 만료");
             throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
-
         }
+
         String email = jwtUtil.getEmail(token);
+        String role = jwtUtil.getRole(token);
         String storedToken = jwtUtil.getToken(email);
-
-        //로그인한 유저가 있다면 현재 로그인 시도를 차단
-        if(storedToken != null && !storedToken.equals(token)){
-            throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
-        }
-        jwtUtil.storeToken(email, token);
-
-        //토큰이 access인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(token);
-        String requestURI = request.getRequestURI();
-        if(requestURI.equals("/api/refresh")){
+
+        if(requestURI.equals("/api/refresh")){ // 재발급이면
             if(!category.equals("refresh")){
                 throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
             }
@@ -68,20 +61,11 @@ public class JWTFilter extends OncePerRequestFilter {
             if(!category.equals("access")){
                 throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
             }
+            //로그인한 유저가 있다면 현재 로그인 시도를 차단
+//            if(storedToken != null && !storedToken.equals(token)){
+//                throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
+//            }
         }
-//        if (!category.equals("access")) {
-//            logger.debug("JWTFilter: 잘못된 토큰 카테고리");
-//            //response body
-//            PrintWriter writer = response.getWriter();
-//            writer.print("invalid access token");
-//
-//            //response status code
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            return;
-//        }
-
-        //role값을 획득
-        String role = jwtUtil.getRole(token);
 
         CommonDto commonDto = new CommonDto(email, role);
         CustomUserDetails customUserDetails = new CustomUserDetails(commonDto);
