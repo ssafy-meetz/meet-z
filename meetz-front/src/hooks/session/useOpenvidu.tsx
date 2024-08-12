@@ -5,16 +5,27 @@ import {
   Subscriber,
   Publisher,
 } from "openvidu-browser";
-import { useSessionStore } from "../../zustand/useSessionStore";
 import { createToken } from "../../apis/session/openviduAPI";
 import useOpenviduStore from "../../zustand/useOpenviduStore";
 
 export const useOpenvidu = () => {
-  const {session,subscriber,publisher,OV,sessionId,setSession,setSubscriber,setPublisher,setOV,setSessionId} =useOpenviduStore();
+  const {
+    session,
+    subscriber,
+    publisher,
+    OV,
+    sessionId,
+    setSession,
+    setSubscriber,
+    setPublisher,
+    setOV,
+    setSessionId,
+  } = useOpenviduStore();
 
   // Leaving session
   const leaveSession = useCallback(() => {
     if (session) session.disconnect();
+    console.log("~기존 세션 종료 완료~" + sessionId);
     setOV(null);
     setSession(null);
     setSessionId("");
@@ -25,7 +36,6 @@ export const useOpenvidu = () => {
   // Joining session
   const joinSession = () => {
     if (session) {
-      console.log("~기존 세션 종료~");
       leaveSession();
     }
     if (sessionId === "") return;
@@ -104,4 +114,4 @@ export const useOpenvidu = () => {
     leaveSession,
     setSubscriber,
   };
-}
+};
