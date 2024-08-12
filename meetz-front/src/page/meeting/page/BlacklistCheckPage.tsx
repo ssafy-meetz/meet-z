@@ -13,15 +13,13 @@ import { AiOutlineClose } from 'react-icons/ai';
 const BlacklistCheckPage = () => {
   const navigate = useNavigate();
   const {
-    openDeleteModal,
     isDeleteModalOpen,
     isDeletedModalOpen,
-    setSelectedBlacklistId,
     isDelete,
     selectedBlacklistId,
     blacklist,
     setBlacklist,
-    // resetModals
+    resetModals,
   } = useBlackStore();
   const { accessToken } = fetchUserData();
   const [blacklistCompany, setBlacklistCompany] = useState(''); // 회사 이름
@@ -69,19 +67,22 @@ const BlacklistCheckPage = () => {
   const cancelHandler = () => {
     navigate(-1);
   };
-  
+
+  const deleteHandler = (blacklistId: number) => {
+    // 상태를 한 번에 업데이트
+    useBlackStore.setState((state) => ({
+      ...state,
+      isDeleteModalOpen: true,
+      selectedBlacklistId: blacklistId,
+      isDeletedModalOpen: false,
+      isDelete: false,
+    }));
+  };
+
   useEffect(() => {
     // 컴포넌트가 마운트될 때 상태 초기화
-    useBlackStore.getState().closeDeleteModal();
-    useBlackStore.getState().closeDeletedModal();
-    useBlackStore.getState().setIsDelete(false);
-  }, []);
-
-  // 모달을 여는 핸들러
-  const deleteHandler = (blacklistId: number) => {
-    setSelectedBlacklistId(blacklistId); // 선택된 블랙리스트 ID 설정
-    openDeleteModal(); // 삭제 확인 모달 열기
-  };
+    resetModals();
+  }, [resetModals]);
 
   const memoizedBlacklistCompany = useMemo(
     () => blacklistCompany,

@@ -15,6 +15,7 @@ interface BlackStoreState {
   setSelectedBlacklistId: (id: number | undefined) => void;
   setBlacklist: (blacklist: BlacklistDto[]) => void; // 블랙리스트 상태 설정 함수
   updateBlacklist: (id: number) => void; // 블랙리스트 업데이트 함수
+  resetModals: () => void;
 }
 
 export const useBlackStore = create<BlackStoreState>((set) => ({
@@ -34,4 +35,10 @@ export const useBlackStore = create<BlackStoreState>((set) => ({
   updateBlacklist: (id: number) => set((state) => ({
     blacklist: state.blacklist.filter((item) => item.blacklistId !== id)
   })),
+  resetModals: () => set({
+    isDeleteModalOpen: false,
+    isDeletedModalOpen: false,
+    isDelete: false,
+    selectedBlacklistId: undefined,
+  }),
 }));
