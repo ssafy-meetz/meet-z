@@ -4,7 +4,6 @@ import com.c108.meetz.domain.Manager;
 import com.c108.meetz.domain.User;
 import com.c108.meetz.domain.Warning;
 import com.c108.meetz.exception.BadRequestException;
-import com.c108.meetz.exception.DuplicateException;
 import com.c108.meetz.exception.ForbiddenException;
 import com.c108.meetz.exception.NotFoundException;
 import com.c108.meetz.repository.BlackListRepository;
@@ -24,6 +23,7 @@ public class WarningService {
     private final BlackListRepository blackListRepository;
     private final BlackListService blackListService;
     private final ManagerRepository managerRepository;
+    private final MailService mailService;
 
     // 경고를 저장하고, 필요 시 블랙리스트에 추가하는 메서드
     public void saveWarning(int userId, String reason) {
@@ -64,6 +64,9 @@ public class WarningService {
         warningRepository.save(warning); // 경고 저장
         System.out.println("Warning saved for user: " + userName);
 
+        // 경고 메일 발송
+        mailService.sendWarningUser(user, reason); // 사용자에게 경고 메일을 전송
+
         // 경고 횟수를 조회.
         int warningCount = warningRepository.countByNameAndPhoneAndManagerId(userName, userPhone, managerId);
         System.out.println("Warning count for user: " + warningCount);
@@ -72,6 +75,9 @@ public class WarningService {
         if (warningCount >= 3) {
             System.out.println("Adding user to blacklist due to 3 warnings: " + userName);
             blackListService.saveBlackList(userId);
+
+            // 경고 누적에 따른 블랙리스트 등록 메일 발송
+            mailService.sendWarningCountToBlacklist(user); // 사용자에게 경고 누적에 따른 블랙리스트 등록 메일을 전송
         }
     }
 
