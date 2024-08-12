@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { MeetingDto } from "../../../types/types";
 import MeetingDayBox from "./MeetingDayBox";
 import MeetingListItem from "./MeetingListItem";
+import { MeetingDto } from "../../../../types/types";
 
 interface MeetingMonthData {
   [key: string]: MeetingDto[];

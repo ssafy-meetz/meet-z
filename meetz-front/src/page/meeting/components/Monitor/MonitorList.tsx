@@ -1,5 +1,5 @@
 import { ReportsDto } from "../../../../types/types"
-import Accordion from "../Accordion"
+import Accordion from "./Accordion"
 
 const MonitorList = ({ reports }: { reports: ReportsDto[] | null }) => {
 

@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { MeetingDto } from '../../../types/types';
+import { MeetingDto } from '../../../../types/types';
 
 const MeetingListItem = ({ meeting }: { meeting: MeetingDto }) => {
   const navigate = useNavigate();

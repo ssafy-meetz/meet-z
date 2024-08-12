@@ -1,10 +1,10 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import MeetingList from '../components/MeetingList';
-import MeetingListTitle from '../components/MeetingListTitle';
 import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 import getEndMeetingList from '../../../apis/meeting/getEndMeetingList';
 import { MeetingDto } from '../../../types/types';
 import fetchUserData from '../../../lib/fetchUserData';
+import MeetingListTitle from '../components/YetEndList/MeetingListTitle';
+import MeetingList from '../components/YetEndList/MeetingList';
 
 interface MeetingMonthData {
   [key: string]: {

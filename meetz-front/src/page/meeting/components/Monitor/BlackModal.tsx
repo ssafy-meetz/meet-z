@@ -1,4 +1,4 @@
-import { useMonitorStore } from '../../../zustand/useMonitorStore';
+import { useMonitorStore } from '../../../../zustand/useMonitorStore';
 import Alert from '/src/assets/images/alert.png';
 
 const BlackModal = () => {
