@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ReportsDto } from '../../../../types/types';
+import { ReportDetailDto, ReportsDto } from '../../../../types/types';
 import fetchUserData from '../../../../lib/fetchUserData';
 import getReportedDetail from '../../../../apis/meeting/getReportedDetail';
 import Loading from '../../../../common/Loading';
 import AudioPlayer from './AudioPlayer';
 import ScriptBox from './ScriptBox';
-
 
 interface AccordionProps {
   title: string;
@@ -18,16 +17,16 @@ const Accordion: React.FC<AccordionProps> = ({ title, report }) => {
   const { meetingId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const [scriptLoading, setScriptLoading] = useState(false);
-  const [reportDetail, setReportDetail] = useState<ReportsDto | null>(null);
+  const [reportDetail, setReportDetail] = useState<ReportDetailDto | null>(null);
 
   const fetchReportedDetail = async () => {
     setScriptLoading(true);
     try {
       const { data } = await getReportedDetail(+(meetingId || 0), report.reportId, accessToken || '');
-
+      setReportDetail(data);
 
     } catch (error) {
-
+      alert('신고받은 내용을 로드하는데 실패했습니다.');
     }
     setScriptLoading(false);
   }
@@ -70,8 +69,8 @@ const Accordion: React.FC<AccordionProps> = ({ title, report }) => {
             </div>
             :
             <>
-              <AudioPlayer />
-              <ScriptBox />
+              <AudioPlayer reportDetail={reportDetail} />
+              <ScriptBox reportDetail={reportDetail} />
             </>}
         </div>
       )}
