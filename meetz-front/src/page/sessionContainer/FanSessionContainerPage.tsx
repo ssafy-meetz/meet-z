@@ -9,7 +9,6 @@ import PickPhotoPage from "./pickPhoto/PickPhotoPage";
 import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 import useOpenviduStore from "../../zustand/useOpenviduStore";
-import useCheckAuth from "../../hooks/meeting/useCheckAuth";
 type SessionInfo = {
   timer: number;
   wait: number;
