@@ -140,7 +140,7 @@ public class OpenviduService {
     //스케줄러
     //cron(초 분 시 일 월 요일 (년))
     // * : 모든 값, /: 증분 값(0/15, 0부터 시작해 15마다), -: 범위
-    @Scheduled(cron = "1 0/10 * * * ?") //10분마다 실행
+    @Scheduled(cron = "1 0/5 * * * ?") //5분마다 실행
 //    @Scheduled(cron = "0/10 * * * * ?") //10초마다 실행
     public void scheduleTaskTest() throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
@@ -363,7 +363,8 @@ public class OpenviduService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }, 15, TimeUnit.SECONDS);
+        }, meetingRoomInfos.get(meetingId).getMeetingDuration()
+                + meetingRoomInfos.get(meetingId).getTerm(), TimeUnit.SECONDS);
 
         scheduler.schedule(() -> {
             try {
@@ -375,7 +376,7 @@ public class OpenviduService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }, 12, TimeUnit.SECONDS);
+        }, meetingRoomInfos.get(meetingId).getMeetingDuration(), TimeUnit.SECONDS);
 
     }
 
