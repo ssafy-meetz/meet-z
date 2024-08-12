@@ -19,7 +19,7 @@ type SessionInfo = {
 const FanSessionContainerPage = () => {
   const { isSessionEnd, setWait, setTakePhoto, setIsSessionEnd } =
     useSessionStore();
-  const { session, setSessionId } = useOpenviduStore();
+  const { session, exSession, setSessionId } = useOpenviduStore();
   const [type, setType] = useState(0);
   const { leaveSession,joinSession } = useOpenvidu();
   const { settingDone, setTimer, setStartName, setNextStarName } =
@@ -28,9 +28,6 @@ const FanSessionContainerPage = () => {
   useEffect(() => {
     fetchSSE();
   }, []);
-  useEffect(() => {
-    console.log(session);
-  }, [session]);
   useEffect(() => {
     if (!settingDone && type === 1) {
       alert("카메라 설정이 완료되어야 미팅 입장이 진행됩니다.");
@@ -73,8 +70,8 @@ const FanSessionContainerPage = () => {
           setTakePhoto(true);
           break;
 
-        case 4:
-          await setSessionId("meetz");
+        case 4: 
+          await leaveSession();
           if (
             !localStorage.getItem("images") ||
             localStorage.getItem("images") === "[]"
