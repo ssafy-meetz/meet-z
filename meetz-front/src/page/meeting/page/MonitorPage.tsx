@@ -9,6 +9,7 @@ import getReportedList from '../../../apis/meeting/getReportedList';
 import MonitorHeader from '../components/Monitor/MonitorHeader';
 import { ReportsDto } from '../../../types/types';
 import MonitorList from '../components/Monitor/MonitorList';
+import Loading from '../../../common/Loading';
 
 interface ReportedDataDto {
   meetingDuration: string; //number형으로 변경해야함
@@ -39,9 +40,16 @@ const MonitoringPage = () => {
   }
 
   useEffect(() => {
-    console.log(meetingId)
     fetchReportedData();
   }, [])
+
+  if (!reportedData) {
+    return (
+      <div className='flex justify-center items-center w-full h-screen'>
+        <Loading width={160} height={160} />
+      </div>
+    );
+  }
 
   return (
     <div className='flex flex-col items-center'>

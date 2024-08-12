@@ -120,6 +120,7 @@ export type SegementsDto = {
 
 export type ReportDetailDto = {
   reportId: number;
+  reportedUserId: number;
   reportedUserName: string;
   starName: string;
   isReported: boolean;

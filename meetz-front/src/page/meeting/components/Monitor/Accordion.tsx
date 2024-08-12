@@ -6,6 +6,7 @@ import getReportedDetail from '../../../../apis/meeting/getReportedDetail';
 import Loading from '../../../../common/Loading';
 import AudioPlayer from './AudioPlayer';
 import ScriptBox from './ScriptBox';
+import { useMonitorStore } from '../../../../zustand/useMonitorStore';
 
 interface AccordionProps {
   title: string;
@@ -17,16 +18,15 @@ const Accordion: React.FC<AccordionProps> = ({ title, report }) => {
   const { meetingId } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const [scriptLoading, setScriptLoading] = useState(false);
-  const [reportDetail, setReportDetail] = useState<ReportDetailDto | null>(null);
+  const { reportDetail, setReportDetail, setReportedUserId } = useMonitorStore();
 
   const fetchReportedDetail = async () => {
     setScriptLoading(true);
     try {
       const { data } = await getReportedDetail(+(meetingId || 0), report.reportId, accessToken || '');
       setReportDetail(data);
-
+      setReportedUserId(data.reportedUserId); //이거 가져다가 userId에 넣기
     } catch (error) {
-      setReportDetail(null);
     }
     setScriptLoading(false);
   }

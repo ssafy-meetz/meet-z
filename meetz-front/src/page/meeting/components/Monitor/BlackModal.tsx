@@ -25,11 +25,11 @@ const BlackModal = () => {
             </div>
             <div>
               <span className='text-xl cursor-default'>
-                “강창우” 팬에게{' '}
+                “강창우” 팬을{' '}
                 <span className='text-red-600 font-semibold'>
-                  경고 1회 누적
+                  영구 제명
                 </span>
-                을 진행하시겠습니까?
+                하시겠습니까?
               </span>
             </div>
           </div>

@@ -122,7 +122,7 @@ const ExcelBox = ({ scrollToBottom }: { scrollToBottom: () => void }) => {
       >
         {isLoading ? (
           <div className='h-12 flex justify-center items-center'>
-            <Loading width={48} height={48} />
+            <Loading width={64} height={64} />
           </div>
         ) : (
           <>
