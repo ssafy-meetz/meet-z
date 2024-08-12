@@ -24,8 +24,12 @@ export const useOpenvidu = () => {
 
   // Leaving session
   const leaveSession = useCallback(() => {
-    if (session) session.disconnect();
-    console.log("~기존 세션 종료 완료~" + sessionId);
+    if (session) {
+      console.log(session);
+      session.disconnect();
+      console.log("~기존 세션 종료 완료~");
+    }
+
     setOV(null);
     setSession(null);
     setSessionId("");
