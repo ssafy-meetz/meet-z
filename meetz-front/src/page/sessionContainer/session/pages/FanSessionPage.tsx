@@ -7,18 +7,11 @@ import { MeetingInfoDto } from "../../../../types/types";
 import useOpenviduStore from "../../../../zustand/useOpenviduStore";
 
 function FanSessionPage() {
-  const {joinSession } = useOpenvidu();
-  const {session, subscriber,publisher,sessionId} = useOpenviduStore();
+  const {session, subscriber,publisher} = useOpenviduStore();
   const { formatTime } = useSessionTimer();
   const [meetingInfo] = useState<MeetingInfoDto>(
     JSON.parse(sessionStorage.getItem("mi") || "")
   );
-  useEffect(() => {
-    if(sessionId==="")return;
-     joinSession();
-
-  }, [sessionId]);
-
   return (
     <div>
       <div className="flex flex-col justify-center items-center h-screen bg-black">

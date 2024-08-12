@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSessionStore } from "../../zustand/useSessionStore";
-import { useOpenvidu } from "./useOpenvidu";
 
 const useSessionTimer = () => {
-  const { session } = useOpenvidu();
   const { timer } = useSessionStore();
   const [time, setTime] = useState(0);
   const [formatTime, setFormatTime] = useState("");

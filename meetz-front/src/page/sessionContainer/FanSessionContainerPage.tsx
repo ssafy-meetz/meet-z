@@ -21,7 +21,7 @@ const FanSessionContainerPage = () => {
     useSessionStore();
   const { session, setSessionId } = useOpenviduStore();
   const [type, setType] = useState(0);
-  const { leaveSession } = useOpenvidu();
+  const { leaveSession,joinSession } = useOpenvidu();
   const { settingDone, setTimer, setStartName, setNextStarName } =
     useSessionStore();
   //로딩될 때마다 SSE 연결 시도
@@ -61,21 +61,20 @@ const FanSessionContainerPage = () => {
       const res = await e.data;
       const parseData = await JSON.parse(res);
       console.log(parseData);
-      await setType(parseData.type);
-      if (session && parseData.type !== 3 && parseData.type !== 0) {
-        await leaveSession();
-      }
+
       switch (parseData.type) {
         case 1:
           await moveNextSession(parseData);
           break;
-      
+        case 2:
+          await leaveSession();
+          break;
         case 3:
           setTakePhoto(true);
           break;
-      
+
         case 4:
-          leaveSession();
+          await setSessionId("meetz");
           if (
             !localStorage.getItem("images") ||
             localStorage.getItem("images") === "[]"
@@ -83,22 +82,22 @@ const FanSessionContainerPage = () => {
             setIsSessionEnd(true);
           }
           break;
-      
+
         case 0:
           setWait(parseData.waitingNum);
           break;
       }
-      
-      //SSE에러 발생 시 SSE와 연결 종료
-      eventSource.onerror = (e: any) => {
-        eventSource.close();
-        if (e.error) {
-          console.error(e.error);
-        }
-        if (e.target.readyState === EventSourcePolyfill.CLOSED) {
-          console.log("EventSourcePolyFill-CLOSED");
-        }
-      };
+      await setType(parseData.type);
+    };
+    //SSE에러 발생 시 SSE와 연결 종료
+    eventSource.onerror = (e: any) => {
+      eventSource.close();
+      if (e.error) {
+        console.error(e.error);
+      }
+      if (e.target.readyState === EventSourcePolyfill.CLOSED) {
+        console.log("EventSourcePolyFill-CLOSED");
+      }
     };
   };
 
@@ -118,6 +117,7 @@ const FanSessionContainerPage = () => {
     setNextStarName(info.nextStarName);
     setSessionId(info.sessionId);
     setWait(info.wait);
+    await joinSession(info.sessionId);
   };
   if (type === 2 && settingDone) {
     return <SessionLoadingPage />;
