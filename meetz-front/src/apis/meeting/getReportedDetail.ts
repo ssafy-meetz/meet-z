@@ -8,7 +8,6 @@ const getReportedDetail = async (meetingId: number, reportId: number, accessToke
         'Authorization': `Bearer ${accessToken}`
       }
     });
-    console.log(data)
     if (status === 200 && data.code) {
 
       return data;
