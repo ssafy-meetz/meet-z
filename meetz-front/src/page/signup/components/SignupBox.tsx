@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import logo from '/src/assets/images/logo.png';
+import { FaTimes, FaCheck } from 'react-icons/fa'; // react-icons에서 아이콘 가져오기
 import useEmailValidation from '../../../hooks/form/useEmailValidation';
 import usePasswordValidation from '../../../hooks/form/usePasswordValidation';
 import usePhoneValidation from '../../../hooks/form/usePhoneValidation';
@@ -33,11 +34,8 @@ const SignupBox = () => {
     }
 
     try {
-      const isNotDuplicate = await checkDuplicatedEmail(email); // API : 이메일 중복 여부 체크
-      //  true면 중복이 아니다.
-
+      const isNotDuplicate = await checkDuplicatedEmail(email);
       if (isNotDuplicate) {
-        // 중복이 아닌 경우
         alert('사용 가능한 이메일입니다.');
         setAuthCode('');
         setIsAuthenticated(false);
@@ -70,17 +68,15 @@ const SignupBox = () => {
     }
 
     if (!isActive) {
-      // 타이머가 작동하지 않는 상태라면
-      startTimer(); //isActive = true로
+      startTimer();
       if (authCodeInputRef.current) {
         authCodeInputRef.current.focus();
       }
       alert('인증 번호를 발송했습니다. 제한 시간 내에 인증을 완료해주세요.');
-      await reqCertifyEmail(email); // API : 인증 이메일 보내기 요청
+      await reqCertifyEmail(email);
       return;
     }
 
-    // 타이머가 작동하고 있는 상태라면
     if (!authCode || authCode === null || authCode === '') {
       alert('올바른 인증 번호를 입력하세요.');
       return;
@@ -88,8 +84,7 @@ const SignupBox = () => {
 
     stopTimer();
     try {
-      const result = await checkEmailAuthNum(email, authCode); // API : 이메일 인증 번호 보내서 인증 여부 확인
-
+      const result = await checkEmailAuthNum(email, authCode);
       if (result) {
         alert('인증이 완료되었습니다.');
         setIsAuthenticated(true);
@@ -100,7 +95,7 @@ const SignupBox = () => {
       setIsAuthenticated(false);
       setAuthCode('');
       stopTimer();
-      setTime(120); //isActive = false로
+      setTime(120);
     }
   };
 
@@ -140,7 +135,6 @@ const SignupBox = () => {
       return;
     }
 
-    // 회원가입 API 호출 로직 추가
     try {
       const successSignup = await postUserSignup(
         email,
@@ -150,7 +144,6 @@ const SignupBox = () => {
       );
       if (successSignup) {
         alert('회원가입이 완료되었습니다. 로그인 후 이용해주세요.');
-        //로그인 페이지로 라우팅
         navigate('/');
         return;
       }
@@ -213,34 +206,66 @@ const SignupBox = () => {
                 : '인증 완료'}
             </button>
           </div>
-          <input
-            type='password'
-            value={password}
-            placeholder='비밀번호 (영문, 특수문자를 포함하는 8자 이상)'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
-            onChange={handlePasswordChange}
-          />
-          <input
-            type='password'
-            value={secondPW}
-            placeholder='비밀번호 확인'
-            className='border  border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
-            onChange={(e) => setSecondPW(e.target.value)}
-          />
-          <input
-            type='text'
-            value={company}
-            placeholder='기관 또는 개인명'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
-            onChange={(e) => setCompany(e.target.value)}
-          />
-          <input
-            type='text'
-            value={phone}
-            placeholder='휴대폰 번호 입력 (‘-’ 제외 11자리 입력)'
-            className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D]  focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
-            onChange={handlePhoneChange}
-          />
+          <div className='relative'>
+            <input
+              type='password'
+              value={password}
+              placeholder='비밀번호 (영문, 특수문자를 포함하는 8자 이상)'
+              className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
+              onChange={handlePasswordChange}
+            />
+            <span className='absolute inset-y-0 right-3 flex items-center'>
+              {password &&
+                (isValidPassword ? (
+                  <FaCheck className='text-green-500' />
+                ) : (
+                  <FaTimes className='text-red-500' />
+                ))}
+            </span>
+          </div>
+          <div className='relative'>
+            <input
+              type='password'
+              value={secondPW}
+              placeholder='비밀번호 확인'
+              className='border  border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
+              onChange={(e) => setSecondPW(e.target.value)}
+            />
+            <span className='absolute inset-y-0 right-3 flex items-center'>
+              {secondPW &&
+                (checkMatchPassword() ? (
+                  <FaCheck className='text-green-500' />
+                ) : (
+                  <FaTimes className='text-red-500' />
+                ))}
+            </span>
+          </div>
+          <div className='relative'>
+            <input
+              type='text'
+              value={company}
+              placeholder='기관 또는 개인명'
+              className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D] focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
+              onChange={(e) => setCompany(e.target.value)}
+            />
+          </div>
+          <div className='relative'>
+            <input
+              type='text'
+              value={phone}
+              placeholder='휴대폰 번호 입력 (‘-’ 제외 11자리 입력)'
+              className='border border-[#C4C4C4] h-full focus:border-[#FF4F5D]  focus:outline-none p-3 rounded-lg w-full hover:border-[#ff4f5d] transition-all duration-400 ease-in-out'
+              onChange={handlePhoneChange}
+            />
+            <span className='absolute inset-y-0 right-3 flex items-center'>
+              {phone &&
+                (isValidPhone ? (
+                  <FaCheck className='text-green-500' />
+                ) : (
+                  <FaTimes className='text-red-500' />
+                ))}
+            </span>
+          </div>
         </div>
         <button
           type='submit'
