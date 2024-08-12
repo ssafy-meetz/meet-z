@@ -1,30 +1,35 @@
 package com.c108.meetz.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public class TranscriptionResponseDto {
+    private String filePath; // 파일 경로를 추가
     private String transcript;
-    private List<ProfanityCheckResult> profanityResults;
+    private boolean hasProfanityInTranscript;
+    private List<TranscriptionSegment> segments;
 
-    public TranscriptionResponseDto(String transcript, List<ProfanityCheckResult> profanityResults) {
+
+    public TranscriptionResponseDto(String filePath, String transcript, boolean hasProfanityInTranscript, List<TranscriptionSegment> segments) {
+        this.filePath = filePath;
         this.transcript = transcript;
-        this.profanityResults = profanityResults;
+        this.hasProfanityInTranscript = hasProfanityInTranscript;
+        this.segments = segments;
     }
 
-    @Getter
-    @Setter
-    public static class ProfanityCheckResult {
-        private int wordIndex;
-        private String word;
-
-        public ProfanityCheckResult(int wordIndex, String word) {
-            this.wordIndex = wordIndex;
-            this.word = word;
-        }
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TranscriptionSegment {
+        private String startTime;
+        private String endTime;
+        private String text;
+        private List<String> badWordsList;
     }
+
 }

@@ -27,7 +27,11 @@ const postUserLogin = async (email: string, password: string, isManager: boolean
       if (e.response.status === 404) {
         throw new Error('존재하지 않는 회원입니다.');
       } else if (e.response.status === 400) {
-        throw new Error('올바른 형식이 아닙니다.');
+        throw new Error('올바른 형식이 아닙니다. 다시 시도하세요.');
+      } else if (e.response.status === 401) {
+        throw new Error('이미 다른 기기에서 로그인 중입니다. 로그아웃 후 다시 시도하세요.')
+      } else if (e.response.status === 403) {
+        throw new Error('입장 가능한 미팅이 존재하지 않습니다. 예정된 미팅은 시작 30분 전 부터 입장 가능합니다.');
       }
     }
     throw new Error('로그인 중 오류가 발생했습니다.');

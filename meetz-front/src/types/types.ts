@@ -42,6 +42,13 @@ export type StarDto = {
   password: string;
 }
 
+export type StarMeetingDto = {
+  name: string;
+  email: string;
+  password: string;
+  meetingRoomId: number;
+}
+
 export type FanDto = {
   name: string;
   email: string;
@@ -62,8 +69,44 @@ export type UserDto = {
 } | undefined
 
 export type ChatFanDto = {
-  id: number;
+  userId: number;
   name: string;
-  Message: string;
-  time: string;
+  recentChat: string;
+  recentDate: string;
+}
+
+export type messageDto = {
+  chatRoomId: number;
+  receiverId: number;
+  content: string;
+  senderRole: string;
+  senderId: number;
+  createdAt: string | null;
+}
+
+export type BlacklistDto = {
+  blacklistId: number;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+export type MeetingInfoDto = {
+  chatRoomId: number;
+  meetingDuration: number;
+  meetingId: number;
+  meetingName: string;
+  meetingstart: string;
+  nickname: string;
+  starList: StarDto[];
+  term: number;
+  userPosition: number;
+}
+
+export type ReportsDto = {
+  reportId: number;
+  reportedUserName: string;
+  starName: string;
+  isReported: boolean;
+  isProfanity: boolean;
 }

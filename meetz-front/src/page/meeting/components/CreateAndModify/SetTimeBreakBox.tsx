@@ -16,7 +16,9 @@ const SetTimeBreakBox = () => {
         <Select
           options={breakOptions}
           value={selectedBreak}
-          onChange={(option) => setSelectedBreak(option)}
+          onChange={(option) => {
+            setSelectedBreak(option)
+          }}
           styles={customStyles}
           className='text-xl w-40'
           placeholder='선택'

@@ -1,15 +1,38 @@
-import { useNavigate } from "react-router-dom";
-import { ChatFanDto } from "../../../../types/types";
+import { useNavigate, useParams } from "react-router-dom";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import ChatFanListItem from "./ChatFanListItem";
+import { useEffect } from "react";
+import getChatListForManager from "../../../../apis/managerChat/getChatListForManager";
+import fetchUserData from "../../../../lib/fetchUserData";
+import { useManagerChatStore } from "../../../../zustand/useManagerChatStore";
 
-const ChatFanList = ({ setSelectedFan, fanList }: { setSelectedFan: React.Dispatch<ChatFanDto | null>; fanList: ChatFanDto[] }) => {
+const ChatFanList = () => {
   const navigate = useNavigate();
+  const { meetingId } = useParams();
+  const { setFanList, setChatRoomId, setManagerId } = useManagerChatStore();
+  const { accessToken } = fetchUserData();
 
   const handleButtonClick = () => {
-    const id = 1;
-    navigate(`/meeting/detail/${id}`);
+    if (!meetingId) {
+      return;
+    }
+    navigate(`/meeting/detail/${+meetingId}`);
   };
+
+  const fetchChatList = async () => {
+    if (!meetingId) {
+      return;
+    }
+
+    const { rooms, chatRoomId, managerId } = await getChatListForManager(+meetingId, accessToken || "");
+    setFanList(rooms);
+    setManagerId(managerId);
+    setChatRoomId(chatRoomId);
+  }
+
+  useEffect(() => {
+    fetchChatList();
+  }, [])
 
   return (
     <div className='w-80 h-full border-r-4 overflow-y-hidden'>
@@ -25,8 +48,8 @@ const ChatFanList = ({ setSelectedFan, fanList }: { setSelectedFan: React.Dispat
         </div>
       </div>
 
-      {/* 채팅 버튼 목록 */}
-      <ChatFanListItem setSelectedFan={setSelectedFan} fanList={fanList} />
+      {/* 채팅 목록 아이템 */}
+      <ChatFanListItem />
     </div>
   )
 }

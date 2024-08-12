@@ -1,36 +1,36 @@
 // src/utils/timeOptions.ts
 
 export const timeOptions = [
-  { value: '08:00 am', label: '08:00 am' },
-  { value: '08:30 am', label: '08:30 am' },
-  { value: '09:00 am', label: '09:00 am' },
-  { value: '09:30 am', label: '09:30 am' },
-  { value: '10:00 am', label: '10:00 am' },
-  { value: '10:30 am', label: '10:30 am' },
-  { value: '11:00 am', label: '11:00 am' },
-  { value: '11:30 am', label: '11:30 am' },
-  { value: '12:00 pm', label: '12:00 pm' },
-  { value: '12:30 pm', label: '12:30 pm' },
-  { value: '01:00 pm', label: '01:00 pm' },
-  { value: '01:30 pm', label: '01:30 pm' },
-  { value: '02:00 pm', label: '02:00 pm' },
-  { value: '02:30 pm', label: '02:30 pm' },
-  { value: '03:00 pm', label: '03:00 pm' },
-  { value: '03:30 pm', label: '03:30 pm' },
-  { value: '04:00 pm', label: '04:00 pm' },
-  { value: '04:30 pm', label: '04:30 pm' },
-  { value: '05:00 pm', label: '05:00 pm' },
-  { value: '05:30 pm', label: '05:30 pm' },
-  { value: '06:00 pm', label: '06:00 pm' },
-  { value: '06:30 pm', label: '06:30 pm' },
-  { value: '07:00 pm', label: '07:00 pm' },
-  { value: '07:30 pm', label: '07:30 pm' },
-  { value: '08:00 pm', label: '08:00 pm' },
-  { value: '08:30 pm', label: '08:30 pm' },
-  { value: '09:00 pm', label: '09:00 pm' },
-  { value: '09:30 pm', label: '09:30 pm' },
-  { value: '10:00 pm', label: '10:00 pm' },
-];
+  { value: '', label: '시간 선택' },
+  { value: '08:00', label: '08:00 am' },
+  { value: '08:30', label: '08:30 am' },
+  { value: '09:00', label: '09:00 am' },
+  { value: '09:30', label: '09:30 am' },
+  { value: '10:00', label: '10:00 am' },
+  { value: '10:30', label: '10:30 am' },
+  { value: '11:00', label: '11:00 am' },
+  { value: '11:30', label: '11:30 am' },
+  { value: '12:00', label: '12:00 pm' },
+  { value: '12:30', label: '12:30 pm' },
+  { value: '13:00', label: '01:00 pm' },
+  { value: '13:30', label: '01:30 pm' },
+  { value: '14:00', label: '02:00 pm' },
+  { value: '14:30', label: '02:30 pm' },
+  { value: '15:00', label: '03:00 pm' },
+  { value: '15:30', label: '03:30 pm' },
+  { value: '16:00', label: '04:00 pm' },
+  { value: '16:30', label: '04:30 pm' },
+  { value: '17:00', label: '05:00 pm' },
+  { value: '17:30', label: '05:30 pm' },
+  { value: '18:00', label: '06:00 pm' },
+  { value: '18:30', label: '06:30 pm' },
+  { value: '19:00', label: '07:00 pm' },
+  { value: '19:30', label: '07:30 pm' },
+  { value: '20:00', label: '08:00 pm' },
+  { value: '20:30', label: '08:30 pm' },
+  { value: '21:00', label: '09:00 pm' },
+  { value: '21:30', label: '09:30 pm' },
+]
 
 export const durationOptions = [
   { value: '60', label: '1분' },
@@ -54,24 +54,18 @@ export const durationOptions = [
   { value: '600', label: '10분' },
 ];
 
-
-export const breakOptions = Array.from({ length: 13 }, (_, i) => {
-  const seconds = i * 10;
-  const minutes = Math.floor(seconds / 60);
-  const remainderSeconds = seconds % 60;
-
-  if (seconds === 0) {
-    return {
-      value: '0:00',
-      label: 'X',
-    };
-  }
-
-  return {
-    value: `${minutes}:${remainderSeconds.toString().padStart(2, '0')}`,
-    label: `${minutes > 0 ? `${minutes}분 ` : ''}${remainderSeconds > 0 ? `${remainderSeconds}초` : ''}`.trim(),
-  };
-});
+export const breakOptions = [
+  { value: '0', label: 'X' },
+  { value: '10', label: '10초' },
+  { value: '20', label: '20초' },
+  { value: '30', label: '30초' },
+  { value: '60', label: '1분' },
+  { value: '90', label: '1분30초' },
+  { value: '120', label: '2분' },
+  { value: '150', label: '2분30초' },
+  { value: '180', label: '3분' },
+  { value: '300', label: '5분' },
+];
 
 export const customStyles = {
   control: (provided: any) => ({

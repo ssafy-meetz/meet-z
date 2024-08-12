@@ -1,29 +1,98 @@
 import { useNavigate } from 'react-router-dom';
 import LoginBox from './components/LoginBox';
-import loginImage from '/src/assets/images/login_image.png';
+import loginemoji from '/src/assets/images/login_emoji.png';
 import fetchUserData from '../../lib/fetchUserData';
 import clearUserData from '../../lib/clearUserData';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import postLogout from '../../apis/auth/postLogout';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const { accessToken } = fetchUserData();
 
+  const [startBottomTextAnimation, setStartBottomTextAnimation] =
+    useState(false);
+
+  const logoutHandler = async () => {
+    try {
+      await postLogout(localStorage.getItem('rt') || '');
+      localStorage.clear();
+      clearUserData();
+      alert('로그아웃 되었습니다.');
+      navigate('/', { replace: true });
+    } catch (error: any) {}
+    return;
+  };
+
   useEffect(() => {
     if (accessToken) {
-      if (window.confirm('현재 로그인 상태입니다. 로그아웃 후 로그인 페이지로 이동하시겠습니까?')) {
-        clearUserData();
-        navigate('/', { replace: true });
-        return;
+      if (
+        window.confirm(
+          '현재 로그인 상태입니다. 로그아웃 후 로그인 페이지로 이동하시겠습니까?'
+        )
+      ) {
+        logoutHandler();
+      } else {
+        navigate(-1);
       }
     }
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    const totalAnimationDuration = 7 * 0.1 + 10 * 0.1; // MEET:Z (7글자) + 에서 편하게 (10글자)의 애니메이션 시간
+    const timeout = setTimeout(() => {
+      setStartBottomTextAnimation(true);
+    }, totalAnimationDuration * 1000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const getDelay = (index: any) => `${index * 0.1}s`;
 
   return (
     <div className='bg-gradient-to-br from-[#FE9374] to-[#FE4D5C] w-full h-screen flex flex-col justify-center items-center'>
       <div className='flex flex-col lg:flex-row justify-center items-center w-full max-w-screen-xl px-5 lg:px-28 gap-5 lg:gap-20'>
-        <div className='w-full  justify-center lg:justify-end lg:flex hidden'>
-          <img src={loginImage} alt='로그인 로고' className='w-3/4 lg:w-full' />
+        <div className='w-full flex-col gap-20 justify-center lg:justify-end lg:flex hidden'>
+          <div className='text-white text-4xl font-semibold  text-container '>
+            <div className='pb-2 flex items-center'>
+              {'MEET:Z'.split('').map((char, index: any) => (
+                <span
+                  key={index}
+                  className='font-audiowide font-normal text-6xl opacity-0 animate-slideInFromTop'
+                  style={{ animationDelay: getDelay(index) }}
+                >
+                  {char}
+                </span>
+              ))}
+              {' 에서 편하게'.split('').map((char, index: any) => (
+                <span
+                  key={index}
+                  className='opacity-0 animate-slideInFromTop'
+                  style={{ animationDelay: getDelay(index + 7) }} // MEET:Z의 글자 수(7)만큼 더해줌
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
+            </div>
+            <div>
+              {'나의 스타와 팬을 만나보세요'
+                .split('')
+                .map((char, index: any) => (
+                  <span
+                    key={index}
+                    className={`opacity-0 ${
+                      startBottomTextAnimation
+                        ? 'animate-slideInFromBottom'
+                        : ''
+                    }`}
+                    style={{ animationDelay: getDelay(index) }}
+                  >
+                    {char === ' ' ? '\u00A0' : char}
+                  </span>
+                ))}
+            </div>
+          </div>
+          <img src={loginemoji} alt='emoji' className='animate-floatIn' />
         </div>
         <div className='w-full flex justify-center lg:justify-start'>
           <div className='lg:mb-[100px]'>

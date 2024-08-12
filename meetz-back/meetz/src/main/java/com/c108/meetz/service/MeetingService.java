@@ -38,6 +38,7 @@ public class MeetingService {
     private final BlackListRepository blackListRepository;
 
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("xls", "xlsx");
+    private static final List<String> EXPECTED_HEADERS = List.of("No", "Name", "Email", "Phone(-제외)");
 
     public MeetingSaveResponseDto saveMeeting(MeetingSaveRequestDto meetingSaveRequestDto) {
         if(!SecurityUtil.getCurrentUserRole().equals("MANAGER")){
@@ -65,24 +66,23 @@ public class MeetingService {
     }
 
     private LocalDateTime calculateMeetingEnd(MeetingSaveRequestDto meeting) {
-        int singleFanMeetingTime = (meeting.getMeetingDuration() + meeting.getTerm()) * meeting.getStarList().size() - meeting.getTerm();
-        int totalFanMeetingTime = singleFanMeetingTime * meeting.getFanList().size();
+        int lastFanMeetingTime = (meeting.getMeetingDuration() + meeting.getTerm()) * meeting.getStarList().size() - meeting.getTerm(); //마지막 팬이 스타를 만나는 총 시간
+        int totalFanMeetingTime = lastFanMeetingTime + (meeting.getMeetingDuration() + meeting.getTerm()) * (meeting.getFanList().size()-1);
         return meeting.getMeetingStart().plusSeconds(totalFanMeetingTime);
     }
 
     public ExcelResponseDto readExcelFile(MultipartFile file) {
-        if(file.isEmpty()) throw new BadRequestException("파일을 첨부해주세요.");
-        if(!isExcelFile(file)) throw new BadRequestException("엑셀파일만 첨부할 수 있습니다.");
+        if(!isExcelFile(file)) throw new ForbiddenException("올바른 파일이 아닙니다.");
         String email = SecurityUtil.getCurrentUserEmail();
         int managerId = managerRepository.findByEmail(email).get().getManagerId();
         try {
             List<FanSaveDto> dtos = parseExcel(file);
             List<FanSaveDto> blackList = new ArrayList<>();
             List<FanSaveDto> notBlackList = new ArrayList<>();
-            for(FanSaveDto dto : dtos){
-                if(blackListRepository.existsByNameAndEmailAndPhoneAndManager_ManagerId(dto.name(), dto.email(), dto.phone(), managerId)){
+            for (FanSaveDto dto : dtos) {
+                if (blackListRepository.existsByNameAndPhoneAndManager_ManagerId(dto.name(), dto.phone(), managerId)) {
                     blackList.add(dto);
-                }else{
+                } else {
                     notBlackList.add(dto);
                 }
             }
@@ -91,8 +91,10 @@ public class MeetingService {
                     notBlackList.isEmpty() ? null : notBlackList,
                     notBlackList.size()
             );
+        }catch (BadRequestException e){
+            throw e;
         }catch(Exception e){
-            throw new InternalServerErrorException();
+            throw new ForbiddenException("올바른 파일이 아닙니다.");
         }
     }
     private boolean isExcelFile(MultipartFile file) {
@@ -109,21 +111,37 @@ public class MeetingService {
 
     private List<FanSaveDto> parseExcel(MultipartFile file) throws Exception {
         List<FanSaveDto> result = new ArrayList<>();
+        boolean hasData = false; //데이터가 있는 지 확인하기 위한 플래그
         try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(0);
+            Row headerRow = sheet.getRow(0);
+            if(!isValidHeader(headerRow)){
+                throw new ForbiddenException("올바른 파일이 아닙니다.");
+            }
             for (Row row : sheet) {
                 if (row.getRowNum() == 0) continue;
                 String name = getCellValue(row.getCell(1));
                 String email = getCellValue(row.getCell(2));
                 String phone = getCellValue(row.getCell(3));
-                if (name.isEmpty() && email.isEmpty() && phone.isEmpty()) {
-                    continue;
+                if (!name.isEmpty() || !email.isEmpty() || !phone.isEmpty()) {
+                    hasData = true;
+                    FanSaveDto dto = new FanSaveDto(name, email, phone);
+                    result.add(dto);
                 }
-                FanSaveDto dto = new FanSaveDto(name, email, phone);
-                result.add(dto);
             }
         }
+        if(!hasData) throw new BadRequestException("명단이 비었습니다.");
         return result;
+    }
+    private boolean isValidHeader(Row headerRow){
+        if(headerRow == null) return false;
+        for(int i=0; i< EXPECTED_HEADERS.size(); i++){
+            Cell cell = headerRow.getCell(i);
+            if(cell == null || !EXPECTED_HEADERS.get(i).equals(cell.getStringCellValue())){
+                return false;
+            }
+        }
+        return true;
     }
 
     private String getCellValue(Cell cell) {
@@ -140,7 +158,7 @@ public class MeetingService {
 
     public void checkBlackList(FanSaveDto fanSaveDto) {
         Manager manager = getManager();
-        if(blackListRepository.existsByNameAndEmailAndPhoneAndManager_ManagerId(fanSaveDto.name(), fanSaveDto.email(), fanSaveDto.phone(), manager.getManagerId())){
+        if(blackListRepository.existsByNameAndPhoneAndManager_ManagerId(fanSaveDto.name(), fanSaveDto.phone(), manager.getManagerId())){
             throw new BadRequestException("블랙리스트입니다.");
         }
     }
@@ -155,12 +173,12 @@ public class MeetingService {
         }
         // 미팅 번호에 따라 팬과 스타 리스트를 조회
         // 팬 리스트와 스타 리스트를 DTO로 변환
-        List<StarResponseDto> starList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR).stream()
-                .map(StarResponseDto::from)
+        List<StarInfo> starList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, STAR).stream()
+                .map(StarInfo::from)
                 .toList();
 
-        List<FanResponseDto> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
-                .map(FanResponseDto::from)
+        List<FanInfo> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
+                .map(FanInfo::from)
                 .toList();
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
         return MeetingDetailResponseDto.of(meeting, chatRoom.getChatRoomId(), starList, fanList);
@@ -177,7 +195,7 @@ public class MeetingService {
         meetingSaveRequestDto.updateMeeting(meeting);
         List<User> fans = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN);
         List<FanSaveDto> fanSaveDtoList = fans.stream()
-                .map(fan -> new FanSaveDto(fan.getName(), fan.getEmail(), fan.getPhone()))
+                .map(fan -> new FanSaveDto(fan.getName(), fan.getOriginEmail(), fan.getPhone()))
                 .collect(Collectors.toList());
         meetingSaveRequestDto.setFanList(fanSaveDtoList);
         meeting.setMeetingEnd(calculateMeetingEnd(meetingSaveRequestDto));
@@ -251,8 +269,8 @@ public class MeetingService {
             throw new BadRequestException("접근 권한이 없습니다.");
         }
 
-        List<FanResponseDto> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
-                .map(FanResponseDto::from)
+        List<FanInfo> fanList = userRepository.findByMeeting_MeetingIdAndRole(meetingId, FAN).stream()
+                .map(FanInfo::from)
                 .toList();
 
         return new FanListResponseDto(fanList);
@@ -271,7 +289,7 @@ public class MeetingService {
         meetingRepository.delete(meeting);
     }
 
-    public MeetingInfoResponseDto getMeetingInfo() {
+    public MeetingInfoFanResponseDto getMeetingInfo() {
         if(!SecurityUtil.getCurrentUserRole().equals("FAN")){
             throw new BadRequestException("접근 권한이 없습니다.");
         }
@@ -294,8 +312,9 @@ public class MeetingService {
                     return star;
                 })
                 .toList();
+        int waitingTime = (userPosition -1) * (meeting.getMeetingDuration() + meeting.getTerm());
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
-        return MeetingInfoResponseDto.of(meeting, starList, userPosition, chatRoom.getChatRoomId());
+        return MeetingInfoFanResponseDto.of(meeting, starList, userPosition, waitingTime, chatRoom.getChatRoomId(), currentUser.getNickname());
     }
 
     private Manager getManager(){
@@ -310,4 +329,22 @@ public class MeetingService {
                 new NotFoundException("user not found"));
     }
 
+    public void updateNickname(String nickname){
+        User user = getUser();
+        userRepository.updateNickname(user.getUserId(), nickname);
+    }
+
+    public MeetingInfoStarResponseDto getMeetingInfoStar() {
+        if(!SecurityUtil.getCurrentUserRole().equals("STAR")){
+            throw new BadRequestException("접근 권한이 없습니다.");
+        }
+        User user = getUser();
+        Meeting meeting = meetingRepository.findById(user.getMeeting().getMeetingId()).orElseThrow(() ->
+                new NotFoundException("Meeting not found"));
+        List<FanNameInfo> fanList = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).stream()
+                .map(FanNameInfo::from)
+                .toList();
+        return MeetingInfoStarResponseDto.of(meeting, fanList, user.getName());
+
+    }
 }

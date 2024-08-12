@@ -4,9 +4,13 @@ import com.c108.meetz.exception.UnauthorizedException;
 import com.c108.meetz.jwt.JWTUtil;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+
+import java.net.URI;
 import java.util.Map;
 
 @Component
@@ -17,14 +21,23 @@ public class WebSocketHandShakeInterceptor implements HandshakeInterceptor {
     }
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        String authorization = request.getHeaders().getFirst("Authorization");
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
+        URI uri = request.getURI();
+        String query = uri.getQuery();
+        String token = null;
+
+        if (query != null && query.startsWith("token=")) {
+            token = query.substring(6);
         }
-        String token = authorization.split(" ")[1];
+
+        if (token == null) {
+            throw new UnauthorizedException("JWT 토큰이 쿼리 파라미터에 없습니다.");
+        }
+
         if (jwtUtil.isExpired(token)) {
-            throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
+            throw new UnauthorizedException("JWT 토큰이 만료되었거나 잘못되었습니다.");
         }
+
+        System.out.println("WebSocket connection authorized for token: " + token);
 
         return true;
     }

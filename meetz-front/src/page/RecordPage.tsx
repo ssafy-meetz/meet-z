@@ -38,8 +38,8 @@ const RecordPage: React.FC = () => {
     formData.append('file', audioBlob, 'recording.wav');
 
     try {
-      await postCheckProfanity(accessToken || "", formData);
-      // console.log(data);
+      const result = await postCheckProfanity(accessToken || "", formData);
+      console.log(result);
     } catch (error) {
       console.error('Error sending audio file:', error);
     }

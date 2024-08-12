@@ -12,19 +12,23 @@ import java.util.List;
 
 @Getter
 public class ChatRoomListResponseDto {
+    int chatRoomId;
+    int managerId;
     List<ChatRoomList> rooms;
-    private ChatRoomListResponseDto(List<ChatRoomList> rooms){
+    private ChatRoomListResponseDto(int chatRoomId, int managerId, List<ChatRoomList> rooms){
+        this.chatRoomId = chatRoomId;
+        this.managerId = managerId;
         this.rooms = rooms;
+
     }
 
-    public static ChatRoomListResponseDto from(List<ChatRoomList> rooms){
-        return new ChatRoomListResponseDto(rooms);
+    public static ChatRoomListResponseDto from(int chatRoomId, int managerId, List<ChatRoomList> rooms){
+        return new ChatRoomListResponseDto(chatRoomId, managerId, rooms);
     }
 
     @Getter
     @Setter
     public static class ChatRoomList {
-        int chatRoomId;
         String name; //팬 이름
         int userId;
         String recentChat;
@@ -32,9 +36,8 @@ public class ChatRoomListResponseDto {
 
         public static final Comparator<ChatRoomList> BY_RECENT_DATE_DESC = Comparator
                 .comparing(ChatRoomList::getRecentDate, Comparator.nullsLast(Comparator.reverseOrder()));
-        public static ChatRoomList of (ChatRoom chatRoom, Chat chat, User user) {
+        public static ChatRoomList of (Chat chat, User user) {
             ChatRoomList chatRoomList = new ChatRoomList();
-            chatRoomList.setChatRoomId(chatRoom.getChatRoomId());
             chatRoomList.setName(user.getName());
             chatRoomList.setUserId(user.getUserId());
             if (chat == null) {

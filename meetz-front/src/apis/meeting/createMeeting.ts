@@ -8,7 +8,7 @@ type starNameDto = {
 interface CreateMeetingDTO {
   meetingName: string;
   meetingStart: string;
-  meetingDuration: number;
+  meetingDuration: number | null;
   term: number;
   starList: starNameDto[];
   fanList: FanDto[];

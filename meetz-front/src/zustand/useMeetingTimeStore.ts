@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 
 interface MeetingTimeState {
-  selectedDate: Date | null;
+  selectedDate: string | null;
   selectedDuration: { value: string; label: string } | null;
   selectedTime: { value: string; label: string } | null;
   selectedBreak: { value: string; label: string } | null;
-  setSelectedDate: (date: Date | null) => void;
+  setSelectedDate: (date: string | null) => void;
   setSelectedDuration: (duration: { value: string; label: string } | null) => void;
   setSelectedTime: (time: { value: string; label: string } | null) => void;
   setSelectedBreak: (breakTime: { value: string; label: string } | null) => void;

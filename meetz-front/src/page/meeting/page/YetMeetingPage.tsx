@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
 import MeetingList from "../components/MeetingList";
 import MeetingListTitle from "../components/MeetingListTitle";
@@ -18,18 +18,22 @@ const YetMeetingPage = () => {
   const [curMeetingData, setCurMeetingData] = useState<MeetingMonthData>({});
   const [nextMeetingData, setNextMeetingData] = useState<MeetingMonthData>({});
   const { accessToken } = fetchUserData();
-  const [meetingCompay, setMeetingCompany] = useState("");
+  const [meetingCompany, setMeetingCompany] = useState("");
 
   useCheckAuth('MANAGER');
 
-  const fetchYetMeetingData = async () => {
-    const { data } = await getYetMeetingList(accessToken || "");
-    return data;
-  };
+  const fetchYetMeetingData = useCallback(async () => {
+    try {
+      const { data } = await getYetMeetingList(accessToken || "");
+      return data;
+    } catch {
+      return [];
+    }
+  }, [accessToken]);
 
   const transformMeetingData = (data: any, months: string[]) => {
     const transformedData: MeetingMonthData = {};
-    months.forEach((month) => {
+    data && months.forEach((month) => {
       if (data[month]) {
         transformedData[month] = {};
         Object.keys(data[month]).forEach((day) => {
@@ -53,9 +57,11 @@ const YetMeetingPage = () => {
     fetchData();
   }, [accessToken, curMonth, nextMonth]);
 
+  const memoizedMeetingCompany = useMemo(() => meetingCompany, [meetingCompany]);
+
   return (
     <div className='mb-40'>
-      <MeetingListTitle company={meetingCompay} />
+      <MeetingListTitle company={memoizedMeetingCompany} />
       <MeetingList isEnd={false} month={curMonth} meetings={curMeetingData[curMonth] || {}} />
       <MeetingList isEnd={false} month={nextMonth} meetings={nextMeetingData[nextMonth] || {}} />
     </div>

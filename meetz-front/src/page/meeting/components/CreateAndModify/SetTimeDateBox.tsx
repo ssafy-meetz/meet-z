@@ -1,7 +1,25 @@
-import useMeetingTimeStore from "../../../../zustand/useMeetingTimeStore";
+import React from 'react';
+import useMeetingTimeStore from '../../../../zustand/useMeetingTimeStore';
 
-const SetTimeDateBox = () => {
+const SetTimeDateBox: React.FC = () => {
   const { setSelectedDate, selectedDate } = useMeetingTimeStore();
+
+  // 오늘 날짜를 YYYY-MM-DD 형식으로 얻기
+  const today = new Date();
+  const formattedToday = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+
+  const dateChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = new Date(e.target.value);
+    const sDate = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+
+    // 선택된 날짜가 오늘보다 이전인지 확인 (오늘 날짜는 포함)
+    if (date.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0)) {
+      alert('현재 날짜 이전의 날짜는 선택할 수 없습니다.');
+      return;
+    }
+
+    setSelectedDate(sDate);
+  }
 
   return (
     <div className='flex gap-14 py-5 border-b items-center'>
@@ -10,10 +28,11 @@ const SetTimeDateBox = () => {
       </div>
       <div>
         <input
-          value={selectedDate ? selectedDate.toISOString().split("T")[0] : ''}
-          className='w-40'
-          type="date"
-          onChange={(e) => setSelectedDate(new Date(e.target.value))}
+          value={selectedDate || ''}
+          className='w-40 cursor-text'
+          type='date'
+          onChange={dateChangeHandler}
+          min={formattedToday}  // 오늘 날짜 이전을 선택할 수 없도록 설정
         />
       </div>
     </div>
