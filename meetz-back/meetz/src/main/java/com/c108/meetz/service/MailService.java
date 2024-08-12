@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -228,6 +227,190 @@ public class MailService {
             throw new BadRequestException();
         }
     }
+
+    /**
+     * 사용자에게 경고 메일을 생성하고 발송합니다.
+     */
+    public void sendWarningUser(User user, String reason) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(senderEmail);
+            helper.setTo(user.getOriginEmail());
+            message.setSubject("[MEET:Z] 서비스 이용 경고 안내");
+
+            Meeting meeting = user.getMeeting();
+            String meetingName = meeting.getMeetingName();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm");
+            String meetingStartFormatted = meeting.getMeetingStart().format(formatter);
+
+            String body = "";
+            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border-radius: 10px; background-color: #f4f4f4; text-align: center;'>";
+            body += "<div style='background-color: #FE4D5C; padding: 20px; border-radius: 10px 10px 0 0;'>";
+            body += "<h1 style='margin: 0; color: #ffffff;'>경고 안내</h1>";
+            body += "<h2 style='margin: 5px 0; color: #ffffff;'>" + meetingName + "</h2>";
+            body += "<h3 style='margin: 5px 0; color: #ffffff;'>" + meetingStartFormatted + "</h3>";
+            body += "</div>";
+            body += "<div style='padding: 30px; background-color: #ffffff; border-radius: 0 0 10px 10px;'>";
+            body += "<p style='font-size: 18px; color: #333333;'>안녕하세요,</p>";
+            body += "<p style='font-size: 16px; color: #666666;'>MEET:Z 서비스를 이용해 주셔서 진심으로 감사드립니다.</p>";
+            body += "<p style='font-size: 16px; color: #666666;'>고객님의 최근 활동이 다음과 같은 사유로 인해</p>";
+            body += "<p style='font-size: 16px; color: #666666;'>서비스 이용 규정을 위반하였음을 알려드립니다:</p>";
+            body += "<div style='margin: 30px 0;'>";
+            body += "<p style='font-size: 16px; color: #333333; font-weight: bold;'>위반 사유:</p>";
+            body += "<p style='font-size: 18px; color: #FE4D5C; padding: 10px; border: 2px solid #FE4D5C; display: inline-block; border-radius: 5px;'>" + reason + "</p>";
+            body += "</div>";
+            body += "<p style='font-size: 16px; color: #333333;'>MEET:Z 이용 약관에 따라, 경고가 3회 누적될 경우</p>";
+            body += "<p style='font-size: 16px; color: #333333;'>서비스 이용이 제한될 수 있음을 알려드립니다.</p>";
+            body += "<p style='font-size: 16px; color: #333333;'>앞으로 이러한 일이 재발하지 않도록 주의해 주시기를 부탁드립니다.</p>";
+            body += "<p style='font-size: 16px; color: #333333;'>MEET:Z 서비스를 이용해주셔서 항상 감사드리며, 추가적인</p>";
+            body += "<p style='font-size: 16px; color: #333333;'>문의사항이 있으시면 언제든지 고객센터로 연락해 주시기 바랍니다.</p>";
+            body += "<p style='font-size: 16px; color: #333333;'>감사합니다.</p>";
+            body += "<div style='margin-top: 30px;'>";
+            body += "<p style='font-size: 20px; color: #FE4D5C;'>MEET:Z</p>";
+            body += "</div>";
+            body += "</div>";
+            body += "</div>";
+
+
+            helper.setText(body, true);
+
+            // 이미지 첨부
+            ClassPathResource image = new ClassPathResource("Meetzlogo.png");
+            helper.addInline("meetzlogo", image);
+
+            // 메일 전송
+            javaMailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace(); // 오류 로그 출력
+            throw new BadRequestException("경고 메일 생성 또는 발송 중 오류가 발생했습니다.");
+        }
+    }
+
+
+
+
+    /**
+     * 사용자를 블랙리스트에 추가할 때의 메일을 생성합니다.
+     */
+    public MimeMessage createBlacklistMail(User user, String reason) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(senderEmail);
+            helper.setTo(user.getOriginEmail());
+            message.setSubject("[MEET:Z] 블랙리스트 등록 안내 메일");
+
+            String body = "";
+            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>";
+            body += "<div style='border: 1px solid #ccc; padding: 20px; border-radius: 10px; background-color: #fff;'>";
+            body += "<div style='background-color: #FE4D5C; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;'>";
+            body += "<h1 style='margin: 0; color: #fff;'>블랙리스트 등록 안내</h1>";
+            body += "</div>";
+            body += "<div style='padding: 20px; text-align: center;'>";
+            body += "<img src='cid:meetzlogo' alt='Meetz Logo' style='width: 40%; height: auto; border-radius: 10px;'>";
+            body += "</div>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>안녕하세요.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>MEET:Z 서비스를 이용해 주셔서 감사합니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>다음 사유로 인해 블랙리스트에 등록되셨습니다:</p>";
+            body += "<div style='margin: 20px 0; text-align: center;'>";
+            body += "<p style='font-size: 16px; color: #333;'>블랙리스트 등록 사유:</p>";
+            body += "<ul style='font-size: 16px; color: #333; list-style-type: none; padding: 0; text-align: center;'>";
+            body += "<li style='margin-bottom: 5px;'>" + reason + "</li>";
+            body += "</ul>";
+            body += "</div>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>등록된 사유로 인해 서비스 이용에 제한이 발생할 수 있습니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>문의사항이 있으시면 고객센터로 연락해 주시기 바랍니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>감사합니다.</p>";
+            body += "<div style='margin-top: 20px; text-align: center;'>";
+            body += "<p style='font-size: 20px; color: #FE4D5C; text-align: center;'>MEET:Z</p>";
+            body += "</div>";
+            body += "</div>";
+            body += "</div>";
+
+            helper.setText(body, true);
+            ClassPathResource image = new ClassPathResource("Meetzlogo.png");
+            helper.addInline("meetzlogo", image);
+
+            return message;
+        } catch (MessagingException e) {
+            throw new BadRequestException("블랙리스트 등록 메일 생성 중 오류가 발생했습니다.");
+        }
+    }
+
+    /**
+     * 사용자에게 블랙리스트 등록 메일을 발송합니다.
+     */
+    public void sendToBlacklist(User user, String reason) {
+        MimeMessage message = createBlacklistMail(user, reason);
+        try {
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            throw new BadRequestException("블랙리스트 등록 메일 발송 중 오류가 발생했습니다.");
+        }
+    }
+
+    /**
+     * 경고 3회 누적으로 인한 블랙리스트 등록 메일을 생성합니다.
+     */
+    public MimeMessage createBlacklistByWarningMail(User user) {
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(senderEmail);
+            helper.setTo(user.getOriginEmail());
+            message.setSubject("[MEET:Z] 블랙리스트 등록 안내 메일 (경고 3회 누적)");
+
+            String body = "";
+            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;'>";
+            body += "<div style='border: 1px solid #ccc; padding: 20px; border-radius: 10px; background-color: #fff;'>";
+            body += "<div style='background-color: #FE4D5C; padding: 10px; border-radius: 10px 10px 0 0; text-align: center;'>";
+            body += "<h1 style='margin: 0; color: #fff;'>블랙리스트 등록 안내</h1>";
+            body += "</div>";
+            body += "<div style='padding: 20px; text-align: center;'>";
+            body += "<img src='cid:meetzlogo' alt='Meetz Logo' style='width: 40%; height: auto; border-radius: 10px;'>";
+            body += "</div>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>안녕하세요.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>MEET:Z 서비스를 이용해 주셔서 감사합니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>다음과 같이 경고 3회 누적으로 인해 블랙리스트에 등록되었습니다:</p>";
+            body += "<div style='margin: 20px 0; text-align: center;'>";
+            body += "<p style='font-size: 16px; color: #333;'>경고 누적 사유:</p>";
+            body += "<ul style='font-size: 16px; color: #333; list-style-type: none; padding: 0; text-align: center;'>";
+            body += "<li style='margin-bottom: 5px;'>경고 3회 누적</li>";
+            body += "</ul>";
+            body += "</div>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>본 조치는 경고 누적으로 인해 발생된 것입니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>문의사항이 있으시면 고객센터로 연락해 주시기 바랍니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>감사합니다.</p>";
+            body += "<div style='margin-top: 20px; text-align: center;'>";
+            body += "<p style='font-size: 20px; color: #FE4D5C; text-align: center;'>MEET:Z</p>";
+            body += "</div>";
+            body += "</div>";
+            body += "</div>";
+
+            helper.setText(body, true);
+            ClassPathResource image = new ClassPathResource("Meetzlogo.png");
+            helper.addInline("meetzlogo", image);
+
+            return message;
+        } catch (MessagingException e) {
+            throw new BadRequestException("경고 누적 메일 생성 중 오류가 발생했습니다.");
+        }
+    }
+
+    /**
+     * 경고 3회 누적으로 블랙리스트 등록 메일을 발송합니다.
+     */
+    public void sendWarningCountToBlacklist(User user) {
+        MimeMessage message = createBlacklistByWarningMail(user);
+        try {
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            throw new BadRequestException("경고 누적으로 인한 블랙리스트 메일 발송 중 오류가 발생했습니다.");
+        }
+    }
+
+
 
     private User getUser(){
         String email = SecurityUtil.getCurrentUserEmail();

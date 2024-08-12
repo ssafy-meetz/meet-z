@@ -5,7 +5,6 @@ import com.c108.meetz.domain.Manager;
 import com.c108.meetz.domain.User;
 import com.c108.meetz.dto.response.BlackListInfoListResponseDto;
 import com.c108.meetz.exception.BadRequestException;
-import com.c108.meetz.exception.DuplicateException;
 import com.c108.meetz.exception.ForbiddenException;
 import com.c108.meetz.exception.NotFoundException;
 import com.c108.meetz.repository.BlackListRepository;
@@ -26,6 +25,7 @@ public class BlackListService {
     private final UserRepository userRepository;
     private final BlackListRepository blackListRepository;
     private final ManagerRepository managerRepository;
+    private final MailService mailService;
 
     public void saveBlackList(int userId){
         User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("존재하지 않는 회원입니다."));
@@ -43,6 +43,9 @@ public class BlackListService {
                 .phone(user.getPhone())
                 .build();
         blackListRepository.save(blackList);
+
+        // 블랙리스트 추가 메일 발송
+        mailService.sendToBlacklist(user, "블랙리스트 등록 사유를 기입하세요."); // 사용자에게 블랙리스트 추가 메일을 전송
     }
 
     public BlackListInfoListResponseDto getBlackListInfoList(){
