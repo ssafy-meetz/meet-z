@@ -63,7 +63,7 @@ const FanSessionContainerPage = () => {
       const parseData = JSON.parse(res);
       console.log(parseData);
       setType(parseData.type);
-      if (parseData.type !== 3 && session) {
+      if (parseData.type !== 3) {
         leaveSession();
       }
       if (parseData.type === 1) {
@@ -77,6 +77,8 @@ const FanSessionContainerPage = () => {
         ) {
           setIsSessionEnd(true);
         }
+      } else {
+        setWait(parseData.waitingNum);
       }
       //SSE에러 발생 시 SSE와 연결 종료
       eventSource.onerror = (e: any) => {
