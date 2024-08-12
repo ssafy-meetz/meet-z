@@ -29,6 +29,9 @@ const FanSessionContainerPage = () => {
     fetchSSE();
   }, []);
   useEffect(() => {
+    console.log(session);
+  }, [session]);
+  useEffect(() => {
     if (!settingDone && type === 1) {
       alert("카메라 설정이 완료되어야 미팅 입장이 진행됩니다.");
     }
@@ -59,14 +62,12 @@ const FanSessionContainerPage = () => {
       const parseData = JSON.parse(res);
       console.log(parseData);
       setType(parseData.type);
-      if (parseData.type !== 3) {
-        leaveSession();
-      }
-      if (parseData.type === 1) {
+      if (parseData.type === 1 || 2) {
         await moveNextSession(parseData);
       } else if (parseData.type === 3) {
         setTakePhoto(true);
       } else if (parseData.type === 4) {
+        leaveSession();
         if (
           !localStorage.getItem("images") ||
           localStorage.getItem("images") === "[]"
@@ -111,7 +112,7 @@ const FanSessionContainerPage = () => {
   };
   if (type === 2 && settingDone) {
     return <SessionLoadingPage />;
-  } else if (type === 4 && isSessionEnd) {
+  } else if (type === 4) {
     if (isSessionEnd) {
       return <SessionSwitchPage />;
     }
