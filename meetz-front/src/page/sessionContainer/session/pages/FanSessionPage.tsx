@@ -14,9 +14,9 @@ function FanSessionPage() {
     JSON.parse(sessionStorage.getItem("mi") || "")
   );
   useEffect(() => {
-    if (sessionId !== "") {
-      joinSession();
-    }
+    if(sessionId==="")return;
+     joinSession();
+
   }, [sessionId]);
 
   return (

@@ -59,24 +59,36 @@ const FanSessionContainerPage = () => {
     //SSE에게 메시지를 전달 받았을 때
     eventSource.onmessage = async (e: any) => {
       const res = await e.data;
-      const parseData = JSON.parse(res);
+      const parseData = await JSON.parse(res);
       console.log(parseData);
-      setType(parseData.type);
-      if (parseData.type === 1 || 2) {
-        await moveNextSession(parseData);
-      } else if (parseData.type === 3) {
-        setTakePhoto(true);
-      } else if (parseData.type === 4) {
-        leaveSession();
-        if (
-          !localStorage.getItem("images") ||
-          localStorage.getItem("images") === "[]"
-        ) {
-          setIsSessionEnd(true);
-        }
-      } else {
-        setWait(parseData.waitingNum);
+      await setType(parseData.type);
+      if (session && parseData.type !== 3 && parseData.type !== 0) {
+        await leaveSession();
       }
+      switch (parseData.type) {
+        case 1:
+          await moveNextSession(parseData);
+          break;
+      
+        case 3:
+          setTakePhoto(true);
+          break;
+      
+        case 4:
+          leaveSession();
+          if (
+            !localStorage.getItem("images") ||
+            localStorage.getItem("images") === "[]"
+          ) {
+            setIsSessionEnd(true);
+          }
+          break;
+      
+        case 0:
+          setWait(parseData.waitingNum);
+          break;
+      }
+      
       //SSE에러 발생 시 SSE와 연결 종료
       eventSource.onerror = (e: any) => {
         eventSource.close();
@@ -101,14 +113,11 @@ const FanSessionContainerPage = () => {
     await setInfo(info);
   };
   const setInfo = async (info: SessionInfo) => {
-    return new Promise<void>((resolve) => {
-      setTimer(info.timer);
-      setStartName(info.starName);
-      setNextStarName(info.nextStarName);
-      setSessionId(info.sessionId);
-      setWait(info.wait);
-      resolve();
-    });
+    setTimer(info.timer);
+    setStartName(info.starName);
+    setNextStarName(info.nextStarName);
+    setSessionId(info.sessionId);
+    setWait(info.wait);
   };
   if (type === 2 && settingDone) {
     return <SessionLoadingPage />;
