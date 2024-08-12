@@ -22,32 +22,71 @@ export const useOpenvidu = () => {
     setSessionId,
   } = useOpenviduStore();
 
+  const [isLeaving, setIsLeaving] = useState(false);
+  const [pendingSessionId, setPendingSessionId] = useState<string | null>(null);
+
   // Leaving session
-  const leaveSession = async() => {
-    if (!session) return;
-    console.log(session);
-    await session.disconnect();
-    console.log("~기존 세션 종료 완료~");
-    setOV(null);
-    setSession(null);
-    setSessionId("");
-    setSubscriber(null);
-    setPublisher(null);
-  };
+  const leaveSession = useCallback(async () => {
+    if (isLeaving || !session) return;
+
+    setIsLeaving(true);
+    console.log("세션 종료 시도");
+
+    try {
+      await session.disconnect();
+      console.log("기존 세션 종료 완료");
+    } catch (error) {
+      console.error("세션 종료 과정 중 에러: ", error);
+    } finally {
+      setOV(null);
+      setSession(null);
+      setSessionId("");
+      setSubscriber(null);
+      setPublisher(null);
+      setIsLeaving(false);
+      console.log("세션 초기화 완료");
+    }
+  }, [session, isLeaving]);
 
   // Joining session
-  const joinSession = async() => {
-    if (sessionId === ""){
-      return;
-    }
-    if (session) {
-      await leaveSession();
-    }
+  const joinSession = useCallback(async (newSessionId: string) => {
+    if (isLeaving || !newSessionId) return;
+
+    console.log("새로운 세션 초기화");
     const OVs = new OpenVidu();
     const newSession = OVs.initSession();
     setOV(OVs);
     setSession(newSession);
-  };
+    setSessionId(newSessionId);
+
+    const getToken = async (): Promise<string> => {
+      try {
+        return await createToken(newSessionId);
+      } catch (error) {
+        throw new Error("Failed to get token.");
+      }
+    };
+
+    try {
+      const token = await getToken();
+      await newSession.connect(token);
+      console.log("세션 연결 성공");
+
+      const newPublisher = OVs.initPublisher(undefined, {
+        audioSource: undefined,
+        videoSource: undefined,
+        publishAudio: true,
+        publishVideo: true,
+        mirror: true,
+      });
+
+      setPublisher(newPublisher);
+      await newSession.publish(newPublisher);
+      console.log("스트림 발행 성공");
+    } catch (error) {
+      console.error("세션 연결 또는 스트림 발행 실패: ", error);
+    }
+  }, [isLeaving]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", leaveSession);
@@ -55,7 +94,7 @@ export const useOpenvidu = () => {
     return () => {
       window.removeEventListener("beforeunload", leaveSession);
     };
-  }, []);
+  }, [leaveSession]);
 
   useEffect(() => {
     if (!session) return;
@@ -65,63 +104,16 @@ export const useOpenvidu = () => {
         setSubscriber(null);
       }
     });
-  }, [subscriber, session]);
-
-  useEffect(() => {
-    if (!session) return;
 
     session.on("streamCreated", (event) => {
-      const subscribers = session.subscribe(event.stream, "");
-      setSubscriber(subscribers);
+      const newSubscriber = session.subscribe(event.stream, "");
+      setSubscriber(newSubscriber);
     });
 
-    const getToken = async (): Promise<string> => {
-      try {
-        const token = await createToken(sessionId);
-        return token;
-      } catch (error) {
-        throw new Error("Failed to get token.");
-      }
-    };
+  }, [session, subscriber]);
 
-    getToken()
-      .then((token) => {
-        session
-          .connect(token)
-          .then(() => {
-            if (OV) {
-              const publishers = OV.initPublisher(undefined, {
-                audioSource: undefined,
-                videoSource: undefined,
-                publishAudio: true,
-                publishVideo: true,
-                mirror: true,
-              });
-              setPublisher(publishers);
-              session
-                .publish(publishers)
-                .then(() => {})
-                .catch((error) => {
-                  console.error("failed to publish stream: ",error);
-                });
-            }
-          })
-          .catch((error) => {
-            console.error("failed to connect session: ",error);
-          });
-      })
-      .catch((error) => {
-        console.error("failed to get token: ",error);
-      });
-  }, [session, OV, setSessionId]);
   return {
-    session,
-    sessionId,
-    publisher,
-    subscriber,
     joinSession,
-    setSessionId,
     leaveSession,
-    setSubscriber,
   };
 };
