@@ -8,6 +8,7 @@ import java.util.List;
 
 public record ReportDetailResponseDto(
         int reportId,
+        int reportedUserId,
         String reportedUserName,
         String starName,
         boolean isReported,
@@ -20,6 +21,7 @@ public record ReportDetailResponseDto(
     public static ReportDetailResponseDto fromEntity(Report report) {
         return new ReportDetailResponseDto(
                 report.getReportId(),
+                report.getFan().getUserId(),   // 팬의 ID 추가
                 report.getFan().getName(),
                 report.getStar().getName(),
                 report.isReported(),
@@ -34,6 +36,7 @@ public record ReportDetailResponseDto(
     public static ReportDetailResponseDto fromEntity(Report report, TranscriptionResponseDto transcriptionResponse) {
         return new ReportDetailResponseDto(
                 report.getReportId(),
+                report.getFan().getUserId(),   // 팬의 ID 추가
                 report.getFan().getName(),
                 report.getStar().getName(),
                 report.isReported(),
