@@ -156,9 +156,10 @@ public class MailService {
             body += "<div style='margin-top: 20px; text-align: center;'>";
             body += "<p style='margin-top: 20px; font-size: 16px; color: #FE4D5C; text-align: center;'><strong>주의</strong></p>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>미팅 중 부적절한 언행이나 스타에게 해를 끼치는 행위가 발생할 경우,</p>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>즉각적인 경고 조치와 함께 서비스 이용이 제한될 수 있으며,</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>즉각적인 경고 조치와 함께 서비스 이용이 제한될 수 있으며</p>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>경고가 3회 누적될 경우 영구 제명될 수 있습니다.</p>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>또한 안내드린 임시 계정은 보안을 위해 타인과 공유하지 마세요.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>미팅 시작 30분전부터 로그인이 가능하며,</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>하나의 계정으로 동시접속이 불가하오니, 안내드린 임시 계정은 원활한 서비스 이용을 위해 타인과 공유하지 마세요.</p>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>해당 계정은 팬미팅 종료 이후 24시간 뒤에 삭제됩니다.</p>";
             body += "<div style='margin-top: 20px; text-align: center;'>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>감사합니다.</p>";
