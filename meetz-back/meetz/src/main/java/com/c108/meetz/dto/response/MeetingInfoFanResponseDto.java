@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-public record MeetingInfoFanResponseDto(int meetingId, String meetingName, @JsonFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime meetingStart, int meetingDuration, int term, int userPosition, int chatRoomId, String nickname, List<StarList> starList) {
-    public static MeetingInfoFanResponseDto of(Meeting meeting, List<StarList> starList, int userPosition, int chatRoomId, String nickname) {
+public record MeetingInfoFanResponseDto(int meetingId, String meetingName, @JsonFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime meetingStart, int meetingDuration, int term, int userPosition, int waitingTime, int chatRoomId, String nickname, List<StarList> starList) {
+    public static MeetingInfoFanResponseDto of(Meeting meeting, List<StarList> starList, int userPosition, int waitingTime, int chatRoomId, String nickname) {
         return new MeetingInfoFanResponseDto(
                 meeting.getMeetingId(),
                 meeting.getMeetingName(),
@@ -17,6 +17,7 @@ public record MeetingInfoFanResponseDto(int meetingId, String meetingName, @Json
                 meeting.getMeetingDuration(),
                 meeting.getTerm(),
                 userPosition,
+                waitingTime,
                 chatRoomId,
                 nickname,
                 starList
