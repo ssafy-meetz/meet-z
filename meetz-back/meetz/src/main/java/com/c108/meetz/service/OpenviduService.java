@@ -55,6 +55,7 @@ public class OpenviduService {
         int remainStarNum;
         String currentStarName;
         String nextStarName;
+        boolean isEnd;
 
         public FanInfo(String email, String name, int remainStarNum, int fanId) {
             this.fanId = fanId;
@@ -67,6 +68,7 @@ public class OpenviduService {
             this.remainStarNum = remainStarNum;
             this.currentStarName = null;
             this.nextStarName = null;
+            this.isEnd = false;
         }
     }
 
@@ -202,15 +204,14 @@ public class OpenviduService {
             log.info("=========================미팅 종료=============================");
             log.info("{}번 님이 방에 나갔습니다.", fanSize - 1);
             log.info("{}번 미팅이 종료되었습니다.", meetingId);
-            //마지막 팬에게 미팅 끝났다고 알려주기
-            FanSseResponseDto endSseDto1 = FanSseResponseDto.endMeeting();
-            String lastEmail = fanEmitterMap.get(meetingId).get(fanSize - 1).email;
-            SseEmitter fanSseEmiter = fanEmitterMap.get(meetingId).get(fanSize - 1).emitter;
-//            sendEventToFanV3(meetingId, lastEmail, endSseDto1);
-
-            if (fanSseEmiter != null) {
-                fanSseEmiter.send(endSseDto1, MediaType.APPLICATION_JSON);
-            }
+            //마지막 팬에게 미팅 끝났다고 알려주기(주석풀자)
+//            FanSseResponseDto endSseDto1 = FanSseResponseDto.endMeeting();
+//            SseEmitter fanSseEmiter = fanEmitterMap.get(meetingId).get(fanSize - 1).emitter;
+////            sendEventToFanV3(meetingId, lastEmail, endSseDto1);
+//
+//            if (fanSseEmiter != null) {
+//                fanSseEmiter.send(endSseDto1, MediaType.APPLICATION_JSON);
+//            }
 
             //스타들에게 팬미팅 끝났다고 알려주기
             StarSseResponseDto endSseDto2 = StarSseResponseDto.endMeeting();
@@ -233,14 +234,14 @@ public class OpenviduService {
         int endTokenSendSize = Math.min(currentPhase, fans.size() - 1); //token을 보낼 사람들의 범위
 
         //starIdx == 0이 아니면 이전 팬은 끝났다는 뜻. 팬에게 끝났다는 정보를 보내자.
-        if (startIdx != 0) {
-            FanSseResponseDto endSseDto = FanSseResponseDto.endMeeting();
-
-            String lastEmail = fanEmitterMap.get(meetingId).get(startIdx - 1).email;
-
-            sendEventToFanV3(meetingId, lastEmail, endSseDto);
-            log.info("{}번 팬의 미팅이 종료되었습니다.", startIdx - 1);
-        }
+//        if (startIdx != 0) {
+//            FanSseResponseDto endSseDto = FanSseResponseDto.endMeeting();
+//
+//            String lastEmail = fanEmitterMap.get(meetingId).get(startIdx - 1).email;
+//
+//            sendEventToFanV3(meetingId, lastEmail, endSseDto);
+//            log.info("{}번 팬의 미팅이 종료되었습니다.", startIdx - 1);
+//        }
 
         //남은 팬 수 줄이기
         int tmpIdx = Math.min(currentPhase, starSize - 1);
@@ -338,8 +339,17 @@ public class OpenviduService {
 
         }
 
+        int duration = meeting.getMeetingDuration();
+        int term = meeting.getTerm();
+
+//        if (currentPhase + 1 >= totalPhases - 1) { //다음이 끝이면
+//            log.info("다음 페이즈가 끝이므로 0으로 설정");
+//            term = 0;
+//        }
+
+
         updateCurrentPhase(meetingId, currentPhase + 1);
-        scheduleNextAutomationV2(meetingId);
+        scheduleNextAutomationV2(meetingId, duration, term);
     }
 
     private int getCurrentPhase(int meetingId) {
@@ -350,7 +360,8 @@ public class OpenviduService {
         meetingPhases.put(meetingId, newPhase);
     }
 
-    private void scheduleNextAutomationV2(int meetingId) {
+    private void scheduleNextAutomationV2(int meetingId, int duration, int term) {
+        //쉬는시간 + 미팅시간
         scheduler.schedule(() -> {
             try {
                 automationMeetingRoom(meetingId);
@@ -361,8 +372,8 @@ public class OpenviduService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }, meetingRoomInfos.get(meetingId).getMeetingDuration()
-                        + meetingRoomInfos.get(meetingId).getTerm(), TimeUnit.SECONDS);
+        }, duration + term, TimeUnit.SECONDS);
+
 
         scheduler.schedule(() -> {
             try {
@@ -374,8 +385,35 @@ public class OpenviduService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }, meetingRoomInfos.get(meetingId).getMeetingDuration(), TimeUnit.SECONDS);
+        }, duration, TimeUnit.SECONDS);
+    }
 
+    public void sendBreakTime(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
+        log.info("{}번 미팅에 쉬는시간 정보 전송", meetingId);
+
+        List<StarInfo> stars = meetingRooms.get(meetingId);
+        List<FanInfo> fans = fanEmitterMap.get(meetingId);
+
+        FanSseResponseDto fanBreakingDto = FanSseResponseDto.breakMeeting();
+        StarSseResponseDto StarBreakingDto = StarSseResponseDto.breakMeeting();
+        FanSseResponseDto fanEndDto = FanSseResponseDto.endMeeting();
+        for (StarInfo starInfo : stars) {
+            if (starInfo.emitter != null) {
+//               sendEventToStar(meetingId, starInfo.email, StarBreakingDto);
+               starInfo.emitter.send(StarBreakingDto, MediaType.APPLICATION_JSON);
+            }
+        }
+
+        for (FanInfo fanInfo : fans) {
+           if (fanInfo.emitter != null && fanInfo.remainStarNum > 0 && fanInfo.curStarIdx >= 0) {
+//               sendEventToFanV3(meetingId, fanInfo.email, fanBreakingDto);
+               fanInfo.emitter.send(fanBreakingDto, MediaType.APPLICATION_JSON);
+               //마지막 미팅인 사람에게는 종료 메세지 보내기
+           } else if (fanInfo.emitter != null && fanInfo.curStarIdx == stars.size() - 1 && !fanInfo.isEnd) {
+               fanInfo.emitter.send(fanEndDto, MediaType.APPLICATION_JSON);
+               fanInfo.isEnd = true;
+           }
+        }
     }
 
     public void endMeeting(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
@@ -418,27 +456,6 @@ public class OpenviduService {
         meetingRoomInfos.remove(meetingId);
     }
 
-    public void sendBreakTime(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
-        log.info("{}번 미팅에 쉬는시간 정보 전송", meetingId);
-
-        List<StarInfo> stars = meetingRooms.get(meetingId);
-        List<FanInfo> fans = fanEmitterMap.get(meetingId);
-
-        FanSseResponseDto fanSseResponseDto = FanSseResponseDto.breakMeeting();
-        StarSseResponseDto starSseResponseDto = StarSseResponseDto.breakMeeting();
-
-        for (StarInfo starInfo : stars) {
-            if (starInfo.emitter != null) {
-               sendEventToStar(meetingId, starInfo.email, starSseResponseDto);
-            }
-        }
-
-        for (FanInfo fanInfo : fans) {
-           if (fanInfo.emitter != null && fanInfo.remainStarNum > 0 && fanInfo.curStarIdx >= 0) {
-               sendEventToFanV3(meetingId, fanInfo.email, fanSseResponseDto);
-           }
-        }
-    }
 
     //============================OpenViduService================================//
 
