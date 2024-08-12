@@ -24,10 +24,6 @@ const FanSessionContainerPage = () => {
   const { leaveSession } = useOpenvidu();
   const { settingDone, setTimer, setStartName, setNextStarName } =
     useSessionStore();
-  useEffect(() => {
-    console.log(session);
-  }, [session]);
-
   //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
     fetchSSE();
@@ -113,25 +109,17 @@ const FanSessionContainerPage = () => {
       resolve();
     });
   };
-  switch (type) {
-    case 2:
-      return <SessionLoadingPage />;
-
-    case 4:
-      if (isSessionEnd) {
-        return <SessionSwitchPage />;
-      }
-      return <PickPhotoPage />;
-
-    case 1:
-    case 3:
-      if (settingDone) {
-        return <FanSessionPage />;
-      }
-      return <FanSettingPage />;
-
-    default:
-      return <FanSettingPage />;
+  if (type === 2 && settingDone) {
+    return <SessionLoadingPage />;
+  } else if (type === 4 && isSessionEnd) {
+    if (isSessionEnd) {
+      return <SessionSwitchPage />;
+    }
+    return <PickPhotoPage />;
+  } else if ((type === 1 || type === 3) && settingDone) {
+    return <FanSessionPage />;
+  } else {
+    return <FanSettingPage />;
   }
 };
 
