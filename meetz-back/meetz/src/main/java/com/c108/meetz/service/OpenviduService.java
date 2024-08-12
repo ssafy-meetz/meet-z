@@ -16,9 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -777,10 +781,19 @@ public class OpenviduService {
         String str = "";
         Session session = meetingRooms.get(meetingId).get(0).session;
         List<Connection> connections = session.getConnections();
-
+        log.info("connection한 인원 수: {}", connections.size());
         for (Connection connection : connections) {
-            str += connection.getConnectionId() + " " + connection.getClientData();
+            str += connection.getConnectionId() + " " + connection.getClientData() + "\n";
+
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBasicAuth("OPENVIDUAPP", OPENVIDU_SECRET);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            String url = OPENVIDU_URL + "/openvidu/api/sessions/" + session.getSessionId() + "/connection/" + connection.getConnectionId();
+            restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
         }
+
 
         return str;
     }
