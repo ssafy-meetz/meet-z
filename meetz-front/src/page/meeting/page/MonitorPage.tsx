@@ -1,6 +1,6 @@
 import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
-import WarningModal from '../components/WarningModal';
-import BlackModal from '../components/BlackModal';
+import WarningModal from '../components/Monitor/WarningModal';
+import BlackModal from '../components/Monitor/BlackModal';
 import { useMonitorStore } from '../../../zustand/useMonitorStore';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';

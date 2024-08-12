@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMonitorStore } from '../../../zustand/useMonitorStore';
+import { useMonitorStore } from '../../../../zustand/useMonitorStore';
 
 const ScriptBox = () => {
   const { openWarnModal, openBlackModal } = useMonitorStore();

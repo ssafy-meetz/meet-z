@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { ReportsDto } from '../../../../types/types';
+import fetchUserData from '../../../../lib/fetchUserData';
+import getReportedDetail from '../../../../apis/meeting/getReportedDetail';
+import Loading from '../../../../common/Loading';
 import AudioPlayer from './AudioPlayer';
 import ScriptBox from './ScriptBox';
-import getReportedDetail from '../../../apis/meeting/getReportedDetail';
-import fetchUserData from '../../../lib/fetchUserData';
-import { useParams } from 'react-router-dom';
-import { ReportsDto } from '../../../types/types';
-import Loading from '../../../common/Loading';
+
 
 interface AccordionProps {
   title: string;
