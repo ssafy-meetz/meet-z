@@ -5,5 +5,5 @@ import lombok.Setter;
 
 public record WarningRequestDto(
         int userId,
-        String reason)
-{ }
+        String reason
+) { }
