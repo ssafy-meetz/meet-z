@@ -363,8 +363,7 @@ public class OpenviduService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }, meetingRoomInfos.get(meetingId).getMeetingDuration()
-                + meetingRoomInfos.get(meetingId).getTerm(), TimeUnit.SECONDS);
+        }, 12, TimeUnit.SECONDS);
 
         scheduler.schedule(() -> {
             try {
@@ -376,7 +375,7 @@ public class OpenviduService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }, meetingRoomInfos.get(meetingId).getMeetingDuration(), TimeUnit.SECONDS);
+        }, 15, TimeUnit.SECONDS);
 
     }
 
@@ -436,7 +435,7 @@ public class OpenviduService {
         }
 
         for (FanInfo fanInfo : fans) {
-           if (fanInfo.emitter != null && fanInfo.remainStarNum > 0) {
+           if (fanInfo.emitter != null && fanInfo.remainStarNum > 0 && fanInfo.curStarIdx >= 0) {
                sendEventToFanV3(meetingId, fanInfo.email, fanSseResponseDto);
            }
         }
