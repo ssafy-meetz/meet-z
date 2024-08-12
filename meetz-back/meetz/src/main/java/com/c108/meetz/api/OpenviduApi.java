@@ -127,7 +127,7 @@ public class OpenviduApi {
     }
 
     @GetMapping("/vidu/connection/{meetingId}")
-    public ApiResponse<String> getConnectedPersonInCurrentRoom(@PathVariable("meetingId") int meetingId) {
+    public ApiResponse<String> getConnectedPersonInCurrentRoom(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
 
         String str = openviduService.getConnectedPersonInCurrentRoom(meetingId);
 

@@ -775,23 +775,19 @@ public class OpenviduService {
         }
     }
 
-    public String getConnectedPersonInCurrentRoom(int meetingId) {
+    public String getConnectedPersonInCurrentRoom(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
 
         //세션 아이디가 같으면
         String str = "";
         Session session = meetingRooms.get(meetingId).get(0).session;
+        log.info("세션 주인 이름: {}", meetingRooms.get(meetingId).get(0).name);
         List<Connection> connections = session.getConnections();
         log.info("connection한 인원 수: {}", connections.size());
         for (Connection connection : connections) {
             str += connection.getConnectionId() + " " + connection.getClientData() + "\n";
 
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBasicAuth("OPENVIDUAPP", OPENVIDU_SECRET);
-            HttpEntity<String> entity = new HttpEntity<>(headers);
+            session.forceDisconnect(connection);
 
-            String url = OPENVIDU_URL + "/openvidu/api/sessions/" + session.getSessionId() + "/connection/" + connection.getConnectionId();
-            restTemplate.exchange(url, HttpMethod.DELETE, entity, String.class);
         }
 
 
