@@ -1,24 +1,27 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 const usePhoneValidation = () => {
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState('');
   const [isValidPhone, setIsValidPhone] = useState(false);
 
-  const phoneRegex = /^01\d{8,9}$/;
+  const phoneRegex = /^01\d{9}$/;
 
   const validatePhone = (phone: string) => {
     return phoneRegex.test(phone.replace(/-/g, ''));
-  }
+  };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPhone = e.target.value;
     setPhone(newPhone);
     setIsValidPhone(validatePhone(newPhone));
-  }
+  };
 
   return {
-    phone, setPhone, isValidPhone, handlePhoneChange
-  }
-}
+    phone,
+    setPhone,
+    isValidPhone,
+    handlePhoneChange,
+  };
+};
 
-export default usePhoneValidation
+export default usePhoneValidation;
