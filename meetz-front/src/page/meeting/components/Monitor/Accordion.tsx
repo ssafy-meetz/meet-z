@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ReportDetailDto, ReportsDto } from '../../../../types/types';
 import fetchUserData from '../../../../lib/fetchUserData';
@@ -26,7 +26,7 @@ const Accordion: React.FC<AccordionProps> = ({ title, report }) => {
       setReportDetail(data);
 
     } catch (error) {
-      alert('신고받은 내용을 로드하는데 실패했습니다.');
+      setReportDetail(null);
     }
     setScriptLoading(false);
   }
@@ -35,8 +35,6 @@ const Accordion: React.FC<AccordionProps> = ({ title, report }) => {
     fetchReportedDetail();
     setIsOpen(!isOpen)
   }
-
-
 
   return (
     <div className='border-b'>
@@ -69,8 +67,13 @@ const Accordion: React.FC<AccordionProps> = ({ title, report }) => {
             </div>
             :
             <>
-              <AudioPlayer reportDetail={reportDetail} />
-              <ScriptBox reportDetail={reportDetail} />
+              {!reportDetail ?
+                <div className='flex justify-center items-center py-16 text-2xl text-gray-400 font-semibold'>
+                  미팅 내용 데이터가 없습니다.
+                </div>
+                :
+                <><AudioPlayer reportDetail={reportDetail} />
+                  <ScriptBox reportDetail={reportDetail} /></>}
             </>}
         </div>
       )}
