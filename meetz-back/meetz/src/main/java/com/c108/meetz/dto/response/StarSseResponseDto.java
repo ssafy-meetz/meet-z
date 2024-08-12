@@ -15,6 +15,10 @@ public record StarSseResponseDto( //type 1: 넘기기, 2: 쉬는시간, 3: 사�
         return new StarSseResponseDto(1, remainFanNum, currentFanName, currentFanId, timer);
     }
 
+    public static StarSseResponseDto sendWait(int remainFanNum, int timer) {
+        return new StarSseResponseDto(0, 1, null, -1, timer);
+    }
+
     public static StarSseResponseDto endMeeting() {
         return new StarSseResponseDto(4, -1, null, 0, 0);
     }

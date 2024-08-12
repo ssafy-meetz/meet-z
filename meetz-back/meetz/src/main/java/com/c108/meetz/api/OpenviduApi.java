@@ -67,6 +67,7 @@ public class OpenviduApi {
         return ApiResponse.success(HttpStatus.OK);
     }
 
+    //스타의 세션ID를 얻는 함수
     @GetMapping("/vidu/star")
     public ApiResponse<String> getStarToken() throws OpenViduJavaClientException, OpenViduHttpException {
         String token = openviduService.getStarToken();

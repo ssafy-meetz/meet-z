@@ -141,7 +141,7 @@ public class OpenviduService {
     //cron(초 분 시 일 월 요일 (년))
     // * : 모든 값, /: 증분 값(0/15, 0부터 시작해 15마다), -: 범위
     @Scheduled(cron = "1 0/10 * * * ?") //10분마다 실행
-//    @Scheduled(cron = "0/30 * * * * ?") //30초마다 실행
+//    @Scheduled(cron = "0/10 * * * * ?") //10초마다 실행
     public void scheduleTaskTest() throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
         //1. 미팅 시작 시간 30분 전에 방에 대한 모든 세션 생성(미팅 테이블에서 시작 시간 범위를 (현재 시간 + 30 == 미팅 시작 시간)인거 불러오기)
@@ -194,7 +194,8 @@ public class OpenviduService {
         int currentPhase = getCurrentPhase(meetingId); //현재 진행중인 phase를 반환
         Meeting meeting = meetingRoomInfos.get(meetingId);
 
-        if (currentPhase >= totalPhases) {
+        if (currentPhase >= totalPhases - 1) {
+            log.info("=========================미팅 종료=============================");
             log.info("{}번 님이 방에 나갔습니다.", fanSize - 1);
             log.info("{}번 미팅이 종료되었습니다.", meetingId);
             //마지막 팬에게 미팅 끝났다고 알려주기
@@ -227,17 +228,25 @@ public class OpenviduService {
         //token을 보내줄 사람들의 범위 currnentPhase - starSize + 1 <= i <= currentPhase
         int endTokenSendSize = Math.min(currentPhase, fans.size() - 1); //token을 보낼 사람들의 범위
 
-
-        //starIdx == 0이 아니면 이전 사람은 끝났다는 뜻. 클라에게 보내자.
+        //starIdx == 0이 아니면 이전 팬은 끝났다는 뜻. 팬에게 끝났다는 정보를 보내자.
         if (startIdx != 0) {
             FanSseResponseDto endSseDto = FanSseResponseDto.endMeeting();
 
             String lastEmail = fanEmitterMap.get(meetingId).get(startIdx - 1).email;
 
             sendEventToFanV3(meetingId, lastEmail, endSseDto);
-            log.info("{}번 님이 방에 나갔습니다.", startIdx - 1);
+            log.info("{}번 팬의 미팅이 종료되었습니다.", startIdx - 1);
         }
 
+        //남은 팬 수 줄이기
+
+        int tmpIdx = Math.min(currentPhase, starSize - 1);
+
+        for (int i = 0; i <= tmpIdx; i++) {
+            stars.get(i).remainFanNum = Math.max(stars.get(i).remainFanNum - 1, 0);
+        }
+
+        //
         for (int i = startIdx; i <= endIdx; i++) { //팬미팅이 끝나지 않은 사람들의 범위
             //현재 팬의 idx
             FanInfo fan = fans.get(i);
@@ -276,7 +285,7 @@ public class OpenviduService {
 
             FanSseResponseDto responseDto = null;
 
-            //sessionId를 보낼지 말지
+            //sessionId
             if (i <= endTokenSendSize) {
 
                 fan.viduToken = stars.get(fan.curStarIdx).session.getSessionId();
@@ -308,19 +317,16 @@ public class OpenviduService {
                 emitter.send(responseDto, MediaType.APPLICATION_JSON);
             }
 
-            for (int j = 0; j <= currentPhase; j++) {
-                stars.get(j).remainFanNum = Math.max(stars.get(j).remainFanNum - 1, 0);
-            }
-
             //star에게도 dto보내기
 
-            StarSseResponseDto starSseDto = null;
 
+
+            StarSseResponseDto starSseDto = null;
             SseEmitter starEmitter = null;
             if (fan.curStarIdx >= 0) {
-                log.info("{}번 스타에게 팬 정보(name: {}, id: {}, {}) 넘기기", fan.curStarIdx, fan.name, fan.fanId, stars.get(fan.curStarIdx).remainFanNum);
+                log.info("{}번 스타에게 팬 정보(remainFanNum: {}, fanName: {}, fanId: {}) 넘기기", fan.curStarIdx, stars.get(fan.curStarIdx).remainFanNum, fan.name, fan.fanId);
                 starEmitter = stars.get(fan.curStarIdx).emitter;
-                starSseDto =  StarSseResponseDto.sendNext(
+                starSseDto = StarSseResponseDto.sendNext(
                         stars.get(fan.curStarIdx).remainFanNum,
                         fan.name,
                         fan.fanId,
@@ -338,7 +344,6 @@ public class OpenviduService {
         scheduleNextAutomationV2(meetingId);
     }
 
-
     private int getCurrentPhase(int meetingId) {
         return meetingPhases.getOrDefault(meetingId, 0);
     }
@@ -346,10 +351,6 @@ public class OpenviduService {
     private void updateCurrentPhase(int meetingId, int newPhase) {
         meetingPhases.put(meetingId, newPhase);
     }
-
-//    private void scheduleNextAutomation(int meetingId) {
-//        scheduler.schedule(() -> automateMeetingRoom(meetingId), 5, TimeUnit.SECONDS);
-//    }
 
     private void scheduleNextAutomationV2(int meetingId) {
         scheduler.schedule(() -> {
@@ -588,18 +589,25 @@ public class OpenviduService {
         if (user == null) {
             return null;
         }
-        int meetingId = user.getMeeting().getMeetingId();
+//        int meetingId = user.getMeeting().getMeetingId();
+//
+//        userEmail = user.getEmail();
+//
+//        List<StarInfo> starInfos = meetingRooms.get(meetingId);
+//        for (StarInfo starInfo : starInfos) {
+//            if (starInfo.email.equals(userEmail)) {
+//
+//                return starInfo.session.getSessionId();
+//            }
+//        }
 
         userEmail = user.getEmail();
-
-        List<StarInfo> starInfos = meetingRooms.get(meetingId);
-        for (StarInfo starInfo : starInfos) {
-            if (starInfo.email.equals(userEmail)) {
-
-                return starInfo.session.getSessionId();
-            }
+        if (userEmail == null) {
+            return null;
         }
-        return null;
+        String sessionId;
+        sessionId = userEmail.split("@")[0];
+        return sessionId;
     }
 
     //emitter를 만들어서 클라이언트에게 전달
