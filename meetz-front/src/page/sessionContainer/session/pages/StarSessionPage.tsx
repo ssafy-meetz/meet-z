@@ -15,7 +15,8 @@ import useOpenviduStore from "../../../../zustand/useOpenviduStore";
 function StarSessionPage() {
   const { joinSession } = useOpenvidu();
   const { remain } = useSessionStore();
-  const {sessionId, session, publisher, subscriber, setSessionId} = useOpenviduStore();
+  const { sessionId, session, publisher, subscriber, setSessionId } =
+    useOpenviduStore();
   const { openModal, confirmModal, setOpenModal } = useReportModal();
   const { accessToken } = fetchUserData();
   const { formatTime } = useSessionTimer();
