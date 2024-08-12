@@ -23,24 +23,26 @@ export const useOpenvidu = () => {
   } = useOpenviduStore();
 
   // Leaving session
-  const leaveSession = useCallback(() => {
+  const leaveSession = async() => {
     if (!session) return;
     console.log(session);
-    session.disconnect();
+    await session.disconnect();
     console.log("~기존 세션 종료 완료~");
     setOV(null);
     setSession(null);
     setSessionId("");
     setSubscriber(null);
     setPublisher(null);
-  }, [session]);
+  };
 
   // Joining session
-  const joinSession = () => {
-    if (session) {
-      leaveSession();
+  const joinSession = async() => {
+    if (sessionId === ""){
+      return;
     }
-    if (sessionId === "") return;
+    if (session) {
+      await leaveSession();
+    }
     const OVs = new OpenVidu();
     const newSession = OVs.initSession();
     setOV(OVs);
@@ -99,12 +101,18 @@ export const useOpenvidu = () => {
               session
                 .publish(publishers)
                 .then(() => {})
-                .catch(() => {});
+                .catch((error) => {
+                  console.error("failed to publish stream: ",error);
+                });
             }
           })
-          .catch(() => {});
+          .catch((error) => {
+            console.error("failed to connect session: ",error);
+          });
       })
-      .catch(() => {});
+      .catch((error) => {
+        console.error("failed to get token: ",error);
+      });
   }, [session, OV, setSessionId]);
   return {
     session,
