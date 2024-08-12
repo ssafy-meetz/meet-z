@@ -126,6 +126,14 @@ public class OpenviduApi {
         return ApiResponse.success(HttpStatus.OK, sb.toString());
     }
 
+    @GetMapping("/vidu/connection/{meetingId}")
+    public ApiResponse<String> getConnectedPersonInCurrentRoom(@PathVariable("meetingId") int meetingId) {
+
+        String str = openviduService.getConnectedPersonInCurrentRoom(meetingId);
+
+        return ApiResponse.success(HttpStatus.OK, str);
+    }
+
     //testCode: 세션을 생성하는 함수
     @PostMapping("/vidu")
     public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
