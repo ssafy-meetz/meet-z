@@ -7,7 +7,7 @@ const usePasswordValidation = () => {
   const [password, setPassword] = useState("");
   const [isValidPassword, setIsValidPassword] = useState(false);
 
-  const passwordRegex = /^(?=.*[!@#$%^&*-?_]).{8,16}$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
 
   const validatePassword = (password: string) => {
     return passwordRegex.test(password);
