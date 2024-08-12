@@ -17,19 +17,16 @@ type SessionInfo = {
   sessionId: string;
 };
 const FanSessionContainerPage = () => {
-  const { isSessionEnd, setWait, setTakePhoto, setIsSessionEnd } = useSessionStore();
-  const {session,setSessionId} = useOpenviduStore();
+  const { isSessionEnd, setWait, setTakePhoto, setIsSessionEnd } =
+    useSessionStore();
+  const { session, setSessionId } = useOpenviduStore();
   const [type, setType] = useState(0);
-  const {leaveSession} = useOpenvidu();
-  const {
-    settingDone,
-    setTimer,
-    setStartName,
-    setNextStarName,
-  } = useSessionStore();
-  useEffect(()=>{
+  const { leaveSession } = useOpenvidu();
+  const { settingDone, setTimer, setStartName, setNextStarName } =
+    useSessionStore();
+  useEffect(() => {
     console.log(session);
-  },[session])
+  }, [session]);
 
   //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
@@ -66,14 +63,14 @@ const FanSessionContainerPage = () => {
       const parseData = JSON.parse(res);
       console.log(parseData);
       setType(parseData.type);
-      if(parseData.type!==3&&session){
+      if (parseData.type !== 3 && session) {
         leaveSession();
       }
       if (parseData.type === 1) {
         await moveNextSession(parseData);
       } else if (parseData.type === 3) {
         setTakePhoto(true);
-      } else if(parseData.type===4){
+      } else if (parseData.type === 4) {
         if (
           !localStorage.getItem("images") ||
           localStorage.getItem("images") === "[]"
@@ -100,7 +97,7 @@ const FanSessionContainerPage = () => {
       starName: parseData.currentStarName,
       nextStarName: parseData.nextStarName,
       sessionId: parseData.viduToken,
-      wait: parseData.waitingNum
+      wait: parseData.waitingNum,
     };
     await setInfo(info);
   };
@@ -119,18 +116,16 @@ const FanSessionContainerPage = () => {
       return <SessionLoadingPage />;
 
     case 4:
-      if(isSessionEnd){
+      if (isSessionEnd) {
         return <SessionSwitchPage />;
       }
       return <PickPhotoPage />;
-      
 
     case 1:
     case 3:
       if (settingDone) {
         return <FanSessionPage />;
       }
-      break;
 
     default:
       return <FanSettingPage />;

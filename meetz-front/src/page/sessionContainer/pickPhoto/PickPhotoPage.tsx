@@ -4,7 +4,7 @@ import { useSessionStore } from "../../../zustand/useSessionStore";
 
 const PickPhotoPage = () => {
   const [selectedFrame, setSelectedFrame] = useState(0);
-  const {setIsSessionEnd} = useSessionStore();
+  const { setIsSessionEnd } = useSessionStore();
   const { sendImage } = useSaveImage();
   const frameList = [
     { name: "frame1", img: "/frame1.png" },
@@ -29,17 +29,24 @@ const PickPhotoPage = () => {
       <div className="max-w-screen-xl w-screen px-24 py-2">
         <div className="flex flex-col justify-center items-center w-full mt-5 px-24 h-[660px] border rounded-3xl border-[#d9d9d9] bg-white shadow-2xl">
           <div className="flex flex-col gap-5 max-w-[800px] w-full justify-center opacity-0 animate-staggeredFadeIn">
-            
             <div className="flex flex-col">
-            <div className="flex gap-2 pt-8">
-              <span className="inline-block font-medium text-3xl">Frame</span>
-              <span className="inline-block font-light text-3xl">Select</span>
+              <div className="flex gap-2 pt-8">
+                <span className="inline-block font-medium text-3xl">Frame</span>
+                <span className="inline-block font-light text-3xl">Select</span>
+              </div>
+              <p className="font-light text-xl">
+                스타와 찍은 사진을 꾸밀 프레임을 설정해주세요
+              </p>
             </div>
-            <p className="font-light text-xl">스타와 찍은 사진을 꾸밀 프레임을 설정해주세요</p>
-            </div>
-            
+
             <div className="flex flex-col items-center gap-6">
-              <img src={`/frame${selectedFrame}.png`} alt="" className="w-[800px]  h-[374px]" />
+              {selectedFrame !== 0 && (
+                <img
+                  src={`/frame${selectedFrame}.png`}
+                  alt=""
+                  className="w-[800px]  h-[374px]"
+                />
+              )}
               <div className="flex space-x-4">
                 {colors.map((color) => (
                   <button
