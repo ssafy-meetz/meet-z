@@ -36,7 +36,7 @@ function StarSessionPage() {
   };
   useEffect(() => {
     if (sessionId !== "") {
-      joinSession();
+      joinSession(sessionId);
     }
   }, [sessionId]);
 
