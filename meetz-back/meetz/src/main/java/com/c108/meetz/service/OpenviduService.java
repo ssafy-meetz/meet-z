@@ -357,7 +357,8 @@ public class OpenviduService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }, 12, TimeUnit.SECONDS);
+        }, meetingRoomInfos.get(meetingId).getMeetingDuration()
+                        + meetingRoomInfos.get(meetingId).getTerm(), TimeUnit.SECONDS);
 
         scheduler.schedule(() -> {
             try {
@@ -369,7 +370,7 @@ public class OpenviduService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }, 15, TimeUnit.SECONDS);
+        }, meetingRoomInfos.get(meetingId).getMeetingDuration(), TimeUnit.SECONDS);
 
     }
 
