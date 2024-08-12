@@ -18,12 +18,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -150,8 +153,11 @@ public class MailService {
             body += "</div>";
             body += "</div>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>팬싸인회 당일 <a href='https://i11c108.p.ssafy.io/' style='color: #FE4D5C; text-decoration: none;'>https://i11c108.p.ssafy.io/</a> 사이트로 접속 후 위 계정으로 로그인해주세요.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'><strong>주의:</strong> 미팅 중 부적절한 언행이나 스타에게 해를 끼치는 행위가 발생할 경우,</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>즉각적인 경고 조치와 함께 서비스 이용이 제한될 수 있으며,</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>경고가 3회 누적될 경우 영구 제명될 수 있습니다.</p>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>또한 안내드린 임시 계정은 보안을 위해 타인과 공유하지 마세요.</p>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>해당 계정은 팬싸인회 종료 이후 24시간 뒤에 삭제됩니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>해당 계정은 팬미팅 종료 이후 24시간 뒤에 삭제됩니다.</p>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>감사합니다.</p>";
             body += "<div style='margin-top: 20px; text-align: center;'>";
             body += "<p style='font-size: 20px; color: #FE4D5C; text-align: center;'>MEET:Z</p>";
@@ -245,33 +251,32 @@ public class MailService {
             String meetingStartFormatted = meeting.getMeetingStart().format(formatter);
 
             String body = "";
-            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border-radius: 10px; background-color: #f4f4f4; text-align: center;'>";
-            body += "<div style='background-color: #FE4D5C; padding: 20px; border-radius: 10px 10px 0 0;'>";
-            body += "<h1 style='margin: 0; color: #ffffff;'>경고 안내</h1>";
-            body += "<h2 style='margin: 5px 0; color: #ffffff;'>" + meetingName + "</h2>";
-            body += "<h3 style='margin: 5px 0; color: #ffffff;'>" + meetingStartFormatted + "</h3>";
+            body += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9; text-align: center;'>";
+            body += "<div style='border: 1px solid #ccc; padding: 20px; border-radius: 10px; background-color: #fff;'>";
+            body += "<div style='background-color: #FE4D5C; padding: 10px; border-radius: 10px 10px 0 0;'>";
+            body += "<h1 style='margin: 0; color: #fff;'>" + meetingName + "</h1>";
+            body += "<h2 style='margin: 5px 0; color: #fff;'>" + meetingStartFormatted + "</h2>";
             body += "</div>";
-            body += "<div style='padding: 30px; background-color: #ffffff; border-radius: 0 0 10px 10px;'>";
-            body += "<p style='font-size: 18px; color: #333333;'>안녕하세요,</p>";
-            body += "<p style='font-size: 16px; color: #666666;'>MEET:Z 서비스를 이용해 주셔서 진심으로 감사드립니다.</p>";
-            body += "<p style='font-size: 16px; color: #666666;'>고객님의 최근 활동이 다음과 같은 사유로 인해</p>";
-            body += "<p style='font-size: 16px; color: #666666;'>서비스 이용 규정을 위반하였음을 알려드립니다:</p>";
-            body += "<div style='margin: 30px 0;'>";
-            body += "<p style='font-size: 16px; color: #333333; font-weight: bold;'>위반 사유:</p>";
+            body += "<div style='padding: 20px;'>";
+            body += "<img src='cid:meetzlogo' alt='Meetz Logo' style='width: 40%; height: auto; border-radius: 10px;'>";
+            body += "</div>";
+            body += "<p style='font-size: 16px; color: #333;'>안녕하세요,</p>";
+            body += "<p style='font-size: 16px; color: #333;'>MEET:Z 서비스를 이용해 주셔서 감사합니다.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>고객님의 최근 활동이 다음과 같은 사유로 인해</p>";
+            body += "<p style='font-size: 16px; color: #333;'>서비스 이용 규정을 위반하였음을 알려드립니다:</p>";
+            body += "<div style='margin: 20px 0;'>";
+            body += "<p style='font-size: 16px; color: #333; font-weight: bold;'>위반 사유:</p>";
             body += "<p style='font-size: 18px; color: #FE4D5C; padding: 10px; border: 2px solid #FE4D5C; display: inline-block; border-radius: 5px;'>" + reason + "</p>";
             body += "</div>";
-            body += "<p style='font-size: 16px; color: #333333;'>MEET:Z 이용 약관에 따라, 경고가 3회 누적될 경우</p>";
-            body += "<p style='font-size: 16px; color: #333333;'>서비스 이용이 제한될 수 있음을 알려드립니다.</p>";
-            body += "<p style='font-size: 16px; color: #333333;'>앞으로 이러한 일이 재발하지 않도록 주의해 주시기를 부탁드립니다.</p>";
-            body += "<p style='font-size: 16px; color: #333333;'>MEET:Z 서비스를 이용해주셔서 항상 감사드리며, 추가적인</p>";
-            body += "<p style='font-size: 16px; color: #333333;'>문의사항이 있으시면 언제든지 고객센터로 연락해 주시기 바랍니다.</p>";
-            body += "<p style='font-size: 16px; color: #333333;'>감사합니다.</p>";
-            body += "<div style='margin-top: 30px;'>";
+            body += "<p style='font-size: 16px; color: #333;'>MEET:Z 이용 약관에 따라, 경고가 3회 누적될 경우</p>";
+            body += "<p style='font-size: 16px; color: #333;'>서비스 이용이 제한될 수 있음을 알려드립니다.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>앞으로 이러한 일이 재발하지 않도록 주의해 주시기를 부탁드립니다.</p>";
+            body += "<p style='font-size: 16px; color: #333;'>MEET:Z 서비스를 이용해주셔서 항상 감사드립니다.</p>";
+            body += "<div style='margin-top: 20px;'>";
             body += "<p style='font-size: 20px; color: #FE4D5C;'>MEET:Z</p>";
             body += "</div>";
             body += "</div>";
             body += "</div>";
-
 
             helper.setText(body, true);
 
@@ -286,9 +291,6 @@ public class MailService {
             throw new BadRequestException("경고 메일 생성 또는 발송 중 오류가 발생했습니다.");
         }
     }
-
-
-
 
     /**
      * 사용자를 블랙리스트에 추가할 때의 메일을 생성합니다.
@@ -310,17 +312,10 @@ public class MailService {
             body += "<div style='padding: 20px; text-align: center;'>";
             body += "<img src='cid:meetzlogo' alt='Meetz Logo' style='width: 40%; height: auto; border-radius: 10px;'>";
             body += "</div>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>안녕하세요.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>안녕하세요,</p>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>MEET:Z 서비스를 이용해 주셔서 감사합니다.</p>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>다음 사유로 인해 블랙리스트에 등록되셨습니다:</p>";
-            body += "<div style='margin: 20px 0; text-align: center;'>";
-            body += "<p style='font-size: 16px; color: #333;'>블랙리스트 등록 사유:</p>";
-            body += "<ul style='font-size: 16px; color: #333; list-style-type: none; padding: 0; text-align: center;'>";
-            body += "<li style='margin-bottom: 5px;'>" + reason + "</li>";
-            body += "</ul>";
-            body += "</div>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>등록된 사유로 인해 서비스 이용에 제한이 발생할 수 있습니다.</p>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>문의사항이 있으시면 고객센터로 연락해 주시기 바랍니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>귀하께서는 서비스 이용 규정 위반으로 인해 블랙리스트에 등록되었습니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>이에 따라, 서비스 이용이 제한되었음을 알려드립니다.</p>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>감사합니다.</p>";
             body += "<div style='margin-top: 20px; text-align: center;'>";
             body += "<p style='font-size: 20px; color: #FE4D5C; text-align: center;'>MEET:Z</p>";
@@ -370,18 +365,13 @@ public class MailService {
             body += "<div style='padding: 20px; text-align: center;'>";
             body += "<img src='cid:meetzlogo' alt='Meetz Logo' style='width: 40%; height: auto; border-radius: 10px;'>";
             body += "</div>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>안녕하세요.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>안녕하세요,</p>";
             body += "<p style='font-size: 16px; color: #333; text-align: center;'>MEET:Z 서비스를 이용해 주셔서 감사합니다.</p>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>다음과 같이 경고 3회 누적으로 인해 블랙리스트에 등록되었습니다:</p>";
-            body += "<div style='margin: 20px 0; text-align: center;'>";
-            body += "<p style='font-size: 16px; color: #333;'>경고 누적 사유:</p>";
-            body += "<ul style='font-size: 16px; color: #333; list-style-type: none; padding: 0; text-align: center;'>";
-            body += "<li style='margin-bottom: 5px;'>경고 3회 누적</li>";
-            body += "</ul>";
-            body += "</div>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>본 조치는 경고 누적으로 인해 발생된 것입니다.</p>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>문의사항이 있으시면 고객센터로 연락해 주시기 바랍니다.</p>";
-            body += "<p style='font-size: 16px; color: #333; text-align: center;'>감사합니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>귀하의 계정은 경고가 3회 누적됨에 따라 블랙리스트에 등록되었습니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>이로 인해 서비스 이용이 제한되었음을 알려드립니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>본 조치는 MEET:Z의 이용 규정을 준수하기 위한 불가피한 조치입니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>이의가 있으시거나 추가 문의사항이 있으시면, 고객센터로 연락해 주시기 바랍니다.</p>";
+            body += "<p style='font-size: 16px; color: #333; text-align: center;'>MEET:Z와 함께 해주셔서 감사합니다.</p>";
             body += "<div style='margin-top: 20px; text-align: center;'>";
             body += "<p style='font-size: 20px; color: #FE4D5C; text-align: center;'>MEET:Z</p>";
             body += "</div>";
@@ -416,5 +406,13 @@ public class MailService {
         String email = SecurityUtil.getCurrentUserEmail();
         return userRepository.findByEmail(email).orElseThrow(() ->
                 new NotFoundException("user not found"));
+    }
+
+    // HTML 파일을 불러와서 String으로 변환하는 메서드
+    private String loadHtmlTemplate(String templateName) throws IOException {
+        ClassPathResource resource = new ClassPathResource("templates/" + templateName);
+        try (InputStream inputStream = resource.getInputStream()) {
+            return StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+        }
     }
 }
