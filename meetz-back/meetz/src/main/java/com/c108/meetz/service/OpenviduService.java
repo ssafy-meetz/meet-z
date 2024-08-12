@@ -770,4 +770,18 @@ public class OpenviduService {
             star.emitter.send(pictureStarDto, MediaType.APPLICATION_JSON);
         }
     }
+
+    public String getConnectedPersonInCurrentRoom(int meetingId) {
+
+        //세션 아이디가 같으면
+        String str = "";
+        Session session = meetingRooms.get(meetingId).get(0).session;
+        List<Connection> connections = session.getConnections();
+
+        for (Connection connection : connections) {
+            str += connection.getConnectionId() + " " + connection.getClientData();
+        }
+
+        return str;
+    }
 }
