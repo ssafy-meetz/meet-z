@@ -66,8 +66,8 @@ public class MeetingService {
     }
 
     private LocalDateTime calculateMeetingEnd(MeetingSaveRequestDto meeting) {
-        int singleFanMeetingTime = (meeting.getMeetingDuration() + meeting.getTerm()) * meeting.getStarList().size() - meeting.getTerm();
-        int totalFanMeetingTime = singleFanMeetingTime * meeting.getFanList().size();
+        int lastFanMeetingTime = (meeting.getMeetingDuration() + meeting.getTerm()) * meeting.getStarList().size() - meeting.getTerm(); //마지막 팬이 스타를 만나는 총 시간
+        int totalFanMeetingTime = lastFanMeetingTime + (meeting.getMeetingDuration() + meeting.getTerm()) * (meeting.getFanList().size()-1);
         return meeting.getMeetingStart().plusSeconds(totalFanMeetingTime);
     }
 
@@ -312,8 +312,9 @@ public class MeetingService {
                     return star;
                 })
                 .toList();
+        int waitingTime = (userPosition -1) * (meeting.getMeetingDuration() + meeting.getTerm());
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
-        return MeetingInfoFanResponseDto.of(meeting, starList, userPosition, chatRoom.getChatRoomId(), currentUser.getNickname());
+        return MeetingInfoFanResponseDto.of(meeting, starList, userPosition, waitingTime, chatRoom.getChatRoomId(), currentUser.getNickname());
     }
 
     private Manager getManager(){
