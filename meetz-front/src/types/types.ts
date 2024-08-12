@@ -110,3 +110,21 @@ export type ReportsDto = {
   isReported: boolean;
   isProfanity: boolean;
 }
+
+export type SegementsDto = {
+  startTime: string;
+  endTime: string;
+  text: string;
+  badWordsList: string[];
+}
+
+export type ReportDetailDto = {
+  reportId: number;
+  reportedUserName: string;
+  starName: string;
+  isReported: boolean;
+  isProfanity: boolean;
+  filePath: string;
+  transcript: string;
+  segments: SegementsDto[];
+}
