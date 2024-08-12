@@ -1,8 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
+import { ReportDetailDto } from '../../../../types/types';
+import { IoPauseCircleOutline, IoPlayCircleOutline } from "react-icons/io5";
 
-const AudioPlayer = () => {
+interface AudioPlayerProps {
+  reportDetail: ReportDetailDto | null;
+}
+
+const AudioPlayer = ({ reportDetail }: AudioPlayerProps) => {
   const [progress, setProgress] = useState(0); // 초기 진행률 (퍼센트)
   const progressBarRef = useRef<HTMLDivElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [totalDuration, setTotalDuration] = useState<number>(0);
+  const [curTime, setCurTime] = useState<number>(0);
 
   const handleMouseDown = () => {
     document.addEventListener('mousemove', handleMouseMove);
@@ -17,6 +27,11 @@ const AudioPlayer = () => {
         Math.max(0, ((e.clientX - bar.left) / bar.width) * 100)
       );
       setProgress(newProgress);
+      if (audioRef.current) {
+        const newTime = (newProgress / 100) * totalDuration;
+        audioRef.current.currentTime = newTime;
+        setCurTime(newTime);
+      }
     }
   };
 
@@ -25,32 +40,77 @@ const AudioPlayer = () => {
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
+  const playHandler = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setPlaying(true);
+    }
+  }
+
+  const pauseHandler = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setPlaying(false);
+    }
+  }
+
+  // 시간 형식 변환 함수
+  const formatTime = (time: number) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
   useEffect(() => {
+    if (audioRef.current) {
+      const updateProgress = () => {
+        setCurTime(audioRef.current!.currentTime);
+        setProgress((audioRef.current!.currentTime / totalDuration) * 100);
+      };
+
+      audioRef.current.addEventListener('timeupdate', updateProgress);
+      return () => {
+        audioRef.current!.removeEventListener('timeupdate', updateProgress);
+      };
+    }
+  }, [totalDuration]);
+
+  useEffect(() => {
+    if (curTime === totalDuration) {
+      setPlaying(false);
+      setCurTime(0);
+      setProgress(0);
+    }
+  }, [curTime])
+
+  useEffect(() => {
+    if (reportDetail?.filePath) {
+      audioRef.current = new Audio(reportDetail.filePath);
+
+      // 메타데이터가 로드되었을 때 duration 값을 설정
+      audioRef.current.addEventListener('loadedmetadata', () => {
+        setTotalDuration(audioRef.current?.duration || 0);
+        setCurTime(audioRef.current?.currentTime || 0);
+      });
+    }
+
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
-  }, []);
+  }, [reportDetail?.filePath]);
 
   return (
     <div className='bg-white gap-8 items-center justify-between flex rounded-tl-xl sm:rounded-t-xl p-4 pb-6 sm:p-8 lg:p-4 lg:pb-6 xl:p-8 space-y-6 sm:space-y-8 lg:space-y-6 xl:space-y-8'>
-      <button type='button' className=''>
-        <svg width='50' height='50' fill='none'>
-          <circle
-            className='text-[#ff4f5d]'
-            cx='25'
-            cy='25'
-            r='24'
-            stroke='currentColor'
-            strokeWidth='1.5'
-          />
-          <path
-            className='text-[#ff4f5d]'
-            d='M18 16h4v18h-4V16zM28 16h4v18h-4z'
-            fill='currentColor'
-          />
-        </svg>
-      </button>
+      {!playing ? (
+        <IoPlayCircleOutline onClick={playHandler} className='w-16 h-16 text-[#ff4f5d] cursor-pointer' />
+      ) : (
+        <IoPauseCircleOutline onClick={pauseHandler} className='w-16 h-16 text-[#ff4f5d] cursor-pointer' />
+      )}
       <div className='space-y-2 w-full'>
         <div
           className='bg-gray-200 rounded-full relative h-2'
@@ -73,8 +133,8 @@ const AudioPlayer = () => {
           </div>
         </div>
         <div className='text-gray-500 flex justify-between text-sm font-medium tabular-nums'>
-          <div>00:00</div>
-          <div>03:00</div>
+          <div>{formatTime(curTime)}</div>
+          <div>{formatTime(totalDuration)}</div>
         </div>
       </div>
     </div>
