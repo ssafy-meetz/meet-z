@@ -1,5 +1,5 @@
-import { useOpenvidu } from "../../../../hooks/session/useOpenvidu";
-import { useEffect, useState } from "react";
+
+import { useState } from "react";
 import logo_white from "/src/assets/images/logo-white.png";
 import FanSession from "../components/FanSession";
 import useSessionTimer from "../../../../hooks/session/useSessionTimer";
