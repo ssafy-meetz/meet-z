@@ -2,6 +2,7 @@ package com.c108.meetz.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
+import com.c108.meetz.domain.Manager;
 import com.c108.meetz.domain.Meeting;
 import com.c108.meetz.domain.Report;
 import com.c108.meetz.domain.User;
@@ -12,6 +13,7 @@ import com.c108.meetz.dto.response.TranscriptionResponseDto;
 import com.c108.meetz.exception.BadRequestException;
 import com.c108.meetz.exception.DuplicateException;
 import com.c108.meetz.exception.NotFoundException;
+import com.c108.meetz.repository.ManagerRepository;
 import com.c108.meetz.repository.MeetingRepository;
 import com.c108.meetz.repository.ReportRepository;
 import com.c108.meetz.repository.UserRepository;
@@ -38,6 +40,7 @@ public class ReportService {
     private final MeetingRepository meetingRepository;
     private final AudioProcessingService audioProcessingService;
     private final AmazonS3 s3Client;
+    private final ManagerRepository managerRepository;
 
     /**
      * 현재 스타 사용자가 팬(Fan)을 신고하는 메서드.
@@ -86,12 +89,24 @@ public class ReportService {
         reportRepository.delete(report);
     }
     /**
-     * 특정 미팅에 대한 신고 목록을 조회하는 메서드.
+     * 매니저가 특정 미팅에 대한 신고 목록을 조회하는 메서드.
      */
     public ReportsListResponseDto getReportList(int meetingId) {
+        // 미팅 id대한 report List, 디테일
+        // report meeting 찾고 거기에 있는 meeting.getManager()
+        // 1. 지금 접속한 매니저
+        // 2. 미팅레포지터리에서 meetingId로 meeting을 찾음
+        // 3. meeting.getmanager = 지금 접속한 매니저
+        Manager currentManager = getManager();
+
         // 미팅 정보 조회
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
+
+        // 미팅의 매니저와 현재 로그인된 매니저가 일치하는지 확인
+        if (!meeting.getManager().equals(currentManager)) {
+            throw new BadRequestException("접근 권한이 없습니다.");
+        }
 
         // 참가자 수 계산
         int participantCount = meetingRepository.countFansInMeeting(meetingId);
@@ -104,16 +119,21 @@ public class ReportService {
     }
 
     /**
-     * 특정 신고에 대한 세부 정보를 조회하는 메서드.
+     * 매니저가 특정 신고에 대한 세부 정보를 조회하는 메서드.
      */
     public ReportDetailResponseDto getReportDetail(int meetingId, int reportId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException("Meeting not found"));
 
+        Manager currentManager = getManager();
 //        verifyManagerAuthorization(meeting);
 
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new NotFoundException("Report not found"));
+
+        if (!currentManager.equals(meeting.getManager())) {
+            throw new BadRequestException("접근 권한이 없습니다.");
+        }
 
         // 동적으로 URL을 생성
         String urlPrefix = String.format("https://kr.object.ncloudstorage.com/meeting%d/", meetingId);
@@ -151,6 +171,12 @@ public class ReportService {
         }
 
         return stars; // 모든 스타 사용자 반환
+    }
+
+    private Manager getManager(){
+        String email = SecurityUtil.getCurrentUserEmail();
+        return managerRepository.findByEmail(email).orElseThrow(()->
+                new NotFoundException("manager not found"));
     }
 
 //    /**
