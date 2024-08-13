@@ -1,12 +1,30 @@
+import { useState } from 'react';
+import postFanBlackList from '../../../../apis/meeting/postFanBlackList';
+import fetchUserData from '../../../../lib/fetchUserData';
 import { useMonitorStore } from '../../../../zustand/useMonitorStore';
 import Alert from '/src/assets/images/alert.png';
+import Loading from '../../../../common/Loading';
 
 const BlackModal = () => {
-  const { closeBlackModal } = useMonitorStore();
+  const { reportDetail, reportedUserId, closeBlackModal } = useMonitorStore();
+  const { accessToken } = fetchUserData()
+  const [dataLoading, setDataLoading] = useState(false);
 
-  const continueBtnHandler = () => {
-    // 경고 누적 API 연동
-    alert('경고 누적 API 연동');
+  const continueBtnHandler = async () => {
+    setDataLoading(true);
+    try {
+      const result = await postFanBlackList(reportedUserId, accessToken || "");
+
+      if (result) {
+        alert('해당 팬이 영구 제명되었습니다.');
+        closeBlackModal();
+      }
+    } catch (error: any) {
+      alert(error.message)
+      setDataLoading(false);
+      closeBlackModal();
+    }
+    setDataLoading(false);
   };
 
   return (
@@ -18,14 +36,14 @@ const BlackModal = () => {
         onClick={(e) => e.stopPropagation()}
         className='w-[460px] h-[240px] flex flex-col items-center justify-center rounded-3xl border-2 border-[#FF4F5D] bg-white'
       >
-        <div className='flex flex-col gap-6'>
+        {dataLoading ? <Loading width={70} height={70} /> : <div className='flex flex-col gap-6'>
           <div className='gap-4 flex flex-col items-center justify-center'>
             <div className='w-16 h-16'>
               <img src={Alert} alt='alert' />
             </div>
             <div>
               <span className='text-xl cursor-default'>
-                “강창우” 팬을{' '}
+                “{reportDetail?.reportedUserName}” 팬을{' '}
                 <span className='text-red-600 font-semibold'>
                   영구 제명
                 </span>
@@ -47,7 +65,7 @@ const BlackModal = () => {
               취소
             </button>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

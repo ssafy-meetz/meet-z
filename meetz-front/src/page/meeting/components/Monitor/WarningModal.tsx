@@ -6,7 +6,7 @@ import Alert from '/src/assets/images/alert.png';
 
 
 const WarningModal = () => {
-  const { inputText, selectedOption, reportedUserId, closeWarnModal, setSelectedOption, openBlackModal, setInputText } = useMonitorStore();
+  const { inputText, selectedOption, reportedUserId, closeWarnModal, setSelectedOption, setInputText } = useMonitorStore();
   const { accessToken } = fetchUserData();
 
 

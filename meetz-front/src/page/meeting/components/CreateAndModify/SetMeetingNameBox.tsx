@@ -3,13 +3,13 @@ import useMeetingSettingStore from '../../../../zustand/useMeetingSettingStore';
 
 const SetMeetingNameBox = () => {
   const { meetingName, setMeetingName } = useMeetingSettingStore();
-  const [inputWidth, setInputWidth] = useState(70); // 초기 width 값을 더 넓게 설정하거나, span의 width로 초기화
+  const [inputWidth, setInputWidth] = useState(100); // 초기 width 값을 더 넓게 설정하거나, span의 width로 초기화
   const spanRef = useRef<HTMLSpanElement>(null); // 숨겨진 span 요소를 참조
 
   useEffect(() => {
     if (spanRef.current) {
       // span 요소의 width를 기반으로 input의 초기 width 설정
-      setInputWidth(spanRef.current.offsetWidth + 42); // 10px의 여유를 추가
+      setInputWidth(spanRef.current.offsetWidth + 105); // 10px의 여유를 추가
     }
   }, [meetingName]);
 

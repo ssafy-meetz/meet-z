@@ -44,7 +44,7 @@ const ParticipateStarInput = forwardRef<HTMLInputElement>((props, ref) => {
         onChange={handleInputChange}
         onKeyDown={handleOnkeyDown}
         ref={ref}
-        className='text-xl font-normal py-1 focus:outline-none focus:border-[#FF4F5D] border-b hover:border-[#FF4F5D] min-w-[70px] max-w-full'
+        className='text-xl font-semibold py-1 focus:outline-none focus:border-[#FF4F5D] border-b hover:border-[#FF4F5D] min-w-[70px] max-w-full'
         placeholder='입력'
         style={{ width: `${inputWidth}px` }}
       />
