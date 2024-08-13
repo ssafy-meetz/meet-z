@@ -22,8 +22,13 @@ const FanSessionContainerPage = () => {
   const { setSessionId } = useOpenviduStore();
   const [type, setType] = useState(0);
   const { leaveSession, joinSession } = useOpenvidu();
-  const { settingDone, setTimer, setStartName, setNextStarName } =
-    useSessionStore();
+  const {
+    settingDone,
+    setTimer,
+    setStartName,
+    setNextStarName,
+    setWaitingTime,
+  } = useSessionStore();
   //로딩될 때마다 SSE 연결 시도
   useEffect(() => {
     fetchSSE();
@@ -82,6 +87,7 @@ const FanSessionContainerPage = () => {
           break;
 
         case 0:
+          setWaitingTime(parseData.timer);
           setWait(parseData.waitingNum);
           break;
       }
