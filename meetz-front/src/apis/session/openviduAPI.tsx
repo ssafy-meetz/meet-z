@@ -53,3 +53,25 @@ export const createToken = (sessionIds: string): Promise<string> => {
       .catch(error => reject(error));
   });
 };
+
+export const checkSessionExists = async (sessionId:string)=>{
+  try {
+    const response = await axios.get(
+      `${OPENVIDU_SERVER_URL}/openvidu/api/sessions`,
+      {
+        headers: {
+          Authorization: `Basic ${btoa(
+            `OPENVIDUAPP:${OPENVIDU_SERVER_SECRET}`,
+          )}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    const sessions = response.data.content || [];
+    const exists = sessions.some((session:any) => session.sessionId === sessionId);
+    return exists;
+  } catch (error) {
+    console.error('Error checking session:', error);
+    return false;
+  }
+}
