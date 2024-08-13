@@ -8,6 +8,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JWTUtil {
@@ -20,7 +21,7 @@ public class JWTUtil {
     }
     //redis에 토큰 저장
     public void storeToken(String email, String token){
-        redisTemplate.opsForValue().set(email, token);
+        redisTemplate.opsForValue().set(email, token, 24, TimeUnit.HOURS);
     }
     //redis에서 토큰 값 가져오기
     public String getToken(String email){
