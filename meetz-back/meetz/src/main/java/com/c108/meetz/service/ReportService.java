@@ -57,7 +57,7 @@ public class ReportService {
         Meeting meeting = fan.getMeeting();  // 팬이 속한 미팅을 가져옴
 
         // 이미 신고된 사항인지 확인
-        boolean reportExists = reportRepository.existsByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(meeting.getMeetingId(), fan.getUserId(), star.getUserId());
+        boolean reportExists = reportRepository.existsByStar_UserIdAndFan_UserId(star.getUserId(), fan.getUserId());
 
         if (reportExists) {
             throw new DuplicateException("이미 신고하였습니다.");
@@ -78,8 +78,7 @@ public class ReportService {
         Meeting meeting = fan.getMeeting();  // 팬이 속한 미팅을 가져옴
 
         // 리포트를 조회하고 null 체크로 예외 처리
-        Report report = reportRepository.findByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(
-                meeting.getMeetingId(), fan.getUserId(), star.getUserId());
+        Report report = reportRepository.findByStar_UserIdAndFan_UserId(star.getUserId(), fan.getUserId());
 
         if (report == null) {
             throw new NotFoundException("신고를 찾을 수 없습니다.");

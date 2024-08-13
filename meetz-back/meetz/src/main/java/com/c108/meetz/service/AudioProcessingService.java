@@ -120,17 +120,11 @@ public class AudioProcessingService {
             User star = userRepository.findByEmail(email)
                     .orElseThrow(() -> new NotFoundException("스타 정보를 찾을 수 없습니다."));
             int starId = star.getUserId();
+
             int meetingId = star.getMeeting().getMeetingId();
 
             // 현재 접속한 팬의 이메일을 이용해 팬 번호 조회
             String fanEmail = SecurityUtil.getCurrentUserEmail();
-            boolean fanExists = userRepository.existsByEmailAndMeeting_MeetingId(fanEmail, meetingId);
-
-            if (!fanExists) {
-                log.debug("팬 정보를 찾을 수 없습니다. 이메일: {}", fanEmail);
-                throw new NotFoundException("팬 정보를 찾을 수 없습니다.");
-            }
-
             User fan = userRepository.findByEmail(fanEmail)
                     .orElseThrow(() -> new NotFoundException("팬 정보를 찾을 수 없습니다."));
             int fanId = fan.getUserId();
@@ -159,7 +153,7 @@ public class AudioProcessingService {
             boolean hasProfanityInTranscript = segments.stream().anyMatch(segment -> !segment.getBadWordsList().isEmpty());
 
             // 4. 신고 테이블 처리 로직
-            String fileUrl = handleReportAfterMeeting(file, meetingId, fanId, starId, hasProfanityInTranscript);
+            String fileUrl = handleReportAfterMeeting(file, meetingId, starId, fanId, hasProfanityInTranscript);
 
             // TranscriptionResponseDto에 파일 경로를 추가
             TranscriptionResponseDto responseDto = new TranscriptionResponseDto(fileUrl, transcript, hasProfanityInTranscript, segments);
@@ -185,7 +179,7 @@ public class AudioProcessingService {
      * @param hasProfanity 오디오 파일에 비속어가 포함되었는지 여부
      * @return String 업로드된 파일의 URL
      */
-    private String handleReportAfterMeeting(MultipartFile file, int meetingId, int fanId, int starId, boolean hasProfanity) {
+    private String handleReportAfterMeeting(MultipartFile file, int meetingId, int starId, int fanId, boolean hasProfanity) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new BadRequestException("해당 미팅을 찾을 수 없습니다."));
         User star = userRepository.findById(starId)
@@ -201,11 +195,11 @@ public class AudioProcessingService {
         createPublicBucket(bucketName);
 
         // 기존 신고 데이터가 있는지 확인
-        boolean reportExists = reportRepository.existsByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(meetingId, fanId, starId);
+        boolean reportExists = reportRepository.existsByStar_UserIdAndFan_UserId(starId, fanId);
 
         if (reportExists) {
             // 신고가 이미 존재하는 경우: 파일 경로와 비속어 여부를 업데이트
-            Report report = reportRepository.findByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(meetingId, fanId, starId);
+            Report report = reportRepository.findByStar_UserIdAndFan_UserId(starId, fanId);
             String filePath = meetingId + "_" + starId + "_" + report.getFan().getUserId() + ".wav";
             System.out.println("file, bucketName, filePath " + file + "," + bucketName + "," + filePath);
             System.out.println("file" + file);
@@ -220,7 +214,7 @@ public class AudioProcessingService {
         } else if (hasProfanity) {
             // 신고가 존재하지 않으며 비속어가 발견된 경우: 새로운 신고 생성
             User fan = userRepository.findById(fanId).orElseThrow(()->new NotFoundException("팬 정보를 찾지 못했습니다.")); // DB에서 찾을 시 없을 수 있음, opritonal은 null or 객체 반환, Repository findById Optional<User> 반환,
-            Report newReport = new Report(meeting, star, fan, true, hasProfanity, null);
+            Report newReport = new Report(meeting, star, fan, false, hasProfanity, null);
             reportRepository.save(newReport);
 
             // 새로운 신고가 생성된 후 파일을 S3에 업로드
@@ -237,8 +231,6 @@ public class AudioProcessingService {
 
         return fileUrl; // URL 반환
     }
-
-
 
     /**
      * 클로바 스피치 API 응답을 파싱하여 텍스트와 비속어를 추출하는 메서드.
