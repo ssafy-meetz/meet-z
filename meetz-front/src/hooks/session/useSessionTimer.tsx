@@ -3,7 +3,7 @@ import { useSessionStore } from "../../zustand/useSessionStore";
 
 const useSessionTimer = () => {
   const { timer } = useSessionStore();
-  const [time, setTime] = useState(0);
+  const [time, setTime] = useState(timer);
   const [formatTime, setFormatTime] = useState("");
   useEffect(() => {
     setTime(timer);
