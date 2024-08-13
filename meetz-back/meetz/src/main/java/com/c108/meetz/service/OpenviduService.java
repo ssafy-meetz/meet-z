@@ -645,30 +645,26 @@ public class OpenviduService {
         sessionId = userEmail.split("@")[0];
 
         Session activeSession = openvidu.getActiveSession(sessionId);
+        List<StarInfo> starInfos = meetingRooms.get(user.getMeeting().getMeetingId());
 
-        if (activeSession == null) {
-            List<StarInfo> starInfos = meetingRooms.get(user.getMeeting().getMeetingId());
+        log.info("세션존재하지 않아서 세션 만든다.");
+        try {
+            for (StarInfo starInfo : starInfos) {
+                if (starInfo.session.equals(sessionId)) {
 
-            log.info("세션존재하지 않아서 세션 만든다.");
-            try {
-                for (StarInfo starInfo : starInfos) {
-                    if (starInfo.session.equals(sessionId)) {
-
-                        //sessionProperties생성
-                        SessionProperties properties = getSessionProperties(sessionId);
-                        //sessjion생성
-                        Session session = openvidu.createSession(properties);
-                        log.info("세션 생성 완료");
-                        starInfo.session = session;
-                        break;
-                    }
+                    //sessionProperties생성
+                    SessionProperties properties = getSessionProperties(sessionId);
+                    //sessjion생성
+                    Session session = openvidu.createSession(properties);
+                    log.info("세션 생성 완료");
+                    starInfo.session = session;
+                    break;
                 }
-            } catch (Exception e) {
-                throw new InternalServerErrorException(e.getMessage());
             }
-
-
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e.getMessage());
         }
+
 
         return sessionId;
     }
