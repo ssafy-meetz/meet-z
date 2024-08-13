@@ -66,9 +66,11 @@ const FanSessionContainerPage = () => {
 
       switch (parseData.type) {
         case 1:
+          //to. 창우 음성 녹음 시작~!~!
           await moveNextSession(parseData);
           break;
         case 2:
+          //to. 창우 음성 녹음 종료 & api 연결 요청
           await leaveSession();
           await setTimer(parseData.timer);
           break;
@@ -76,6 +78,7 @@ const FanSessionContainerPage = () => {
           setTakePhoto(true);
           break;
 
+        //to. 창우 음성 녹음 종료 & api 연결 요청
         case 4:
           await leaveSession();
           if (

@@ -2,13 +2,10 @@ import { useState, useEffect } from "react";
 import logo from "/src/assets/images/sessionlogo.png";
 import meetz from "/src/assets/images/meetz.png";
 import SessionLoading from "../../../../common/SessionLoading";
-import getFanSession from "../../../../apis/session/getFanSession";
 import { useSessionStore } from "../../../../zustand/useSessionStore";
-import fetchUserData from "../../../../lib/fetchUserData";
 
 const LoadingSession = () => {
-  const { timer, setTimer, decrementTimer, message, setMessage } =
-    useSessionStore();
+  const { timer, decrementTimer, message, setMessage } = useSessionStore();
   const [fadeClass, setFadeClass] = useState("opacity-100"); // 초기 opacity 상태
 
   useEffect(() => {
