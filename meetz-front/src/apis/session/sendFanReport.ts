@@ -7,7 +7,9 @@ const getFanReport = async (fanId: string) => {
     const { data, status } = await instance.post(
       `/api/meeting/report/${fanId}`,
       {
-        Authorization: `Bearer ${accessToken}`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       }
     );
     if (status === 200) {
