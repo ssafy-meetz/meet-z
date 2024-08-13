@@ -578,7 +578,7 @@ public class OpenviduService {
 
         //유저정보 입력
         for (User user : users) {
-            fanInfos.add(new FanInfo(user.getEmail(), user.getName(), starSize, user.getUserId()));
+            fanInfos.add(new FanInfo(user.getEmail(), user.getNickname(), starSize, user.getUserId()));
         }
 
         //미팅방 팬 사이즈 입력
