@@ -13,17 +13,6 @@ const LoginPage = () => {
   const [startBottomTextAnimation, setStartBottomTextAnimation] =
     useState(false);
 
-  const logoutHandler = async () => {
-    try {
-      await postLogout(localStorage.getItem('rt') || '');
-      localStorage.clear();
-      clearUserData();
-      alert('로그아웃 되었습니다.');
-      navigate('/', { replace: true });
-    } catch (error: any) { }
-    return;
-  };
-
   useEffect(() => {
     if (accessToken || localStorage.getItem('rt')) {
       const result = window.confirm('로그인 상태입니다. 로그아웃 하시겠습니까?');
