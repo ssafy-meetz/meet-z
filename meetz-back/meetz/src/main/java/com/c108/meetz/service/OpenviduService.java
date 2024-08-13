@@ -505,6 +505,15 @@ public class OpenviduService {
                 Session session = openvidu.createSession(properties);
                 log.info("sessionId: " + sessionId + ", getSessionId: " + session.getSessionId());
 
+                //더미 커넥션 세션에 넣기
+                ConnectionProperties cp = new ConnectionProperties.Builder()
+                        .type(ConnectionType.WEBRTC)
+                        .role(OpenViduRole.SUBSCRIBER)
+                        .data("dummy-connection")
+                        .build();
+
+                session.createConnection(cp);
+
                 StarInfo starInfo = new StarInfo(user.getName(), user.getEmail(), session);
 
                 //생성한 세션을 리스트에넣기
