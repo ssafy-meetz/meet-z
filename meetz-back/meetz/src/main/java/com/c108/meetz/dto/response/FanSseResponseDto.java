@@ -25,8 +25,8 @@ public record FanSseResponseDto( //type 0: 대기, 1: 넘기기, 2: 쉬는시간
         return new FanSseResponseDto(4, null, 0, -1, null, null, 0);
     }
 
-    public static FanSseResponseDto breakMeeting() {
-        return new FanSseResponseDto(2, null, 0, 0, null, null, 0);
+    public static FanSseResponseDto breakMeeting(int term) {
+        return new FanSseResponseDto(2, null, 0, 0, null, null, term);
     }
 
     public static FanSseResponseDto takePicture() {

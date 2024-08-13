@@ -23,8 +23,8 @@ public record StarSseResponseDto( //type 1: 넘기기, 2: 쉬는시간, 3: 사�
         return new StarSseResponseDto(4, -1, null, 0, 0);
     }
 
-    public static StarSseResponseDto breakMeeting() {
-        return new StarSseResponseDto(2, 0, null, 0, 0);
+    public static StarSseResponseDto breakMeeting(int term) {
+        return new StarSseResponseDto(2, 0, null, 0, term);
     }
 
     public static StarSseResponseDto takePicture() {

@@ -378,7 +378,7 @@ public class OpenviduService {
 
         scheduler.schedule(() -> {
             try {
-                sendBreakTime(meetingId);
+                sendBreakTime(meetingId, term);
             } catch (OpenViduJavaClientException e) {
                 throw new RuntimeException(e);
             } catch (OpenViduHttpException e) {
@@ -389,14 +389,14 @@ public class OpenviduService {
         }, duration, TimeUnit.SECONDS);
     }
 
-    public void sendBreakTime(int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
+    public void sendBreakTime(int meetingId, int term) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
         log.info("{}번 미팅에 쉬는시간 정보 전송", meetingId);
 
         List<StarInfo> stars = meetingRooms.get(meetingId);
         List<FanInfo> fans = fanEmitterMap.get(meetingId);
 
-        FanSseResponseDto fanBreakingDto = FanSseResponseDto.breakMeeting();
-        StarSseResponseDto StarBreakingDto = StarSseResponseDto.breakMeeting();
+        FanSseResponseDto fanBreakingDto = FanSseResponseDto.breakMeeting(term);
+        StarSseResponseDto StarBreakingDto = StarSseResponseDto.breakMeeting(term);
         FanSseResponseDto fanEndDto = FanSseResponseDto.endMeeting();
         for (StarInfo starInfo : stars) {
             if (starInfo.emitter != null) {
