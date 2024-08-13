@@ -19,7 +19,7 @@ const LoginBox = () => {
   const onChangeRadioBtn = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsManager(e.target.value === "manager");
   };
-  const { setWait, setTimer } = useSessionStore();
+  const { setWaitingTime, setWait } = useSessionStore();
 
   const routeAfterLogin = async (role: string, accessToken: string) => {
     if (role === "MANAGER") {
@@ -35,7 +35,7 @@ const LoginBox = () => {
           sessionStorage.setItem("mi", JSON.stringify(meetingInfo));
           navigate("/session");
           setWait(meetingInfo.userPosition);
-          setTimer(meetingInfo.term);
+          setWaitingTime(meetingInfo.waitingTime);
         } else {
           throw new Error("미팅 정보를 불러오는 데 실패했습니다.");
         }
