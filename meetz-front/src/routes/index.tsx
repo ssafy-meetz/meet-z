@@ -11,7 +11,6 @@ import CreatePage from '../page/meeting/page/CreatePage';
 import ModifyPage from '../page/meeting/page/ModifyPage';
 import ChatPage from '../page/meeting/page/ChatPage';
 import LoadChatPage from '../page/meeting/page/LoadChatPage';
-import RecordPage from '../page/RecordPage';
 import SessionContainerPage from '../page/sessionContainer/SessionContainerPage';
 import BlacklistCheckPage from '../page/meeting/page/BlacklistCheckPage';
 import PickPhotoPage from '../page/sessionContainer/pickPhoto/PickPhotoPage';
@@ -37,7 +36,6 @@ const Router: React.FC = () => {
           <Route path='monitor/:meetingId' element={<MonitorPage />} />
         </Route>
         <Route path='/session' element={<SessionContainerPage />} />
-        <Route path='/test' element={<RecordPage />} />
         <Route path='/pick' element={<PickPhotoPage />} />
 
       </Routes>
