@@ -1,8 +1,7 @@
-import { useEffect } from "react";
 import { useMonitorStore } from "../../../../zustand/useMonitorStore"
 
 const WarnDropdown = () => {
-  const { inputText, warnModalOpend, selectedOption, setSelectedOption, setInputText } = useMonitorStore();
+  const { inputText, selectedOption, setSelectedOption, setInputText } = useMonitorStore();
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedOption(event.target.value);
