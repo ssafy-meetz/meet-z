@@ -20,18 +20,17 @@ const LoginPage = () => {
       clearUserData();
       alert('로그아웃 되었습니다.');
       navigate('/', { replace: true });
-    } catch (error: any) {}
+    } catch (error: any) { }
     return;
   };
 
   useEffect(() => {
-    if (accessToken) {
-      if (
-        window.confirm(
-          '현재 로그인 상태입니다. 로그아웃 후 로그인 페이지로 이동하시겠습니까?'
-        )
-      ) {
-        logoutHandler();
+    if (accessToken || localStorage.getItem('rt')) {
+      const result = window.confirm('로그인 상태입니다. 로그아웃 하시겠습니까?');
+      if (result) {
+        postLogout(localStorage.getItem('rt') || '');
+        clearUserData();
+        localStorage.clear();
       } else {
         navigate(-1);
       }
@@ -80,11 +79,10 @@ const LoginPage = () => {
                 .map((char, index: any) => (
                   <span
                     key={index}
-                    className={`opacity-0 ${
-                      startBottomTextAnimation
-                        ? 'animate-slideInFromBottom'
-                        : ''
-                    }`}
+                    className={`opacity-0 ${startBottomTextAnimation
+                      ? 'animate-slideInFromBottom'
+                      : ''
+                      }`}
                     style={{ animationDelay: getDelay(index) }}
                   >
                     {char === ' ' ? '\u00A0' : char}
