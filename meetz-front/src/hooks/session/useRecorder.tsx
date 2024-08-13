@@ -39,7 +39,7 @@ const useRecorder = (): UseRecorderProps => {
   const sendRecording = async (accessToken: string) => {
     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
     const formData = new FormData();
-    formData.append('file', audioBlob, 'recording.wav');
+    formData.append('file', audioBlob, 'file.wav');
 
     try {
       await postCheckProfanity(accessToken, formData);
