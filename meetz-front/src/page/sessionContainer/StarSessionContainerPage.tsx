@@ -8,7 +8,7 @@ import StarEndPage from "./session/pages/StarEndPage";
 import useCheckAuth from "../../hooks/meeting/useCheckAuth";
 
 type SessionInfo = {
-  fanId: string;
+  fanId: number;
   timer: number;
   fanName: string;
   remain: number;
