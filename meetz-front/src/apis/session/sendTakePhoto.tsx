@@ -5,9 +5,9 @@ const sendTakePhoto = async () => {
   const { accessToken } = fetchUserData();
   try {
     const { data } = await instance.get("/api/sessions/picture", {
-      headers:{
-        Authorization:`Bearer ${accessToken}`,
-      }
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
     if (data === 200) {
       return data;
