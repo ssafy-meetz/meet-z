@@ -6,7 +6,7 @@ interface UseRecorderProps {
   isRecording: boolean; // 녹음 중 여부 boolean 변수
   startRecording: () => Promise<void>; //음성 녹음 시작
   stopRecording: () => void; // 음성 녹음 중단
-  sendRecording: (accessToken: string) => Promise<void>;  // 음성 전송
+  sendRecording: (email: string, accessToken: string) => Promise<void>;  // 음성 전송
 }
 
 const useRecorder = (): UseRecorderProps => {
@@ -36,13 +36,13 @@ const useRecorder = (): UseRecorderProps => {
     }
   };
 
-  const sendRecording = async (accessToken: string) => {
+  const sendRecording = async (email: string, accessToken: string) => {
     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
     const formData = new FormData();
     formData.append('file', audioBlob, 'file.wav');
 
     try {
-      await postCheckProfanity(accessToken, formData);
+      await postCheckProfanity(email, accessToken, formData);
     } catch (error) {
       return;
     }
