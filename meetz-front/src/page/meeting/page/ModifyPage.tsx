@@ -27,7 +27,7 @@ const ModifyPage: React.FC = () => {
   const navigate = useNavigate();
   const { meetingId } = useParams<{ meetingId: string }>();
 
-  useCheckAuth('MANAGER');
+  useCheckAuth();
   const {
     isOpenModal,
     meetingName,
