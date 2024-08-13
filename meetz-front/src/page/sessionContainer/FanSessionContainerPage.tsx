@@ -9,6 +9,7 @@ import PickPhotoPage from "./pickPhoto/PickPhotoPage";
 import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 import useOpenviduStore from "../../zustand/useOpenviduStore";
+import useRecorder from "../../hooks/session/useRecorder";
 type SessionInfo = {
   timer: number;
   wait: number;
@@ -17,7 +18,8 @@ type SessionInfo = {
   sessionId: string;
 };
 const FanSessionContainerPage = () => {
-
+  const { startRecording, sendRecording, stopRecording } = useRecorder();
+  const { sessionId } = useOpenviduStore();
   const { isSessionEnd, setWait, setTakePhoto, setIsSessionEnd } =
     useSessionStore();
   const { setSessionId } = useOpenviduStore();
@@ -67,11 +69,15 @@ const FanSessionContainerPage = () => {
 
       switch (parseData.type) {
         case 1:
-          //to. 창우 음성 녹음 시작~!~!
+          // 음성 녹음 시작~!~!
+          startRecording();
+
           await moveNextSession(parseData);
           break;
         case 2:
-          //to. 창우 음성 녹음 종료 & api 연결 요청
+          // 음성 녹음 종료 & api 연결 요청
+          stopRecording();
+          await sendRecording(sessionId, accessToken || '');
           await leaveSession();
           await setTimer(parseData.timer);
           break;
@@ -81,6 +87,8 @@ const FanSessionContainerPage = () => {
 
         //to. 창우 음성 녹음 종료 & api 연결 요청
         case 4:
+          stopRecording();
+          await sendRecording(sessionId, accessToken || '');
           await leaveSession();
           if (
             !localStorage.getItem("images") ||
