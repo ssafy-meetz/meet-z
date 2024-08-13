@@ -190,6 +190,7 @@ public class OpenviduService {
 
         if (stars == null || fans == null || stars.isEmpty() || fans.isEmpty()) {
             log.error("스타 세션 또는 팬 목록이 비어있습니다. 방 생성을 잘못하신 것 같아요.");
+            endMeeting(meetingId);
             return;
         }
 
