@@ -4,7 +4,7 @@ import {
   Session as OVSession,
 
 } from "openvidu-browser";
-import { createToken } from "../../apis/session/openviduAPI";
+import { checkSessionExists, createSession, createToken } from "../../apis/session/openviduAPI";
 import useOpenviduStore from "../../zustand/useOpenviduStore";
 
 export const useOpenvidu = () => {
@@ -62,6 +62,18 @@ export const useOpenvidu = () => {
 
     if(exSession){
       await leaveSession();
+    }
+    const sessionExists = await checkSessionExists(nextSession);
+    if (!sessionExists) {
+      console.log("세션이 존재하지 않음, 세션 생성 시도 중...");
+      const createdSessionId = await createSession(nextSession);
+      if (createdSessionId === "") {
+        console.error("세션 생성 실패");
+        return;
+      }
+      console.log("세션 생성 성공:", createdSessionId);
+    } else {
+      console.log("세션이 이미 존재함");
     }
     console.log("새로운 세션 초기화");
     const OVs = new OpenVidu();
