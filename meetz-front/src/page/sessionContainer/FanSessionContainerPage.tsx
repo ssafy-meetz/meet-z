@@ -65,7 +65,7 @@ const FanSessionContainerPage = () => {
           break;
         case 2:
           await leaveSession();
-          await setWait(parseData.timer);
+          await setTimer(parseData.timer);
           break;
         case 3:
           setTakePhoto(true);
