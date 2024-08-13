@@ -30,26 +30,29 @@ interface MeetingInfo {
 
 const StarSessionContainerPage = () => {
   const [type, setType] = useState(0);
-  const { setTakePhoto } = useSessionStore();
+  const {
+    setTakePhoto,
+    timer,
+    settingDone,
+    setTimer,
+    setFanId,
+    setFanName,
+    setRemain,
+    setIsSessionEnd,
+  } = useSessionStore();
 
   const [meetingInfo] = useState<MeetingInfo>(
     JSON.parse(sessionStorage.getItem("mis") || "")
   );
-  const { settingDone, setTimer, setFanId, setFanName, setRemain } =
-    useSessionStore();
+
   useEffect(() => {
     fetchSSE();
   }, []);
 
-  const setInfo = (info: SessionInfo) => {
-    return new Promise<void>((resolve) => {
-      setTimer(info.timer);
-      setFanId(info.fanId);
-      setFanName(info.fanName);
-      setRemain(info.remain);
-      resolve();
-    });
-  };
+  useEffect(() => {
+    console.log("Timer changed:", timer);
+  }, [timer]);
+
   const fetchSSE = () => {
     console.log("SSE 연결 시도");
     const { accessToken } = fetchUserData();
@@ -69,23 +72,30 @@ const StarSessionContainerPage = () => {
     eventSource.onmessage = async (e: any) => {
       const res = await e.data;
       const parseData = await JSON.parse(res);
-      console.log(parseData);
-      setType(parseData.type);
-      if (parseData.type === 1) {
-        await setSessionInfo(parseData);
-      } else if (parseData.type === 3) {
-        setTakePhoto(true);
-      }
+      console.log("Received SSE message:", parseData);
 
-      eventSource.onerror = (e: any) => {
-        eventSource.close();
-        if (e.error) {
-          console.error(e.error);
-        }
-        if (e.target.readyState === EventSourcePolyfill.CLOSED) {
-          console.log("EventSourcePolyFill-CLOSED");
-        }
-      };
+      switch (parseData.type) {
+        case 1:
+          await setSessionInfo(parseData);
+          break;
+        case 2:
+          await setTimer(parseData.timer);
+          break;
+        case 3:
+          setTakePhoto(true);
+          break;
+      }
+      setType(parseData.type);
+    };
+
+    eventSource.onerror = (e: any) => {
+      eventSource.close();
+      if (e.error) {
+        console.error(e.error);
+      }
+      if (e.target.readyState === EventSourcePolyfill.CLOSED) {
+        console.log("EventSourcePolyFill-CLOSED");
+      }
     };
   };
 
@@ -96,8 +106,14 @@ const StarSessionContainerPage = () => {
       fanName: parseData.currentFanName,
       remain: parseData.remainFanNum,
     };
+    await setInfo(info);
+  };
 
-    setInfo(info);
+  const setInfo = async (info: SessionInfo) => {
+    setTimer(info.timer);
+    setFanId(info.fanId);
+    setFanName(info.fanName);
+    setRemain(info.remain);
   };
 
   if (type === 4) {
@@ -109,4 +125,5 @@ const StarSessionContainerPage = () => {
 
   return <StarLoadingPage meetingInfo={meetingInfo} />;
 };
+
 export default StarSessionContainerPage;
