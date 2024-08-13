@@ -147,7 +147,7 @@ public class OpenviduService {
     //스케줄러
     //cron(초 분 시 일 월 요일 (년))
     // * : 모든 값, /: 증분 값(0/15, 0부터 시작해 15마다), -: 범위
-    @Scheduled(cron = "1 0/5 * * * ?") //5분마다 실행
+    @Scheduled(cron = "1 0/2 * * * ?") //5분마다 실행
 //    @Scheduled(cron = "0/10 * * * * ?") //10초마다 실행
     public void scheduleTaskTest() {
         log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
@@ -174,8 +174,8 @@ public class OpenviduService {
 
                 //미팅방 시작
                 //미팅방 시작
-                LocalDateTime thirtySecondsAgo = now.minusSeconds(30);
-                LocalDateTime thirtySecondsLater = now.plusSeconds(30);
+                LocalDateTime thirtySecondsAgo = now.minusSeconds(15);
+                LocalDateTime thirtySecondsLater = now.plusSeconds(15);
 
                 if (meetingStart.isAfter(thirtySecondsAgo) && meetingStart.isBefore(thirtySecondsLater)) {
                     try {
