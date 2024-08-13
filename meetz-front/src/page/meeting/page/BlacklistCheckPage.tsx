@@ -25,7 +25,7 @@ const BlacklistCheckPage = () => {
   const [blacklistCompany, setBlacklistCompany] = useState(''); // 회사 이름
   const [isLoading, setIsLoading] = useState(true); // 로딩 상태
 
-  useCheckAuth('MANAGER');
+  // useCheckAuth('MANAGER');
 
   // 전화번호 포맷팅 함수
   const formatPhoneNumber = (phoneNumber: string) => {
@@ -55,7 +55,6 @@ const BlacklistCheckPage = () => {
           setIsLoading(false);
         }, 300);
       } catch (error) {
-        console.error('블랙리스트를 가져오는 중 오류 발생:', error);
         setBlacklist([]);
         setIsLoading(false);
       }

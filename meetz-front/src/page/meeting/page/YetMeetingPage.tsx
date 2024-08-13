@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import useCheckAuth from "../../../hooks/meeting/useCheckAuth";
 import getYetMeetingList from "../../../apis/meeting/getYetMeetingList";
 import { MeetingDto } from "../../../types/types";
 import fetchUserData from "../../../lib/fetchUserData";
@@ -19,8 +18,6 @@ const YetMeetingPage = () => {
   const [nextMeetingData, setNextMeetingData] = useState<MeetingMonthData>({});
   const { accessToken } = fetchUserData();
   const [meetingCompany, setMeetingCompany] = useState("");
-
-  useCheckAuth('MANAGER');
 
   const fetchYetMeetingData = useCallback(async () => {
     try {

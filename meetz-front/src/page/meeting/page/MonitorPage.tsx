@@ -28,8 +28,6 @@ const MonitoringPage = () => {
   const [reportedData, setReportedData] = useState<ReportedDataDto | null>(null);
   const { accessToken } = fetchUserData();
 
-  useCheckAuth('MANAGER');
-
   const fetchReportedData = async () => {
     try {
       const { data } = await getReportedList(+(meetingId || '0'), accessToken || "");

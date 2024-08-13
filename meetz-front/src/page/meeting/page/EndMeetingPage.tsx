@@ -1,6 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
-import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
-import getEndMeetingList from '../../../apis/meeting/getEndMeetingList';
+import { useEffect, useState, useMemo, useCallback } from 'react'; import getEndMeetingList from '../../../apis/meeting/getEndMeetingList';
 import { MeetingDto } from '../../../types/types';
 import fetchUserData from '../../../lib/fetchUserData';
 import MeetingListTitle from '../components/YetEndList/MeetingListTitle';
@@ -19,8 +17,6 @@ const EndMeetingPage = () => {
   const [beforetMeetingData, setBeforeMeetingData] = useState<MeetingMonthData>({});
   const { accessToken } = fetchUserData();
   const [meetingCompany, setMeetingCompany] = useState("");
-
-  useCheckAuth('MANAGER');
 
   const fetchEndMeetingData = useCallback(async () => {
     const { data } = await getEndMeetingList(accessToken || "");

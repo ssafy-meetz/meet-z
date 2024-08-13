@@ -14,11 +14,9 @@ import useMeetingSettingStore from '../../../zustand/useMeetingSettingStore';
 import useMeetingTimeStore from '../../../zustand/useMeetingTimeStore';
 import { useNavigate } from 'react-router-dom';
 import postMeetingToCreate from '../../../apis/meeting/createMeeting';
-import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 import fetchUserData from '../../../lib/fetchUserData';
 
 const CreatePage: React.FC = () => {
-  useCheckAuth('MANAGER');
   const navigate = useNavigate();
   const { isOpenModal, meetingName, stars, notBlackList, resetStore } =
     useMeetingSettingStore();
