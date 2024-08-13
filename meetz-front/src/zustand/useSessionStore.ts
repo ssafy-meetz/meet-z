@@ -6,7 +6,7 @@ interface SessionStore {
   wait: number;
   remain: number;
   settingDone: boolean;
-  fanId: string;
+  fanId: number;
   timer: number;
   nextStarName: string;
   takePhoto: boolean;
@@ -18,7 +18,7 @@ interface SessionStore {
   setWait: (num: number) => void;
   setRemain: (num: number) => void;
   setSettingDone: (setting: boolean) => void;
-  setFanId: (id: string) => void;
+  setFanId: (id: number) => void;
   setTimer: (time: number) => void;
   decrementTimer: () => void;
   setNextStarName: (nickname: string) => void;
@@ -34,7 +34,7 @@ export const useSessionStore = create<SessionStore>((set) => ({
   wait: 1,
   remain: 200,
   settingDone: false,
-  fanId: "",
+  fanId: 0,
   timer: 0,
   nextStarName: "",
   takePhoto: false,
