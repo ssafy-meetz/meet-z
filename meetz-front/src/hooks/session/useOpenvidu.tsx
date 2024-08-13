@@ -6,12 +6,15 @@ import {
 } from "openvidu-browser";
 import { checkSessionExists, createSession, createToken } from "../../apis/session/openviduAPI";
 import useOpenviduStore from "../../zustand/useOpenviduStore";
+import useRecorder from "./useRecorder";
+import fetchUserData from "../../lib/fetchUserData";
 
 export const useOpenvidu = () => {
   const {
     session,
     subscriber,
     exSession,
+    sessionId,
     setSession,
     setSubscriber,
     setPublisher,
@@ -19,6 +22,8 @@ export const useOpenvidu = () => {
     setSessionId,
     setExSession
   } = useOpenviduStore();
+  const { startRecording, stopRecording, sendRecording } = useRecorder();
+  const { accessToken } = fetchUserData();
 
   //이전에 연결된 session 값을 저장하는 참조값
   const exSessionRef = useRef(exSession);
@@ -31,6 +36,10 @@ export const useOpenvidu = () => {
 
   //세션 연결 해제
   const leaveSession = useCallback(async () => {
+    // 음성 녹음 정지 및 전송
+    stopRecording();
+    await sendRecording(sessionId, accessToken || '');
+
     console.log("세션 종료 시도");
     console.log("Current exSession:", exSessionRef.current);
     //예전에 연결한 세션 값이 있으면 세션 연결 종료
@@ -60,7 +69,7 @@ export const useOpenvidu = () => {
       return;
     }
 
-    if(exSession){
+    if (exSession) {
       await leaveSession();
     }
     const sessionExists = await checkSessionExists(nextSession);
@@ -72,6 +81,7 @@ export const useOpenvidu = () => {
         return;
       }
       console.log("세션 생성 성공:", createdSessionId);
+      startRecording(); // 음성 녹음 시작
     } else {
       console.log("세션이 이미 존재함");
     }
