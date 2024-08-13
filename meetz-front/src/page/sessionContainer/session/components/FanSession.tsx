@@ -48,9 +48,6 @@ function FanSession({ subscriber, publisher, fanName }: SessionProps) {
         }
       } catch { }
     }
-
-    // 음성 녹음 시작
-    startRecording();
   }, []);
 
   //3초 타이머 설정
