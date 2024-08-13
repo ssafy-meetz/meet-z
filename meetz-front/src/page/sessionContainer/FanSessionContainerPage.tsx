@@ -19,9 +19,9 @@ type SessionInfo = {
 const FanSessionContainerPage = () => {
   const { isSessionEnd, setWait, setTakePhoto, setIsSessionEnd } =
     useSessionStore();
-  const { session, exSession, setSessionId } = useOpenviduStore();
+  const { setSessionId } = useOpenviduStore();
   const [type, setType] = useState(0);
-  const { leaveSession,joinSession } = useOpenvidu();
+  const { leaveSession, joinSession } = useOpenvidu();
   const { settingDone, setTimer, setStartName, setNextStarName } =
     useSessionStore();
   //로딩될 때마다 SSE 연결 시도
@@ -65,12 +65,13 @@ const FanSessionContainerPage = () => {
           break;
         case 2:
           await leaveSession();
+          await setWait(parseData.timer);
           break;
         case 3:
           setTakePhoto(true);
           break;
 
-        case 4: 
+        case 4:
           await leaveSession();
           if (
             !localStorage.getItem("images") ||
