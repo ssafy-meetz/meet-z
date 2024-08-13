@@ -505,14 +505,6 @@ public class OpenviduService {
                 Session session = openvidu.createSession(properties);
                 log.info("sessionId: " + sessionId + ", getSessionId: " + session.getSessionId());
 
-                //더미 커넥션 세션에 넣기
-                ConnectionProperties cp = new ConnectionProperties.Builder()
-                        .type(ConnectionType.WEBRTC)
-                        .role(OpenViduRole.SUBSCRIBER)
-                        .data("dummy-connection")
-                        .build();
-
-                session.createConnection(cp);
 
                 StarInfo starInfo = new StarInfo(user.getName(), user.getEmail(), session);
 
@@ -651,6 +643,33 @@ public class OpenviduService {
         }
         String sessionId;
         sessionId = userEmail.split("@")[0];
+
+        Session activeSession = openvidu.getActiveSession(sessionId);
+
+        if (activeSession == null) {
+            List<StarInfo> starInfos = meetingRooms.get(user.getMeeting().getMeetingId());
+
+            log.info("세션존재하지 않아서 세션 만든다.");
+            try {
+                for (StarInfo starInfo : starInfos) {
+                    if (starInfo.session.equals(sessionId)) {
+
+                        //sessionProperties생성
+                        SessionProperties properties = getSessionProperties(sessionId);
+                        //sessjion생성
+                        Session session = openvidu.createSession(properties);
+                        log.info("세션 생성 완료");
+                        starInfo.session = session;
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                throw new InternalServerErrorException(e.getMessage());
+            }
+
+
+        }
+
         return sessionId;
     }
 
