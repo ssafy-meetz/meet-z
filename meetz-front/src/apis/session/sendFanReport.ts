@@ -1,11 +1,11 @@
 import fetchUserData from "../../lib/fetchUserData";
 
 import instance from "../axios";
-const getFanReport = async (fanId: string) => {
+const getFanReport = async (fanId: number) => {
   const { accessToken } = fetchUserData();
   try {
     const { data, status } = await instance.post(
-      `/api/meeting/report/${fanId}`,
+      `/api/meeting/report/${fanId}`,{},
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
