@@ -35,13 +35,8 @@ const StarSessionContainerPage = () => {
   const [meetingInfo] = useState<MeetingInfo>(
     JSON.parse(sessionStorage.getItem("mis") || "")
   );
-  const {
-    settingDone,
-    setTimer,
-    setFanId,
-    setFanName,
-    setRemain,
-  } = useSessionStore();
+  const { settingDone, setTimer, setFanId, setFanName, setRemain } =
+    useSessionStore();
   useEffect(() => {
     fetchSSE();
   }, []);
@@ -73,7 +68,7 @@ const StarSessionContainerPage = () => {
     };
     eventSource.onmessage = async (e: any) => {
       const res = await e.data;
-      const parseData = JSON.parse(res);
+      const parseData = await JSON.parse(res);
       console.log(parseData);
       setType(parseData.type);
       if (parseData.type === 1) {
@@ -103,7 +98,7 @@ const StarSessionContainerPage = () => {
     };
 
     setInfo(info);
-  }
+  };
 
   if (type === 4) {
     return <StarEndPage />;

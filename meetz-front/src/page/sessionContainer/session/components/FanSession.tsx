@@ -104,14 +104,18 @@ function FanSession({ subscriber, publisher, fanName }: SessionProps) {
             <p>{memo}</p>
           </div>
           <div className="flex w-[846px] justify-between text-xl">
-            <div></div>
+            <div className="w-[70px]"></div>
             <img
               className="w[48px] h-[48px]"
               src={camera_icon}
               onClick={toggleTakePhoto}
             />
-            {nextStarName && <p className="text-white">{nextStarName} &gt;</p>}
-            {!nextStarName && <p className="text-white">{nextStarName} </p>}
+            {nextStarName && (
+              <p className="text-white w-[70px]">{nextStarName} &gt;</p>
+            )}
+            {!nextStarName && (
+              <p className="text-white w-[70px]">{nextStarName} </p>
+            )}
           </div>
         </div>
       </div>
