@@ -2,9 +2,11 @@ import { useEffect } from 'react';
 import logo from '/src/assets/images/sessionlogo.png';
 import useRecorder from '../../../../hooks/session/useRecorder';
 import fetchUserData from '../../../../lib/fetchUserData';
+import useOpenviduStore from '../../../../zustand/useOpenviduStore';
 
 const EndSession = () => {
   const { stopRecording, sendRecording } = useRecorder();
+  const { sessionId } = useOpenviduStore();
   const { accessToken } = fetchUserData();
 
   // 문구를 구성하는 각 문자에 고유한 애니메이션을 적용
@@ -14,7 +16,7 @@ const EndSession = () => {
 
   useEffect(() => {
     stopRecording();
-    sendRecording(accessToken || '');
+    sendRecording(sessionId, accessToken || '');
   }, [])
 
   // 각 문자를 span으로 감싸서 개별 애니메이션을 적용
