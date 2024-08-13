@@ -78,9 +78,6 @@ const StarSessionContainerPage = () => {
         case 1:
           await setSessionInfo(parseData);
           break;
-        case 2:
-          await setTimer(parseData.timer);
-          break;
         case 3:
           setTakePhoto(true);
           break;
