@@ -650,7 +650,7 @@ public class OpenviduService {
         log.info("세션존재하지 않아서 세션 만든다.");
         try {
             for (StarInfo starInfo : starInfos) {
-                if (starInfo.session.equals(sessionId)) {
+                if (starInfo.email.equals(userEmail)) {
 
                     //sessionProperties생성
                     SessionProperties properties = getSessionProperties(sessionId);
