@@ -6,10 +6,13 @@ import Alert from "/src/assets/images/alert.png";
 const ReportFanModal = () => {
   const { setOpenModal, setConfirmModal } = useReportModal();
   const fanId = useSessionStore((state) => state.fanId);
+
   const confirmReport = async () => {
     //api 팬 신고
-    await getFanReport(fanId);
-
+    try {
+      await getFanReport(fanId);
+    } catch (error: any) {
+    }
     setConfirmModal(true);
     setOpenModal(false);
   };
