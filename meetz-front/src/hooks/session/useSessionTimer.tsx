@@ -27,9 +27,6 @@ const useSessionTimer = () => {
     };
     setFormatTime(formatTime(time));
   }, [time]);
-  useEffect(() => {
-    setTime(timer);
-  }, [timer]);
   return { formatTime };
 };
 export default useSessionTimer;
