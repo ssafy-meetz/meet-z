@@ -4,7 +4,7 @@ const EndSession = () => {
   // 문구를 구성하는 각 문자에 고유한 애니메이션을 적용
   const endMessage = '미팅이 종료되었습니다.';
   const emailMessage =
-    '스타와 함께한 순간, 사진으로 이메일에 담겼을지도! 놓치지 말고 확인해 보세요.';
+    '오늘 추억을 남겼다면 사진을 이메일로 보내드릴게요.';
 
   // 각 문자를 span으로 감싸서 개별 애니메이션을 적용
   const renderStaggeredText = (text: string) => {
