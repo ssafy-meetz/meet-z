@@ -113,7 +113,7 @@ const StarSessionContainerPage = () => {
 
   const setInfo = async (info: SessionInfo) => {
     setTimer(info.timer);
-    setFanId(info.fanId);
+    setFanId(+(info.fanId));
     setFanName(info.fanName);
     setRemain(info.remain);
   };
