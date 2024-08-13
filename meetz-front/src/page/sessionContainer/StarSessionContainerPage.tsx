@@ -30,7 +30,6 @@ interface MeetingInfo {
 }
 
 const StarSessionContainerPage = () => {
-  useCheckAuth('STAR');
 
   const [type, setType] = useState(0);
   const {

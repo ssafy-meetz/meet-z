@@ -9,11 +9,9 @@ import postLogout from "../../apis/auth/postLogout";
 /**
  * 페이지 접속 시 권한을 확인하는 커스텀 훅
  */
-const useCheckAuth = (pageRole: string) => {
+const useCheckAuth = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const navigationType = useNavigationType();
 
 
   const refreshAccessToken = async (refreshTKOG: string) => {
@@ -38,16 +36,6 @@ const useCheckAuth = (pageRole: string) => {
 
     if (!role || !accessToken || !expireAt) {
       alert("로그인 정보가 초기화 되었습니다. 다시 로그인을 진행해주세요.");
-      // callLogout();
-      // clearUserData();
-      // localStorage.clear();
-      navigate('/');
-      setIsAuthChecked(true);
-      return;
-    }
-
-    if (role && role !== pageRole) {
-      alert('로그인 오류가 발생했습니다. 다시 로그인을 진행해주세요.');
       callLogout();
       clearUserData();
       localStorage.clear();
@@ -55,6 +43,16 @@ const useCheckAuth = (pageRole: string) => {
       setIsAuthChecked(true);
       return;
     }
+
+    // if (role && role !== pageRole) {
+    //   alert('로그인 오류가 발생했습니다. 다시 로그인을 진행해주세요.');
+    //   callLogout();
+    //   clearUserData();
+    //   localStorage.clear();
+    //   navigate('/');
+    //   setIsAuthChecked(true);
+    //   return;
+    // }
 
     // const refreshTKOG = localStorage.getItem('rt');
     // if (!refreshTKOG || refreshTKOG === '') {

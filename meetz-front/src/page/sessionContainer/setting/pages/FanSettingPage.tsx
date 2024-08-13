@@ -14,7 +14,7 @@ import fetchUserData from "../../../../lib/fetchUserData";
 import { useSessionStore } from "../../../../zustand/useSessionStore";
 
 const FanSettingPage: React.FC = () => {
-  useCheckAuth("FAN");
+  useCheckAuth();
   const { accessToken } = fetchUserData();
   const { currentStep, isChattingBoxVisible, toggleChattingBox } =
     useEnvSettingStore();

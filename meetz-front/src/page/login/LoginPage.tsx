@@ -17,10 +17,18 @@ const LoginPage = () => {
     if (accessToken || localStorage.getItem('rt')) {
       const result = window.confirm('로그인 상태입니다. 로그아웃 하시겠습니까?');
       if (result) {
-        postLogout(localStorage.getItem('rt') || '');
+        try {
+          postLogout(localStorage.getItem('rt') || '');
+        } catch (error: any) {
+        }
         clearUserData();
         localStorage.clear();
+        navigate('/');
       } else {
+        if (localStorage.getItem('path') === '/session') {
+          navigate('/session');
+          return;
+        }
         navigate(-1);
       }
     }
