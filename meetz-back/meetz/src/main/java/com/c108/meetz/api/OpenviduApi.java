@@ -1,6 +1,7 @@
 package com.c108.meetz.api;
 
 import com.c108.meetz.dto.ApiResponse;
+import com.c108.meetz.dto.response.FanSseResponseDto;
 import com.c108.meetz.service.OpenviduService;
 import io.openvidu.java.client.*;
 import jakarta.annotation.PostConstruct;
@@ -177,6 +178,11 @@ public class OpenviduApi {
         openviduService.sendPictureEvent();
 
         return ApiResponse.success(HttpStatus.OK);
+    }
+
+    @GetMapping(path="/breaktest")
+    public ApiResponse<FanSseResponseDto> tmpApi() {
+        return ApiResponse.success(HttpStatus.OK, FanSseResponseDto.breakMeeting(10));
     }
 
 }
