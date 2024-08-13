@@ -5,6 +5,7 @@ import StarLoadingPage from "./setting/pages/StarLoadingPage";
 import fetchUserData from "../../lib/fetchUserData";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import StarEndPage from "./session/pages/StarEndPage";
+import useCheckAuth from "../../hooks/meeting/useCheckAuth";
 
 type SessionInfo = {
   fanId: string;
@@ -29,6 +30,8 @@ interface MeetingInfo {
 }
 
 const StarSessionContainerPage = () => {
+  useCheckAuth('STAR');
+
   const [type, setType] = useState(0);
   const {
     setTakePhoto,
