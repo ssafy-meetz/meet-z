@@ -1,4 +1,3 @@
-import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 import SendEmailModal from '../components/Detail/SendEmailModal';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import getMeetingDetail from '../../../apis/meeting/getMeetingDetail';
@@ -16,7 +15,6 @@ import DeleteMeetingCheckModal from '../components/Detail/DeleteMeetingCheckModa
 import DeleteMeetingModal from '../components/Detail/DeleteMeetingModal';
 
 const DetailPage = () => {
-  useCheckAuth('MANAGER');
   const navigate = useNavigate();
   const { meetingId } = useParams();
   const {
@@ -27,7 +25,7 @@ const DetailPage = () => {
     isDeleteModalOpen,
     isDeletedModalOpen,
     resetModals
-    } = useDetailstore();
+  } = useDetailstore();
   const { accessToken } = fetchUserData();
   const [meetingData, setMeetingData] = useState<MeetingDetailDto>();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -69,13 +67,13 @@ const DetailPage = () => {
   }, [meetingId]);
 
   useEffect(() => {
-    resetModals(); 
+    resetModals();
   }, [meetingId, resetModals]);
 
   const cancelHandler = () => {
     navigate("/meeting/yet");
   };
-  
+
   if (!meetingData) {
     return (
       <div className='flex justify-center items-center w-full h-screen'>
