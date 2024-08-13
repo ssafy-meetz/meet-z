@@ -4,7 +4,7 @@ const usePhoneValidation = () => {
   const [phone, setPhone] = useState('');
   const [isValidPhone, setIsValidPhone] = useState(false);
 
-  const phoneRegex = /^01\d{9}$/;
+  const phoneRegex = /^0\d{9,10}$/;
 
   const validatePhone = (phone: string) => {
     return phoneRegex.test(phone.replace(/-/g, ''));
