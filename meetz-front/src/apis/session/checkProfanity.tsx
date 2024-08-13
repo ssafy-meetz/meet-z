@@ -1,9 +1,8 @@
 import instance from "../axios"
 
-
-const postCheckProfanity = async (accessToken: string, formData: FormData) => {
+const postCheckProfanity = async (email: string, accessToken: string, formData: FormData) => {
   try {
-    const { data } = await instance.post('/api/meeting/check-profanity', formData, {
+    const { data } = await instance.post(`/api/meeting/check-profanity?email=${email}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${accessToken}`
