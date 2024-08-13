@@ -2,11 +2,7 @@ import instance from "../axios"
 
 const postLogout = async (refreshToken: string) => {
   try {
-
-    const { status } = await instance.post(`/api/logout`, {}, {
-      headers: {
-        'Authorization': `Bearer ${refreshToken}`
-      }
+    const { status } = await instance.post(`api/leave?token=${refreshToken}`, {}, {
     })
 
     if (status === 200) {
