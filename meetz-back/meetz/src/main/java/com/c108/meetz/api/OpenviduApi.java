@@ -41,7 +41,7 @@ public class OpenviduApi {
     }
     //미팅방 생성 및 삭제를 한번에 해주는 api
     @GetMapping("/test/{meetingId}")
-    public ApiResponse<Void> test(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public ApiResponse<Void> test(@PathVariable("meetingId") int meetingId) {
 
         openviduService.initSession(meetingId);
         openviduService.initFanInfo(meetingId);
@@ -51,7 +51,7 @@ public class OpenviduApi {
 
     //미팅방 시작 테스트용 api
     @GetMapping("/test1/{meetingId}")
-    public ApiResponse<Void> test1(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException, IOException {
+    public ApiResponse<Void> test1(@PathVariable("meetingId") int meetingId) {
 
         openviduService.automationMeetingRoom(meetingId);
 
@@ -60,7 +60,7 @@ public class OpenviduApi {
 
     //1: 미팅방의 세션을 생성하는 api
     @PostMapping("/vidu/{meetingId}")
-    public ApiResponse<Void> initRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public ApiResponse<Void> initRoomSession(@PathVariable("meetingId") int meetingId) {
 
         openviduService.initSession(meetingId);
 
@@ -69,14 +69,14 @@ public class OpenviduApi {
 
     //스타의 세션ID를 얻는 함수
     @GetMapping("/vidu/star")
-    public ApiResponse<String> getStarToken() throws OpenViduJavaClientException, OpenViduHttpException {
+    public ApiResponse<String> getStarToken() {
         String token = openviduService.getStarToken();
         return ApiResponse.success(HttpStatus.OK, token);
     }
 
     //2: 방 세션에 연결하고 sessionId를 넘겨주는 api
     @GetMapping("/vidu/{meetingId}/{starIdx}")
-    public ApiResponse<String> participateSession(@PathVariable("meetingId") int meetingId, @PathVariable("starIdx") int starIdx) throws OpenViduJavaClientException, OpenViduHttpException {
+    public ApiResponse<String> participateSession(@PathVariable("meetingId") int meetingId, @PathVariable("starIdx") int starIdx) {
         String token = openviduService.getTokenV2(meetingId, starIdx);
 
         if (token == null) {
@@ -88,7 +88,7 @@ public class OpenviduApi {
 
     //3: 미팅방 삭제 api
     @DeleteMapping("/vidu/{meetingId}")
-    public ApiResponse<Void> delRoomSession(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public ApiResponse<Void> delRoomSession(@PathVariable("meetingId") int meetingId) {
         openviduService.endMeeting(meetingId);
 
         return ApiResponse.success(HttpStatus.OK);
@@ -127,7 +127,7 @@ public class OpenviduApi {
     }
 
     @GetMapping("/vidu/connection/{meetingId}")
-    public ApiResponse<String> getConnectedPersonInCurrentRoom(@PathVariable("meetingId") int meetingId) throws OpenViduJavaClientException, OpenViduHttpException {
+    public ApiResponse<String> getConnectedPersonInCurrentRoom(@PathVariable("meetingId") int meetingId) {
 
         String str = openviduService.getConnectedPersonInCurrentRoom(meetingId);
 
@@ -172,7 +172,7 @@ public class OpenviduApi {
     }
 
     @GetMapping(path = "/picture")
-    public ApiResponse<Void> sendPictureEvent() throws IOException {
+    public ApiResponse<Void> sendPictureEvent() {
 
         openviduService.sendPictureEvent();
 
