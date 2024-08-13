@@ -16,8 +16,8 @@ public interface ReportRepository extends JpaRepository<Report, Integer> {
     List<Report> findByMeeting_MeetingId(int meetingId);
 
     // 리포트가 존재하는지 확인하는 메서드 추가
-    boolean existsByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(int meetingId, int fanId, int starId);
+    boolean existsByStar_UserIdAndFan_UserId(int starId, int fanId);
 
     // 기존 메서드 수정: Optional을 반환하지 않도록 변경
-    Report findByMeeting_MeetingIdAndFan_UserIdAndStar_UserId(int meetingId, int fanId, int starId);
+    Report findByStar_UserIdAndFan_UserId(int starId, int fanId);
 }
