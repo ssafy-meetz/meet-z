@@ -29,7 +29,7 @@ const SetWait = () => {
             {meetingInfo.starList[0].name}님과의 만남까지
           </span>
           <span className="font-bold text-5xl">
-            <span className="text-[#FE9374]">{wait - 1}</span>명 (약{" "}
+            <span className="text-[#FE9374]">{wait}</span>명 (약{" "}
             {Math.floor(waitingTime / 60)}분)
           </span>
           <span className="font-semibold text-2xl">
