@@ -98,7 +98,7 @@ const FanSessionContainerPage = () => {
           break;
 
         case 0:
-          setWaitingTime(parseData.timer);
+          setWaitingTime(parseData.waitingTime);
           setWait(parseData.waitingNum);
           break;
       }
