@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef } from "react";
+import { OpenVidu, Session as OVSession } from "openvidu-browser";
 import {
-  OpenVidu,
-  Session as OVSession,
-
-} from "openvidu-browser";
-import { checkSessionExists, createSession, createToken } from "../../apis/session/openviduAPI";
+  checkSessionExists,
+  createSession,
+  createToken,
+} from "../../apis/session/openviduAPI";
 import useOpenviduStore from "../../zustand/useOpenviduStore";
 import useRecorder from "./useRecorder";
 import fetchUserData from "../../lib/fetchUserData";
@@ -20,7 +20,7 @@ export const useOpenvidu = () => {
     setPublisher,
     setOV,
     setSessionId,
-    setExSession
+    setExSession,
   } = useOpenviduStore();
   const { startRecording, stopRecording, sendRecording } = useRecorder();
   const { accessToken } = fetchUserData();
@@ -37,13 +37,20 @@ export const useOpenvidu = () => {
   //세션 연결 해제
   const leaveSession = useCallback(async () => {
     // 음성 녹음 정지 및 전송
-    stopRecording();
-    await sendRecording(sessionId, accessToken || '');
 
     console.log("세션 종료 시도");
     console.log("Current exSession:", exSessionRef.current);
     //예전에 연결한 세션 값이 있으면 세션 연결 종료
     if (exSessionRef.current) {
+      try {
+        stopRecording();
+        await sendRecording(
+          exSessionRef.current.sessionId + "@meetz.com",
+          accessToken || ""
+        );
+      } catch (error) {
+        console.error(error);
+      }
       try {
         const sessionToken = exSessionRef.current.token;
         await exSessionRef.current.disconnect();
@@ -61,62 +68,71 @@ export const useOpenvidu = () => {
     setOV(null);
     setSessionId("");
     console.log("세션 상태 초기화 완료");
-  }, [setExSession, setSession, setSubscriber, setPublisher, setOV, setSessionId]);
+  }, [
+    setExSession,
+    setSession,
+    setSubscriber,
+    setPublisher,
+    setOV,
+    setSessionId,
+  ]);
 
   //세션 접속하기
-  const joinSession = useCallback(async (nextSession: string) => {
-    if (nextSession === "") {
-      return;
-    }
-
-    if (exSession) {
-      await leaveSession();
-    }
-    const sessionExists = await checkSessionExists(nextSession);
-    if (!sessionExists) {
-      console.log("세션이 존재하지 않음, 세션 생성 시도 중...");
-      const createdSessionId = await createSession(nextSession);
-      if (createdSessionId === "") {
-        console.error("세션 생성 실패");
+  const joinSession = useCallback(
+    async (nextSession: string) => {
+      if (nextSession === "") {
         return;
       }
-      console.log("세션 생성 성공:", createdSessionId);
-      startRecording(); // 음성 녹음 시작
-    } else {
-      console.log("세션이 이미 존재함");
-    }
-    console.log("새로운 세션 초기화");
-    const OVs = new OpenVidu();
-    const newSession = OVs.initSession();
-    setOV(OVs);
-    setSession(newSession);
-    setSessionId(nextSession);
 
-    try {
-      const token = await createToken(nextSession);
-      await newSession.connect(token);
-      console.log("세션 연결 성공");
-
-      //session connect 성공하면 상태에 새로운 세션 저장
-      setExSession(newSession);
-      if (OVs) {
-        const newPublisher = OVs.initPublisher(undefined, {
-          audioSource: undefined,
-          videoSource: undefined,
-          publishAudio: true,
-          publishVideo: true,
-          mirror: true,
-        });
-        setPublisher(newPublisher);
-        await newSession.publish(newPublisher);
-        console.log("스트림 발행 성공");
+      if (exSession) {
+        await leaveSession();
       }
-    } catch (error) {
-      console.error("세션 연결 또는 스트림 발행 실패: ", error);
-      await leaveSession();
-    }
-  }, [leaveSession, setOV, setSession, setSessionId, setExSession, setPublisher]);
+      const sessionExists = await checkSessionExists(nextSession);
+      if (!sessionExists) {
+        console.log("세션이 존재하지 않음, 세션 생성 시도 중...");
+        const createdSessionId = await createSession(nextSession);
+        if (createdSessionId === "") {
+          console.error("세션 생성 실패");
+          return;
+        }
+        console.log("세션 생성 성공:", createdSessionId);
+        startRecording(); // 음성 녹음 시작
+      } else {
+        console.log("세션이 이미 존재함");
+      }
+      console.log("새로운 세션 초기화");
+      const OVs = new OpenVidu();
+      const newSession = OVs.initSession();
+      setOV(OVs);
+      setSession(newSession);
+      setSessionId(nextSession);
 
+      try {
+        const token = await createToken(nextSession);
+        await newSession.connect(token);
+        console.log("세션 연결 성공");
+
+        //session connect 성공하면 상태에 새로운 세션 저장
+        setExSession(newSession);
+        if (OVs) {
+          const newPublisher = OVs.initPublisher(undefined, {
+            audioSource: undefined,
+            videoSource: undefined,
+            publishAudio: true,
+            publishVideo: true,
+            mirror: true,
+          });
+          setPublisher(newPublisher);
+          await newSession.publish(newPublisher);
+          console.log("스트림 발행 성공");
+        }
+      } catch (error) {
+        console.error("세션 연결 또는 스트림 발행 실패: ", error);
+        await leaveSession();
+      }
+    },
+    [leaveSession, setOV, setSession, setSessionId, setExSession, setPublisher]
+  );
 
   //페이지를 벗어날 때 leaveSession()
   useEffect(() => {
@@ -126,18 +142,17 @@ export const useOpenvidu = () => {
     };
   }, [leaveSession]);
 
-
   //세션 이벤트 핸들러 (스트림 생성&삭제)
   useEffect(() => {
     if (!session) return;
 
-    const handleStreamDestroyed = (event: { stream: { streamId: any; }; }) => {
+    const handleStreamDestroyed = (event: { stream: { streamId: any } }) => {
       if (subscriber && event.stream.streamId === subscriber.stream.streamId) {
         setSubscriber(null);
       }
     };
 
-    const handleStreamCreated = (event: { stream: any; }) => {
+    const handleStreamCreated = (event: { stream: any }) => {
       const newSubscriber = session.subscribe(event.stream, "");
       setSubscriber(newSubscriber);
     };
