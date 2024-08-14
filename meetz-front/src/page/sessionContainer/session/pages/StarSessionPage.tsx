@@ -47,7 +47,9 @@ function StarSessionPage() {
           <img className="w-56 mb-[48px]" src={logo_white} />
         </div>
         <div className="flex w-[846px] justify-between">
-          <p className="text-xl text-white font-bold">{remain}</p>
+          <p className="text-xl text-white font-bold">
+            남은 팬의 수 : {remain}
+          </p>
           <p className="text-2xl text-[#FE9374] font-semibold">{formatTime}</p>
         </div>
 
