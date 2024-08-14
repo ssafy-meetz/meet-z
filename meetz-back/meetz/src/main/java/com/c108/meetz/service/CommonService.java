@@ -41,7 +41,7 @@ public class CommonService {
         if(loginRequestDto.isManager()){
             Manager manager = managerRepository.findByEmail(loginRequestDto.email()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
             if(!bCryptPasswordEncoder.matches(loginRequestDto.password(), manager.getPassword())){
-                throw new NotFoundException("존재하지 않는 회원입니다.");
+                throw new NotFoundException("비밀번호가 일치하지 않습니다.");
             }
             // Redis에서 기존의 access 토큰을 확인
             String existingAccessToken = jwtUtil.getToken(manager.getEmail());
@@ -58,8 +58,11 @@ public class CommonService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             return new LoginResponseDto(refresh, access, expireAt, "MANAGER");
         }
-
-        User user = userRepository.findByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
+        User user = userRepository.findByEmail(loginRequestDto.email()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
+        if(!user.getPassword().equals(loginRequestDto.password())){
+            throw new NotFoundException("비밀번호가 일치하지 않습니다.");
+        }
+        //User user = userRepository.findByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
         // Redis에서 기존의 access 토큰을 확인
         String existingAccessToken = jwtUtil.getToken(user.getEmail());
         if (existingAccessToken != null) {
@@ -111,17 +114,42 @@ public class CommonService {
     public CommonDto checkInfo() {
         String email = SecurityUtil.getCurrentUserEmail();
         String role = SecurityUtil.getCurrentUserRole();
+        String storedToken = jwtUtil.getToken(email);
+        if(storedToken == null){
+            throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
+        }
         return new CommonDto(email, role);
     }
 
+//    public void logout(String token){
+//        String email = jwtUtil.getEmail(token);
+//        jwtUtil.deleteToken(email);
+//        String role = jwtUtil.getRole(token);
+//        if(role.equals("MANAGER")){
+//            managerRepository.updateTokenToNull(token);
+//        }
+//        else userRepository.updateTokenToNull(token);
+//    }
+
     public void logout(String token){
         String email = jwtUtil.getEmail(token);
-        jwtUtil.deleteToken(email);
         String role = jwtUtil.getRole(token);
         if(role.equals("MANAGER")){
+            boolean isExist = managerRepository.existsByToken(token);
+            if(!isExist){
+                throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
+            }
             managerRepository.updateTokenToNull(token);
         }
-        else userRepository.updateTokenToNull(token);
+        else{
+            boolean isExist = userRepository.existsByToken(token);
+            if(!isExist){
+                throw new UnauthorizedException("만료되었거나 잘못된 토큰입니다. 토큰을 확인해주세요.");
+            }
+            userRepository.updateTokenToNull(token);
+        }
+        jwtUtil.deleteToken(email);
     }
+
 }
 
