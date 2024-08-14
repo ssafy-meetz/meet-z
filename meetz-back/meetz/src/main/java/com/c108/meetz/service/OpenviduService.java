@@ -318,7 +318,8 @@ public class OpenviduService {
                             fan.waitingNum,
                             fan.remainStarNum,
                             fan.nextStarName,
-                            meeting.getMeetingDuration()
+                            meeting.getMeetingDuration(),
+                            (meeting.getMeetingDuration() + meeting.getTerm()) * fan.waitingNum
                     );
                     log.info("대기할 {}번 팬: {}", i, responseDto.toString());
                 }
