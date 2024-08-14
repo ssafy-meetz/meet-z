@@ -300,7 +300,7 @@ public class MeetingService {
         int userPosition = 0;
         for(int i = 0; i<fanList.size(); i++){
             if(fanList.get(i).getUserId()==currentUser.getUserId()){
-                userPosition = i+1;
+                userPosition = i;
                 break;
             }
         }
@@ -312,7 +312,7 @@ public class MeetingService {
                     return star;
                 })
                 .toList();
-        int waitingTime = (userPosition -1) * (meeting.getMeetingDuration() + meeting.getTerm());
+        int waitingTime = (userPosition) * (meeting.getMeetingDuration() + meeting.getTerm());
         ChatRoom chatRoom = chatRoomRepository.findByMeeting_MeetingId(meeting.getMeetingId()).orElseThrow(()-> new NotFoundException("chatRoom not found"));
         return MeetingInfoFanResponseDto.of(meeting, starList, userPosition, waitingTime, chatRoom.getChatRoomId(), currentUser.getNickname());
     }
