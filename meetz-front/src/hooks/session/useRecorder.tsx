@@ -31,12 +31,20 @@ const useRecorder = (): UseRecorderProps => {
 
   const stopRecording = () => {
     if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.onstop = () => {
+        // 모든 청크가 수집되었을 때, isRecording을 false로 설정
+        setIsRecording(false);
+      };
       mediaRecorderRef.current.stop();
-      setIsRecording(false);
     }
   };
 
   const sendRecording = async (email: string, accessToken: string) => {
+    if (audioChunks.length === 0) {
+      console.error('No audio data to send');
+      return;
+    }
+
     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
     const formData = new FormData();
     formData.append('file', audioBlob, 'file.wav');
@@ -44,6 +52,7 @@ const useRecorder = (): UseRecorderProps => {
     try {
       await postCheckProfanity(email, accessToken, formData);
     } catch (error) {
+      console.error('Failed to send recording:', error);
       return;
     }
   };
