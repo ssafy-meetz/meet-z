@@ -46,7 +46,7 @@ function FanSession({ subscriber, publisher, fanName }: SessionProps) {
         if (findMemo) {
           setMemo(findMemo.text);
         }
-      } catch { }
+      } catch {}
     }
   }, []);
 
@@ -59,6 +59,7 @@ function FanSession({ subscriber, publisher, fanName }: SessionProps) {
         if (prevCount <= 1) {
           clearInterval(timerId);
           capturePhoto();
+          sendPhoto();
           return 0;
         }
         return prevCount - 1;
@@ -71,12 +72,15 @@ function FanSession({ subscriber, publisher, fanName }: SessionProps) {
   const capturePhoto = async () => {
     console.log("찰칵!");
     setFlash(true);
+    setTimeout(() => setFlash(false), 500);
+  };
+
+  const sendPhoto = async () => {
     const element1 = document.getElementById("meetingVideo-fan");
     const element2 = document.getElementById("meetingVideo-star");
     const image: string = await compositionImage(element1, element2);
     addImageToLocalStorage(image);
     handleCompleteTakePhoto();
-    setTimeout(() => setFlash(false), 500);
   };
 
   const renderSubscribers = () => {
