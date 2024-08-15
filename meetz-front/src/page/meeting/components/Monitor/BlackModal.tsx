@@ -6,7 +6,7 @@ import Alert from '/src/assets/images/alert.png';
 import Loading from '../../../../common/Loading';
 
 const BlackModal = () => {
-  const { reportDetail, reportedUserId, closeBlackModal } = useMonitorStore();
+  const { reportDetail, reportedUserId, closeBlackModal, openBlackCompleteModalOpened, openAlreadyWarnedModalOpened, setWarnedErrorMsg } = useMonitorStore();
   const { accessToken } = fetchUserData()
   const [dataLoading, setDataLoading] = useState(false);
 
@@ -16,12 +16,20 @@ const BlackModal = () => {
       const result = await postFanBlackList(reportedUserId, accessToken || "");
 
       if (result) {
-        alert('해당 팬이 영구 제명되었습니다.');
+        openBlackCompleteModalOpened();
         closeBlackModal();
       }
     } catch (error: any) {
-      alert(error.message)
-      setDataLoading(false);
+      openAlreadyWarnedModalOpened();
+      if (error.response && error.response.status === 400) {
+        setWarnedErrorMsg('이미 블랙리스트에 등록된 팬입니다.');
+      } else if (error.response && error.response.status === 403) {
+        setWarnedErrorMsg('접근 권한이 없습니다.');
+      } else if (error.response && error.response.status === 404) {
+        setWarnedErrorMsg('존재하지 않는 팬입니다.');
+      } else {
+        setWarnedErrorMsg('알 수 없는 에러가 발생했습니다.');
+      }
       closeBlackModal();
     }
     setDataLoading(false);
