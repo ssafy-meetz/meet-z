@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import FanSessionContainerPage from "./FanSessionContainerPage";
 import StarSessionContainerPage from "./StarSessionContainerPage";
 import { useEffect } from "react";
