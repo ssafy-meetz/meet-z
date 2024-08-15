@@ -6,11 +6,7 @@ const PickPhotoPage = () => {
   const [selectedFrame, setSelectedFrame] = useState(0);
   const { setIsSessionEnd } = useSessionStore();
   const { sendImage } = useSaveImage();
-  const frameList = [
-    { name: "frame1", img: "/frame1.png" },
-    { name: "frame2", img: "/frame2.png" },
-    { name: "frame3", img: "/frame3.png" },
-  ];
+
   const colors = [
     { id: 1, color: "bg-[#FE4D5C]" },
     { id: 2, color: "bg-[#D9D9D9]" },
