@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import postFanWarningAtOnce from '../../../../apis/meeting/postFanWraningAtOnce';
 import fetchUserData from '../../../../lib/fetchUserData';
 import { useMonitorStore } from '../../../../zustand/useMonitorStore';
 import WarnDropdown from './WarnDropdown';
 import Alert from '/src/assets/images/alert.png';
+import Loading from '../../../../common/Loading';
 
 
 const WarningModal = () => {
-  const { inputText, selectedOption, reportedUserId, closeWarnModal, setSelectedOption, setInputText } = useMonitorStore();
+  const { inputText, selectedOption, reportedUserId, setWarnedErrorMsg, closeWarnModal, setSelectedOption, openWarnCompleteModalOpened, openAlreadyWarnedModalOpened, setInputText } = useMonitorStore();
   const { accessToken } = fetchUserData();
+  const [dataLoading, setDataLoading] = useState(false);
 
 
   const continueBtnHandler = async ({ }) => {
@@ -23,19 +26,43 @@ const WarningModal = () => {
     } else {
       reason = selectedOption;
     }
-
+    setDataLoading(true);
     try {
-      await postFanWarningAtOnce(reportedUserId, reason, accessToken || '');
+      const result = await postFanWarningAtOnce(reportedUserId, reason, accessToken || '');
+      if (result) {
+        openWarnCompleteModalOpened();
+      }
     } catch (error: any) {
-      alert(error.message)
+      openAlreadyWarnedModalOpened();
+      if (error.response && error.response.status === 400) {
+        setWarnedErrorMsg('이미 해당 미팅에서 경고 처리된 유저입니다.');
+      } else if (error.response && error.response.status === 403) {
+        setWarnedErrorMsg('이미 블랙리스트에 등록된 유저입니다.');
+      } else if (error.response && error.response.status === 404) {
+        setWarnedErrorMsg('사용자를 찾을 수 없습니다.');
+      } else {
+        setWarnedErrorMsg('알 수 없는 에러가 발생했습니다.');
+      }
     }
     closeWarnModal();
+    setDataLoading(false);
   };
 
   const closeModalHandler = () => {
     setSelectedOption('');
     setInputText('');
     closeWarnModal();
+  }
+
+  if (dataLoading) {
+    <div
+      className='fixed bottom-0 left-0 mb-4 ml-4 w-[300px] h-[100px] flex gap-6 items-center justify-center rounded-3xl border-2 border-[#FF4F5D] bg-white'
+    >
+      <Loading width={46} height={46} />
+      <span className='text-xl font-semibold cursor-default'>
+        경고 및 안내 메일 발송
+      </span>
+    </div>
   }
 
   return (
