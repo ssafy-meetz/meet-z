@@ -16,8 +16,8 @@ const BlackModal = () => {
       const result = await postFanBlackList(reportedUserId, accessToken || "");
 
       if (result) {
-        openBlackCompleteModalOpened();
         closeBlackModal();
+        openBlackCompleteModalOpened();
       }
     } catch (error: any) {
       openAlreadyWarnedModalOpened();
@@ -35,6 +35,17 @@ const BlackModal = () => {
     setDataLoading(false);
   };
 
+  if (dataLoading) {
+    return (<div
+      className='fixed bottom-0 left-0 mb-4 ml-4 w-[300px] h-[100px] flex gap-6 items-center justify-center rounded-3xl border-2 border-[#FF4F5D] bg-white'
+    >
+      <Loading width={46} height={46} />
+      <span className='text-xl font-semibold cursor-default'>
+        팬 블랙 및 안내 메일 발송
+      </span>
+    </div>)
+  }
+
   return (
     <div
       className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'
@@ -44,7 +55,7 @@ const BlackModal = () => {
         onClick={(e) => e.stopPropagation()}
         className='w-[460px] h-[240px] flex flex-col items-center justify-center rounded-3xl border-2 border-[#FF4F5D] bg-white'
       >
-        {dataLoading ? <Loading width={70} height={70} /> : <div className='flex flex-col gap-6'>
+        <div className='flex flex-col gap-6'>
           <div className='gap-4 flex flex-col items-center justify-center'>
             <div className='w-16 h-16'>
               <img src={Alert} alt='alert' />
@@ -73,7 +84,7 @@ const BlackModal = () => {
               취소
             </button>
           </div>
-        </div>}
+        </div>
       </div>
     </div>
   );
