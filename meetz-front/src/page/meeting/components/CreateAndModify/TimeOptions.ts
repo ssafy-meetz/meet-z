@@ -1,5 +1,3 @@
-// src/utils/timeOptions.ts
-
 export const timeOptions = [
   { value: '', label: '시간 선택' },
   { value: '08:00', label: '08:00 am' },

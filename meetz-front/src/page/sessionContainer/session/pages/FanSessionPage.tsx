@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import logo_white from "/src/assets/images/logo-white.png";
 import FanSession from "../components/FanSession";
@@ -7,7 +6,7 @@ import { MeetingInfoDto } from "../../../../types/types";
 import useOpenviduStore from "../../../../zustand/useOpenviduStore";
 
 function FanSessionPage() {
-  const {session, subscriber,publisher} = useOpenviduStore();
+  const { session, subscriber, publisher } = useOpenviduStore();
   const { formatTime } = useSessionTimer();
   const [meetingInfo] = useState<MeetingInfoDto>(
     JSON.parse(sessionStorage.getItem("mi") || "")

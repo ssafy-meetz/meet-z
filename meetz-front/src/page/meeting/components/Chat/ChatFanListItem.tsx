@@ -1,4 +1,3 @@
-import { FaCircle } from "react-icons/fa6";
 import { ChatFanDto } from "../../../../types/types";
 import { useManagerChatStore } from "../../../../zustand/useManagerChatStore";
 import Loading from "../../../../common/Loading";
