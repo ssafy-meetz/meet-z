@@ -1,7 +1,5 @@
 # 1. MEET:Z   소개
-<div align="center">
-  <img src="meetz-back/meetz/src/main/resources/Meetzlogo.png" alt="alt text" width="150"/>
-</div>
+<img src="meetz-back/meetz/src/main/resources/Meetzlogo.png" alt="alt text" width="200"/>
 Naming : "팬과 스타의 MEET을 이뤄주는 영통팬싸 플랫폼"
 
 - 기간: 24.07.08 ~ 24.08.16 (7주)
