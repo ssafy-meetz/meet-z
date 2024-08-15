@@ -6,7 +6,7 @@ import Alert from '/src/assets/images/alert.png';
 import Loading from '../../../../common/Loading';
 
 const BlackModal = () => {
-  const { reportDetail, reportedUserId, closeBlackModal } = useMonitorStore();
+  const { reportDetail, reportedUserId, closeBlackModal, openBlackCompleteModalOpened, openAlreadyWarnedModalOpened, setWarnedErrorMsg } = useMonitorStore();
   const { accessToken } = fetchUserData()
   const [dataLoading, setDataLoading] = useState(false);
 
@@ -16,16 +16,35 @@ const BlackModal = () => {
       const result = await postFanBlackList(reportedUserId, accessToken || "");
 
       if (result) {
-        alert('해당 팬이 영구 제명되었습니다.');
         closeBlackModal();
+        openBlackCompleteModalOpened();
       }
     } catch (error: any) {
-      alert(error.message)
-      setDataLoading(false);
+      openAlreadyWarnedModalOpened();
+      if (error.response && error.response.status === 400) {
+        setWarnedErrorMsg('이미 블랙리스트에 등록된 팬입니다.');
+      } else if (error.response && error.response.status === 403) {
+        setWarnedErrorMsg('접근 권한이 없습니다.');
+      } else if (error.response && error.response.status === 404) {
+        setWarnedErrorMsg('존재하지 않는 팬입니다.');
+      } else {
+        setWarnedErrorMsg('알 수 없는 에러가 발생했습니다.');
+      }
       closeBlackModal();
     }
     setDataLoading(false);
   };
+
+  if (dataLoading) {
+    return (<div
+      className='fixed bottom-0 left-0 mb-4 ml-4 w-[300px] h-[100px] flex gap-6 items-center justify-center rounded-3xl border-2 border-[#FF4F5D] bg-white'
+    >
+      <Loading width={46} height={46} />
+      <span className='text-xl font-semibold cursor-default'>
+        팬 블랙 및 안내 메일 발송
+      </span>
+    </div>)
+  }
 
   return (
     <div
@@ -36,7 +55,7 @@ const BlackModal = () => {
         onClick={(e) => e.stopPropagation()}
         className='w-[460px] h-[240px] flex flex-col items-center justify-center rounded-3xl border-2 border-[#FF4F5D] bg-white'
       >
-        {dataLoading ? <Loading width={70} height={70} /> : <div className='flex flex-col gap-6'>
+        <div className='flex flex-col gap-6'>
           <div className='gap-4 flex flex-col items-center justify-center'>
             <div className='w-16 h-16'>
               <img src={Alert} alt='alert' />
@@ -65,7 +84,7 @@ const BlackModal = () => {
               취소
             </button>
           </div>
-        </div>}
+        </div>
       </div>
     </div>
   );
