@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ReportDetailDto, ReportsDto } from '../../../../types/types';
+import { ReportsDto } from '../../../../types/types';
 import fetchUserData from '../../../../lib/fetchUserData';
 import getReportedDetail from '../../../../apis/meeting/getReportedDetail';
 import Loading from '../../../../common/Loading';
