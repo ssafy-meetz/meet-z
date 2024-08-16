@@ -147,47 +147,47 @@ public class OpenviduService {
     //스케줄러
     //cron(초 분 시 일 월 요일 (년))
     // * : 모든 값, /: 증분 값(0/15, 0부터 시작해 15마다), -: 범위
-//    @Scheduled(cron = "1 0/1 * * * ?") //5분마다 실행
-////    @Scheduled(cron = "0/10 * * * * ?") //10초마다 실행
-//    public void scheduleTaskTest() {
-//        log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
-//        //1. 미팅 시작 시간 30분 전에 방에 대한 모든 세션 생성(미팅 테이블에서 시작 시간 범위를 (현재 시간 + 30 == 미팅 시작 시간)인거 불러오기)
-//        //2. 만약 미팅 세션이 안만들어진 방이라면 만들기
-//        //3. 미팅 시작시간이 된 방들에 대해선 현재 접속중인 사람들에게 방 이동 명령을 하게 만들어주는 함수 실행
-//        LocalDateTime now = LocalDateTime.now();
-//        LocalDateTime startTime = now.minusMinutes(1);
-//        LocalDateTime endTime = now.plusMinutes(31);
-//        log.info("시간 범위 {} ~ {}", startTime, endTime);
-//        List<Meeting> meetings = meetingRepository.findMeetingsInTimeRange(startTime, endTime);
-//        if (meetings != null) {
-//            for (Meeting meeting : meetings) {
-//                log.info("미팅방 정보 미팅 시작 시간:{}, 미팅 종료 시간:{}", meeting.getMeetingStart(), meeting.getMeetingEnd());
-//
-//                //미팅방 세션 생성해야 하면
-//                LocalDateTime meetingStart = meeting.getMeetingStart();
-//
-//                //아직 생성되지 않았다면 미팅방 생성
-//                if (!existByMeetingRoomsId(meeting.getMeetingId())) {
-//                    initSession(meeting.getMeetingId());
-//                    initFanInfo(meeting.getMeetingId());
-//                }
-//
-//                //미팅방 시작
-//                //미팅방 시작
-//                LocalDateTime thirtySecondsAgo = now.minusSeconds(15);
-//                LocalDateTime thirtySecondsLater = now.plusSeconds(15);
-//
-//                if (meetingStart.isAfter(thirtySecondsAgo) && meetingStart.isBefore(thirtySecondsLater)) {
-//                    try {
-//                        automationMeetingRoom(meeting.getMeetingId());
-//                    } catch (Exception e) {
-//                        throw new InternalServerErrorException("자동화 중 오류가 발생했습니다.");
-//                    }
-//                }
-//
-//            }
-//        }
-//    }
+    @Scheduled(cron = "0 0/5 * * * ?") //5분마다 실행
+//    @Scheduled(cron = "0/10 * * * * ?") //10초마다 실행
+    public void scheduleTaskTest() {
+        log.info("스케쥴 함수 실행: " + LocalDateTime.now().format(dateFormat));
+        //1. 미팅 시작 시간 30분 전에 방에 대한 모든 세션 생성(미팅 테이블에서 시작 시간 범위를 (현재 시간 + 30 == 미팅 시작 시간)인거 불러오기)
+        //2. 만약 미팅 세션이 안만들어진 방이라면 만들기
+        //3. 미팅 시작시간이 된 방들에 대해선 현재 접속중인 사람들에게 방 이동 명령을 하게 만들어주는 함수 실행
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = now.minusMinutes(1);
+        LocalDateTime endTime = now.plusMinutes(31);
+        log.info("시간 범위 {} ~ {}", startTime, endTime);
+        List<Meeting> meetings = meetingRepository.findMeetingsInTimeRange(startTime, endTime);
+        if (meetings != null) {
+            for (Meeting meeting : meetings) {
+                log.info("미팅방 정보 미팅 시작 시간:{}, 미팅 종료 시간:{}", meeting.getMeetingStart(), meeting.getMeetingEnd());
+
+                //미팅방 세션 생성해야 하면
+                LocalDateTime meetingStart = meeting.getMeetingStart();
+
+                //아직 생성되지 않았다면 미팅방 생성
+                if (!existByMeetingRoomsId(meeting.getMeetingId())) {
+                    initSession(meeting.getMeetingId());
+                    initFanInfo(meeting.getMeetingId());
+                }
+
+                //미팅방 시작
+                //미팅방 시작
+                LocalDateTime thirtySecondsAgo = now.minusSeconds(15);
+                LocalDateTime thirtySecondsLater = now.plusSeconds(15);
+
+                if (meetingStart.isAfter(thirtySecondsAgo) && meetingStart.isBefore(thirtySecondsLater)) {
+                    try {
+                        automationMeetingRoom(meeting.getMeetingId());
+                    } catch (Exception e) {
+                        throw new InternalServerErrorException("자동화 중 오류가 발생했습니다.");
+                    }
+                }
+
+            }
+        }
+    }
 
     public void automationMeetingRoom(int meetingId) {
         List<StarInfo> stars = meetingRooms.get(meetingId);
