@@ -5,10 +5,8 @@ import Video from "./Video";
 import { useSessionStore } from "../../../../zustand/useSessionStore";
 import camera_icon from "/src/assets/images/camera.png";
 import useSaveImage from "../../../../hooks/session/useSaveImage";
-
 import "./flash.css";
 import sendTakePhoto from "../../../../apis/session/sendTakePhoto";
-import useRecorder from "../../../../hooks/session/useRecorder";
 
 interface SessionProps {
   subscriber: Subscriber | null;
@@ -27,7 +25,6 @@ function FanSession({ subscriber, publisher, fanName }: SessionProps) {
   const { starName, nextStarName } = useSessionStore();
   const { compositionImage, addImageToLocalStorage } = useSaveImage();
   const [flash, setFlash] = useState<boolean>(false);
-  const { startRecording } = useRecorder();
 
   const toggleTakePhoto = () => {
     //사진 촬영 요청
@@ -46,7 +43,7 @@ function FanSession({ subscriber, publisher, fanName }: SessionProps) {
         if (findMemo) {
           setMemo(findMemo.text);
         }
-      } catch {}
+      } catch { }
     }
   }, []);
 
