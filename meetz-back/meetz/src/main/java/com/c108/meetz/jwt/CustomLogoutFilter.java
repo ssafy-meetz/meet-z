@@ -75,7 +75,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
         String email = jwtUtil.getEmail(token);
-        jwtUtil.deleteToken(email);
+        //jwtUtil.deleteToken(email);
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
         managerRepository.updateTokenToNull(token);
