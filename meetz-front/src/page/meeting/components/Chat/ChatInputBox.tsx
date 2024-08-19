@@ -1,5 +1,6 @@
 import { FaCircleArrowUp } from "react-icons/fa6";
 import { useManagerChatStore } from "../../../../zustand/useManagerChatStore";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
 interface ChatInputBoxProps {
   sendMessage: () => void;
@@ -21,17 +22,29 @@ const ChatInputBox = ({ sendMessage }: ChatInputBoxProps) => {
     sendMessage(); // input창에 입력한 메시지를 보내기
   };
 
+  const changeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value.length <= 200) {
+      setInputMessage(e.target.value)
+    }
+  }
+
   return (
     <div className='mb-6 mx-5 flex items-center border rounded-lg focus-within:border-[#ff4f5d] flex-shrink-0'>
       <input
         type='text'
         placeholder='메시지를 입력하세요.'
         value={inputMessage} // 상태와 연동된 입력값
-        onChange={(e) => setInputMessage(e.target.value)} // 입력값 업데이트
+        onChange={(e) => changeMessage(e)} // 입력값 업데이트
         onKeyDown={handleKeyPress}
         className='flex-grow p-3 focus:outline-none rounded-lg'
       />
-      <button onClick={handleSendMessage} className='p-2 text-[#ff4f5d]'>
+      <span className=''>
+        {inputMessage.length < 200 ?
+          <span className="text-gray-300">{inputMessage.length}/200</span> : (
+            <span className="text-red-500">{inputMessage.length}/200</span>
+          )}
+      </span>
+      <button disabled={inputMessage.length > 200} onClick={handleSendMessage} className={`p-2 ${inputMessage.length <= 200 ? 'text-[#ff4f5d]' : 'text-slate-300'}`}>
         <FaCircleArrowUp className='w-8 h-8' />
       </button>
     </div>
