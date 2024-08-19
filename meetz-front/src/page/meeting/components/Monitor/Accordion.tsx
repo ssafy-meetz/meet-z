@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { ReportsDto } from "../../../../types/types";
+import { ReportDetailDto, ReportsDto } from "../../../../types/types";
 import fetchUserData from "../../../../lib/fetchUserData";
 import getReportedDetail from "../../../../apis/meeting/getReportedDetail";
 import Loading from "../../../../common/Loading";
 import AudioPlayer from "./AudioPlayer";
 import ScriptBox from "./ScriptBox";
-import { useMonitorStore } from "../../../../zustand/useMonitorStore";
+import TagLabel from "./TagLabel";
 
 interface AccordionProps {
   title: string;
@@ -19,7 +19,7 @@ const Accordion: React.FC<AccordionProps> = ({ title, report, isOpen, onToggle }
   const { accessToken } = fetchUserData();
   const { meetingId } = useParams();
   const [scriptLoading, setScriptLoading] = useState(false);
-  const { reportDetail, setReportDetail, setReportedUserId } = useMonitorStore();
+  const [reportDetail, setReportDetail] = useState<ReportDetailDto | null>(null); // 개별 상태로 관리
 
   const fetchReportedDetail = async () => {
     setScriptLoading(true);
@@ -30,8 +30,9 @@ const Accordion: React.FC<AccordionProps> = ({ title, report, isOpen, onToggle }
         accessToken || ""
       );
       setReportDetail(data);
-      setReportedUserId(data.reportedUserId);
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
     setScriptLoading(false);
   };
 
@@ -49,22 +50,26 @@ const Accordion: React.FC<AccordionProps> = ({ title, report, isOpen, onToggle }
         onClick={openAccordionHandler}
       >
         <span className="font-light text-2xl">{title}</span>
-        <svg
-          className={`w-9 h-9 text-[#FF4F5D] transform transition-transform ${
-            isOpen ? "rotate-180" : ""
-          } hover:scale-125 hover:text-[#ff4444]`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M19 9l-7 7-7-7"
-          ></path>
-        </svg>
+        <div className="flex gap-6">
+          {report?.isReported && <TagLabel title={"미팅중 신고됨"} color={"#FF4F5D"} />}
+          {report?.isProfanity && <TagLabel title={"비속어 필터링"} color={"#ffa44f"} />}
+          <svg
+            className={`w-9 h-9 text-[#FF4F5D] transform transition-transform ${
+              isOpen ? "rotate-180" : ""
+            } hover:scale-125 hover:text-[#ff4444]`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
+        </div>
       </div>
       {isOpen && (
         <div className="p-4">
