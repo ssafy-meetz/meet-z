@@ -18,7 +18,7 @@ const MeetingList = ({ isEnd, month, meetings }: MeetingListProps) => {
 
   useEffect(() => {
     if (meetings) {
-      setDays(Object.keys(meetings));
+      setDays(Object.keys(meetings).sort((a, b) => +b - +a));
     }
   }, [meetings]);
 
