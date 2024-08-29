@@ -9,7 +9,6 @@ import PickPhotoPage from "./pickPhoto/PickPhotoPage";
 import SessionSwitchPage from "./session/pages/SessionSwitchPage";
 import { useOpenvidu } from "../../hooks/session/useOpenvidu";
 import useOpenviduStore from "../../zustand/useOpenviduStore";
-import useRecorder from "../../hooks/session/useRecorder";
 type SessionInfo = {
   timer: number;
   wait: number;
@@ -18,7 +17,6 @@ type SessionInfo = {
   sessionId: string;
 };
 const FanSessionContainerPage = () => {
-  const { startRecording, sendRecording, stopRecording } = useRecorder();
   const { isSessionEnd, setWait, setTakePhoto, setIsSessionEnd } =
     useSessionStore();
   const { sessionId, setSessionId } = useOpenviduStore();

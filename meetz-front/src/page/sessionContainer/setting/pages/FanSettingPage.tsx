@@ -11,7 +11,6 @@ import useCheckAuth from "../../../../hooks/meeting/useCheckAuth";
 import { messageDto } from "../../../../types/types";
 import getChatDetailForFan from "../../../../apis/managerChat/getChatDetailForFan";
 import fetchUserData from "../../../../lib/fetchUserData";
-import { useSessionStore } from "../../../../zustand/useSessionStore";
 
 const FanSettingPage: React.FC = () => {
   useCheckAuth();

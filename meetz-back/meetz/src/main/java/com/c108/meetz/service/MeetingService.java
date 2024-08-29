@@ -222,6 +222,7 @@ public class MeetingService {
                         int cnt = userRepository.findByMeeting_MeetingIdAndRole(meeting.getMeetingId(), FAN).size();
                         return MeetingList.of(meeting, cnt, flag);
                     })
+                    .sorted(Comparator.comparing(MeetingList::getMeetingEnd).reversed()) // MeetingList에서 meetingEnd를 기준으로 내림차순 정렬
                     .collect(Collectors.toList());
         } else { //flag == false 이면 미완료 미팅 찾기
             meetings = meetingRepository.findIncompleteMeetingsByManagerId(manager.getManagerId(), currentTime).stream()
@@ -234,10 +235,14 @@ public class MeetingService {
         Map<String, Map<String, List<MeetingList>>> month = meetings.stream()
                 .collect(Collectors.groupingBy(
                         meeting -> meeting.getMeetingStart().format(DateTimeFormatter.ofPattern("MM")),
+                        LinkedHashMap::new, // 월 순서 유지
                         Collectors.groupingBy(
-                                meeting -> meeting.getMeetingStart().format(DateTimeFormatter.ofPattern("dd"))
+                                meeting -> meeting.getMeetingStart().format(DateTimeFormatter.ofPattern("dd")),
+                                LinkedHashMap::new, // 일 순서 유지
+                                Collectors.toList()
                         )
                 ));
+
 
         return MeetingListResponseDto.from(manager.getCompany(), month);
     }

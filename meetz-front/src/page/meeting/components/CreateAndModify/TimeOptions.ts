@@ -1,5 +1,3 @@
-// src/utils/timeOptions.ts
-
 export const timeOptions = [
   { value: '', label: '시간 선택' },
   { value: '08:00', label: '08:00 am' },
@@ -55,7 +53,7 @@ export const durationOptions = [
 ];
 
 export const breakOptions = [
-  { value: '0', label: 'X' },
+  { value: '5', label: '5초' },
   { value: '10', label: '10초' },
   { value: '20', label: '20초' },
   { value: '30', label: '30초' },

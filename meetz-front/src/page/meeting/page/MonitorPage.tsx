@@ -1,4 +1,3 @@
-import useCheckAuth from '../../../hooks/meeting/useCheckAuth';
 import WarningModal from '../components/Monitor/WarningModal';
 import BlackModal from '../components/Monitor/BlackModal';
 import { useMonitorStore } from '../../../zustand/useMonitorStore';
@@ -10,6 +9,9 @@ import MonitorHeader from '../components/Monitor/MonitorHeader';
 import { ReportsDto } from '../../../types/types';
 import MonitorList from '../components/Monitor/MonitorList';
 import Loading from '../../../common/Loading';
+import BlackCompleteModal from '../components/Monitor/BlackCompleteModal';
+import WarnCompleteModal from '../components/Monitor/WarnCompleteModal';
+import AlreadyWarnedModal from '../components/Monitor/AlreadyWarnedModal';
 
 interface ReportedDataDto {
   meetingDuration: string; //number형으로 변경해야함
@@ -24,7 +26,7 @@ interface ReportedDataDto {
 
 const MonitoringPage = () => {
   const { meetingId } = useParams();
-  const { warnModalOpend, blackModalOpend } = useMonitorStore();
+  const { warnModalOpend, blackModalOpend, blackCompleteModalOpened, warnCompleteModalOpened, alreadyWarnedModalOpened } = useMonitorStore();
   const [reportedData, setReportedData] = useState<ReportedDataDto | null>(null);
   const { accessToken } = fetchUserData();
 
@@ -58,6 +60,9 @@ const MonitoringPage = () => {
       </div>
       {warnModalOpend && <WarningModal />}
       {blackModalOpend && <BlackModal />}
+      {blackCompleteModalOpened && <BlackCompleteModal />}
+      {warnCompleteModalOpened && <WarnCompleteModal />}
+      {alreadyWarnedModalOpened && <AlreadyWarnedModal />}
     </div>
   );
 };

@@ -44,13 +44,13 @@ public class CommonService {
                 throw new NotFoundException("비밀번호가 일치하지 않습니다.");
             }
             // Redis에서 기존의 access 토큰을 확인
-            String existingAccessToken = jwtUtil.getToken(manager.getEmail());
-            if (existingAccessToken != null) {
-                throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
-            }
+//            String existingAccessToken = jwtUtil.getToken(manager.getEmail());
+//            if (existingAccessToken != null) {
+//                throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
+//            }
             String access = jwtUtil.createJwt("access", manager.getEmail(), "MANAGER", ACCESS_TOKEN_EXPIRATION);
             String refresh = jwtUtil.createJwt("refresh", manager.getEmail(), "MANAGER", REFRESH_TOKEN_EXPIRATION);
-            jwtUtil.storeToken(manager.getEmail(), access);
+            //jwtUtil.storeToken(manager.getEmail(), access);
             manager.setToken(refresh);
             managerRepository.save(manager);
             LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
@@ -64,10 +64,10 @@ public class CommonService {
         }
         //User user = userRepository.findByEmailAndPassword(loginRequestDto.email(), loginRequestDto.password()).orElseThrow(()-> new NotFoundException("존재하지 않는 회원입니다."));
         // Redis에서 기존의 access 토큰을 확인
-        String existingAccessToken = jwtUtil.getToken(user.getEmail());
-        if (existingAccessToken != null) {
-            throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
-        }
+//        String existingAccessToken = jwtUtil.getToken(user.getEmail());
+//        if (existingAccessToken != null) {
+//            throw new UnauthorizedException("이미 다른 기기에서 로그인된 상태입니다. 로그아웃 후 다시 시도하세요.");
+//        }
         //방 생성이 되지 않았을 때 로그인을 막자.
         int meetingId = user.getMeeting().getMeetingId();
         if (!openviduService.existByMeetingRoomsId(meetingId)) {
@@ -75,7 +75,7 @@ public class CommonService {
         }
         String access = jwtUtil.createJwt("access", user.getEmail(), String.valueOf(user.getRole()), ACCESS_TOKEN_EXPIRATION);
         String refresh = jwtUtil.createJwt("refresh", user.getEmail(), String.valueOf(user.getRole()), REFRESH_TOKEN_EXPIRATION);
-        jwtUtil.storeToken(user.getEmail(), access);
+        //jwtUtil.storeToken(user.getEmail(), access);
         user.setToken(refresh);
         userRepository.save(user);
         LocalDateTime expireAt = LocalDateTime.now().plusDays(60);
@@ -148,7 +148,7 @@ public class CommonService {
             }
             userRepository.updateTokenToNull(token);
         }
-        jwtUtil.deleteToken(email);
+        //jwtUtil.deleteToken(email);
     }
 
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 
-    @Query("SELECT m FROM Meeting m WHERE m.manager.managerId = :managerId AND m.meetingEnd < :currentTime order by m.meetingStart desc")
+    @Query("SELECT m FROM Meeting m WHERE m.manager.managerId = :managerId AND m.meetingEnd < :currentTime order by m.meetingEnd desc")
     List<Meeting> findCompletedMeetingsByManagerId(@Param("managerId") int managerId, @Param("currentTime") LocalDateTime currentTime);
 
     @Query("SELECT m FROM Meeting m WHERE m.manager.managerId = :managerId AND m.meetingEnd >= :currentTime order by m.meetingStart asc")
