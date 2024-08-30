@@ -22,7 +22,7 @@
 |- 유저관리<br>- 미팅일정<br>- 웹소켓 채팅<br>- 팬 경고/신고<br> |- Infra<br> - UI/UX디자인<br> - 미팅 자동화 시스템<br>  | - UI/UX 디자인<br>- 퍼블리싱<br>- 블랙리스트 |
 
 ## 📃 문서
-[💻 Notion](https://www.notion.so/di-son/MEET-Z-1cc0d67f068149d78a452fa593e4b4b5)
+  ### ** [💻 Notion](https://www.notion.so/di-son/MEET-Z-1cc0d67f068149d78a452fa593e4b4b5) **
 
 # 2. 🔍 개발 환경
 
