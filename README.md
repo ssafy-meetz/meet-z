@@ -5,21 +5,15 @@
 ## 📅 개발 기간
 **24.07.08 ~ 24.08.16** (7주)
 
-(SSAFY 공통 프로젝트 - 웹 기술 트랙)
+(SSAFY 공통 프로젝트 - 웹 기술 트랙, **우수상**)
 
 ## 👨‍💻 팀원
 
-| 손다인 | 이승원 | 김태연 |
-| -------- | -------- | -------- | 
-| 팀장 | 팀원 | 팀원 |
-| BE | BE | BE | FE | FE | FE |
-| - 유저관리<br>- 미팅일정<br>- 웹소켓 채팅<br> | - Infra<br>- 미팅 자동화 시스템   | - 비속어 필터링<br>- 팬 경고, 신고 기능 |
-
-| 강창우 | 신민경 | 서민수 |
-| -------- | -------- | -------- |
-| 팀원 | 팀원 | 팀원 |
-|  FE | FE | FE |
-|- 유저관리<br>- 미팅일정<br>- 웹소켓 채팅<br>- 팬 경고/신고<br> |- Infra<br> - UI/UX디자인<br> - 미팅 자동화 시스템<br>  | - UI/UX 디자인<br>- 퍼블리싱<br>- 블랙리스트 |
+| <img src="https://avatars.githubusercontent.com/dain0826" width=100px /> | <img src="https://avatars.githubusercontent.com/swLeesw" width=100px /> | <img src="https://avatars.githubusercontent.com/taeyekim" width=100px /> |<img src="https://avatars.githubusercontent.com/monam2" width=100px /> | <img src="https://avatars.githubusercontent.com/minggwen" width=100px /> | <img src="https://avatars.githubusercontent.com/seomsoo" width=100px /> |
+| -------- | -------- | -------- | -------- | -------- | -------- |
+|[손다인](https://github.com/dain0826)|[이승원](https://github.com/swLeesw)|[김태연](https://github.com/taeyekim)|[강창우](https://github.com/monam2)|[신민경](https://github.com/minggwen)|[서민수](https://github.com/seomsoo)|
+| **BE/팀장** | **BE** | **BE** | **FE** | **FE** | **FE** |
+| - 유저관리<br>- 미팅일정<br>- 웹소켓 채팅<br> | - Infra<br>- 미팅 자동화 시스템   | - 비속어 필터링<br>- 팬 경고, 신고 기능 |- 유저관리<br>- 미팅일정<br>- 웹소켓 채팅<br>- 팬 경고/신고<br> |- Infra<br> - UI/UX디자인<br> - 미팅 자동화 시스템<br>  | - UI/UX 디자인<br>- 퍼블리싱<br>- 블랙리스트 |
 
 ## 📃 문서
   ### **[💻 Notion](https://www.notion.so/di-son/MEET-Z-1cc0d67f068149d78a452fa593e4b4b5)**
