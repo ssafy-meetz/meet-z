@@ -72,7 +72,7 @@
   ![image](/meetz-back/meetz/src/main/resources/architecture.png)
 
   ### **ERD**
-  ![D110_까까_ERD](/meetz-back/meetz/src/main/resources/ERD-image.png)
+  ![D110_까까_ERD](/meetz-back/meetz/src/main/resources/erd.png)
 
 
 # 3. 💗 주요 기능
