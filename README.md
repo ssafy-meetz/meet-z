@@ -69,7 +69,7 @@
 
 ## 2-2. 개발문서
   ### **아키텍처**
-  ![image](/meetz-back/meetz/src/main/resources/Architecture.png)
+  ![image](/meetz-back/meetz/src/main/resources/architecture.png)
 
   ### **ERD**
   ![D110_까까_ERD](/meetz-back/meetz/src/main/resources/ERD-image.png)
