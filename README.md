@@ -45,10 +45,9 @@
 
   ### 👨‍💻 **DB**
 
-    - MySQL
     - MariaDB
     - Redis
-    - Naver Cloud
+    - Naver Cloud Object Storage
 
   ### 👨‍💻 **CI/CD**
   
